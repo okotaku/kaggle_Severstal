@@ -17,8 +17,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import sys
-
-sys.path.append("../input/siim-src")
+sys.path.append("../input/severstal-src/")
 from util import seed_torch, search_threshold
 from losses import FocalLovaszLoss
 from datasets import SeverDataset
@@ -30,7 +29,7 @@ from scheduler import GradualWarmupScheduler
 # ===============
 # Constants
 # ===============
-IMG_DIR = "../input/siim-train-test/siim/"
+IMG_DIR = "../input/severstal-steel-defect-detection/train_images/"
 LOGGER_PATH = "log.txt"
 FOLD_PATH = "../input/make-folds-severstal/severstal_folds01.csv"
 ID_COLUMNS = "ImageId"
@@ -42,7 +41,7 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(10000)
 device = "cuda:0"
-IMG_SIZE = (256, 512)
+IMG_SIZE = (128, 800)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 35
@@ -82,20 +81,20 @@ def main():
                                     transforms=train_augmentation)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2, pin_memory=True)
-        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2, pin_memory=True)
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
 
         del train_df, val_df, df, train_dataset, val_dataset
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('resnet34', encoder_weights='imagenet', classes=1)
+        model = smp.Unet('resnet34', encoder_weights='imagenet', classes=N_CLASSES)
         model.to(device)
 
         criterion = torch.nn.BCEWithLogitsLoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
+        optimizer = torch.optim.Adam(model.parameters(), lr=3e-3)
         scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
-        scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=10, after_scheduler=scheduler_cosine)
+        scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
 
@@ -110,10 +109,12 @@ def main():
         for epoch in range(1, EPOCHS + 1):
             if epoch % (CLR_CYCLE * 2) == 0:
                 if epoch != 0:
-                    y_val = y_val.reshape(-1, 1, IMG_SIZE[0], IMG_SIZE[1])
-                    th, score, _, _ = search_threshold(y_val, best_pred)
-                    LOGGER.info('Best loss is {} Best Dice is {} on epoch {} th {}'.format(
-                        round(best_model_loss, 5), round(score, 5), best_model_ep, th))
+                    y_val = y_val.reshape(-1, N_CLASSES, IMG_SIZE[0], IMG_SIZE[1])
+                    best_pred = best_pred.reshape(-1, N_CLASSES, IMG_SIZE[0], IMG_SIZE[1])
+                    for i in range(N_CLASSES):
+                        th, score, _, _ = search_threshold(y_val[:, i, :, :], best_pred[:, i, :, :])
+                        LOGGER.info('Best loss: {} Best Dice: {} on epoch {} th {} class {}'.format(
+                            round(best_model_loss, 5), round(score, 5), best_model_ep, th, i))
                 checkpoint += 1
                 best_model_loss = 999
 
@@ -138,10 +139,12 @@ def main():
             gc.collect()
 
     with timer('eval'):
-        y_val = y_val.reshape(-1, 1, IMG_SIZE[0], IMG_SIZE[1])
-        th, score = search_threshold(y_val, best_pred)
-        LOGGER.info(f'Best loss is {} Best Dice is {} on epoch {} th {}'.format(
-            round(best_model_loss, 5), round(score, 5), best_model_ep, th))
+        y_val = y_val.reshape(-1, N_CLASSES, IMG_SIZE[0], IMG_SIZE[1])
+        best_pred = best_pred.reshape(-1, N_CLASSES, IMG_SIZE[0], IMG_SIZE[1])
+        for i in range(N_CLASSES):
+            th, score, _, _ = search_threshold(y_val[:, i, :, :], best_pred[:, i, :, :])
+            LOGGER.info('Best loss: {} Best Dice: {} on epoch {} th {} class {}'.format(
+                round(best_model_loss, 5), round(score, 5), best_model_ep, th, i))
 
     xs = list(range(1, len(train_losses) + 1))
     plt.plot(xs, train_losses, label='Train loss')
