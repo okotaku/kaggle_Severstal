@@ -14,11 +14,10 @@ class DecoderBlock(nn.Module):
             Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
         )
 
-    def forward(self, x):
-        x, skip = x
+    def forward(self, x, skips):
         x = F.interpolate(x, scale_factor=2, mode='nearest')
-        if skip is not None:
-            x = torch.cat([x, skip], dim=1)
+        if skips is not None:
+            x = torch.cat([x]+skips, dim=1)
         x = self.block(x)
         return x
 
@@ -32,11 +31,10 @@ class DecoderBlockSE(nn.Module):
             SCse(out_channels)
         )
 
-    def forward(self, x):
-        x, skip = x
+    def forward(self, x, skips):
         x = F.interpolate(x, scale_factor=2, mode='nearest')
-        if skip is not None:
-            x = torch.cat([x, skip], dim=1)
+        if skips is not None:
+            x = torch.cat([x]+skips, dim=1)
         x = self.block(x)
         return x
 
@@ -109,6 +107,7 @@ class UnetPPDecoder(Model):
     ):
         super().__init__()
         self.h_columns = h_columns
+        self.deep_supervision = deep_supervision
 
         if center:
             channels = encoder_channels[0]
