@@ -89,7 +89,7 @@ def train_one_epoch_mixup(model, train_loader, criterion, optimizer, device, ste
     return total_loss / (step + 1)
 
 
-def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, img_size,
+def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
                     accumulation_steps=1, steps_upd_logging=500, scheduler=None):
     model.train()
 
@@ -102,7 +102,7 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, img_s
         logits = model(features)
         loss = 0
         for l in logits:
-            loss += criterion(l.view(len(l), 1, img_size, img_size), targets.view(len(l), 1, img_size, img_size))
+            loss += criterion(l, targets)
         loss /= len(logits)
 
         with amp.scale_loss(loss, optimizer) as scaled_loss:
@@ -149,7 +149,7 @@ def validate(model, valid_loader, criterion, device):
 
     return test_loss / (step + 1), all_preds, all_true_ans
 
-def validate_dsv(model, valid_loader, criterion, device, img_size):
+def validate_dsv(model, valid_loader, criterion, device):
     model.eval()
     test_loss = 0.0
     true_ans_list = []
@@ -162,7 +162,7 @@ def validate_dsv(model, valid_loader, criterion, device, img_size):
             logits = model(features)
             loss = 0
             for l in logits:
-                loss += criterion(l.view(len(l), 1, img_size, img_size), targets.view(len(l), 1, img_size, img_size))
+                loss += criterion(l, targets)
             loss /= len(logits)
 
             test_loss += loss.item()
