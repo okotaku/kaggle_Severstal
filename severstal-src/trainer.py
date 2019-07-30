@@ -167,7 +167,7 @@ def validate_dsv(model, valid_loader, criterion, device):
 
             test_loss += loss.item()
             true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
-            preds_cat.append(torch.sigmoid(logits[-1]).float().cpu().numpy().astype("float16"))
+            preds_cat.append(torch.sigmoid(logits[0]).float().cpu().numpy().astype("float16"))
 
             del features, targets, logits
             gc.collect()
