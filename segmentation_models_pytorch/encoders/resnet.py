@@ -2,6 +2,9 @@ import torch.nn as nn
 from torchvision.models.resnet import ResNet
 from torchvision.models.resnet import BasicBlock
 from torchvision.models.resnet import Bottleneck
+
+import sys
+sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 from .scse import SCse
 

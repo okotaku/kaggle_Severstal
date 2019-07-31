@@ -1,4 +1,7 @@
 import torch.nn as nn
+
+import sys
+sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.inceptionresnetv2 import InceptionResNetV2
 from pretrainedmodels.models.inceptionresnetv2 import pretrained_settings
 from .scse import SCse

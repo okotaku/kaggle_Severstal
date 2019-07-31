@@ -1,6 +1,8 @@
 import re
 import torch.nn as nn
 
+import sys
+sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 from torchvision.models.densenet import DenseNet
 from .scse import SCse

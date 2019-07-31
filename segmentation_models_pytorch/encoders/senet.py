@@ -1,4 +1,7 @@
 import torch.nn as nn
+
+import sys
+sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.senet import SENet
 from pretrainedmodels.models.senet import SEBottleneck
 from pretrainedmodels.models.senet import SEResNetBottleneck

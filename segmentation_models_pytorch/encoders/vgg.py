@@ -1,6 +1,9 @@
 import torch.nn as nn
 from torchvision.models.vgg import VGG
 from torchvision.models.vgg import make_layers
+
+import sys
+sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 
 
