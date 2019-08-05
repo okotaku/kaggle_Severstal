@@ -1,9 +1,9 @@
-from .decoder import LinknetDecoder
+from .decoder import LinknetPPDecoder
 from ..base import EncoderDecoder
 from ..encoders import get_encoder
 
 
-class Linknet(EncoderDecoder):
+class LinknetPP(EncoderDecoder):
     """Linknet_ is a fully convolution neural network for fast image semantic segmentation
 
     Note:
@@ -35,7 +35,8 @@ class Linknet(EncoderDecoder):
             activation='sigmoid',
             encoder_se_module=False,
             decoder_semodule=False,
-            h_columns=False
+            h_columns=False,
+            deep_supervision=False
     ):
         encoder = get_encoder(
             encoder_name,
@@ -43,13 +44,14 @@ class Linknet(EncoderDecoder):
             se_module=encoder_se_module
         )
 
-        decoder = LinknetDecoder(
+        decoder = LinknetPPDecoder(
             encoder_channels=encoder.out_shapes,
             prefinal_channels=32,
             final_channels=classes,
             use_batchnorm=decoder_use_batchnorm,
             se_module=decoder_semodule,
-            h_columns=h_columns
+            h_columns=h_columns,
+            deep_supervision=deep_supervision
         )
 
         super().__init__(encoder, decoder, activation)

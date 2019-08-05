@@ -7,25 +7,44 @@ from ..base.model import Model
 from ..encoders.scse import SCse
 
 
+class TransposeX2(nn.Module):
+
+    def __init__(self, in_channels, out_channels, use_batchnorm=True, **batchnorm_params):
+        super().__init__()
+        layers = []
+        layers.append(nn.ConvTranspose2d(in_channels, out_channels, kernel_size=4, stride=2, padding=1))
+        if use_batchnorm:
+            layers.append(nn.BatchNorm2d(out_channels, **batchnorm_params))
+        layers.append(nn.ReLU(inplace=True))
+
+        self.block = nn.Sequential(*layers)
+
+    def forward(self, x):
+        return self.block(x)
+
+
 class DecoderBlock(nn.Module):
     def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False):
         super().__init__()
         if se_module:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels, in_channels // 4, kernel_size=1, use_batchnorm=use_batchnorm),
+                TransposeX2(in_channels // 4, in_channels // 4, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels // 4, out_channels, kernel_size=1, use_batchnorm=use_batchnorm),
                 SCse(out_channels)
             )
         else:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels, in_channels // 4, kernel_size=1, use_batchnorm=use_batchnorm),
+                TransposeX2(in_channels // 4, in_channels // 4, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels // 4, out_channels, kernel_size=1, use_batchnorm=use_batchnorm),
             )
 
     def forward(self, x, skips):
         x = F.interpolate(x, scale_factor=2, mode='nearest')
         if skips is not None:
-            x = torch.cat([x]+skips, dim=1)
+            for skip in skips:
+                x += skip
         x = self.block(x)
         return x
 
@@ -83,7 +102,7 @@ class FPAv2(nn.Module):
         return x
 
 
-class UnetPPDecoder(Model):
+class LinknetPPDecoder(Model):
 
     def __init__(
             self,
