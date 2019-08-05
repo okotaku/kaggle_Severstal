@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 import segmentation_models_pytorch as smp
 from apex import amp
 from contextlib import contextmanager
-from albumentations import Compose, HorizontalFlip, OneOf, ElasticTransform, GridDistortion
-from albumentations import OpticalDistortion, CLAHE, RandomBrightnessContrast, RandomGamma
+from albumentations import *
 import torch
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -24,6 +23,32 @@ from datasets import SeverDataset
 from logger import setup_logger, LOGGER
 from trainer import train_one_epoch, validate
 from scheduler import GradualWarmupScheduler
+
+
+def validate(model, valid_loader, criterion, device):
+    model.eval()
+    test_loss = 0.0
+    true_ans_list = []
+    preds_cat = []
+    with torch.no_grad():
+
+        for step, (features, targets) in enumerate(valid_loader):
+            features, targets = features.to(device), targets.to(device)
+
+            logits = model(features)
+            loss = criterion(logits, targets)
+
+            test_loss += loss.item()
+            true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
+            preds_cat.append(torch.sigmoid(logits).float().cpu().numpy().astype("float16"))
+
+            del features, targets, logits
+            gc.collect()
+
+        all_true_ans = np.concatenate(true_ans_list, axis=0)
+        all_preds = np.concatenate(preds_cat, axis=0)
+
+    return test_loss / (step + 1), all_preds, all_true_ans
 
 
 # ===============
@@ -41,10 +66,10 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(10000)
 device = "cuda:0"
-IMG_SIZE = (128, 800)
+IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 35
+EPOCHS = 47
 FOLD_ID = 0
 EXP_ID = "exp1_unet_resnet34"
 
@@ -67,14 +92,35 @@ def main():
         train_df, val_df = df[df.fold_id != FOLD_ID], df[df.fold_id == FOLD_ID]
 
         train_augmentation = Compose([
-            HorizontalFlip(p=0.5),
+            Flip(p=0.5),
             OneOf([
-                ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
+                #ElasticTransform(p=0.5, alpha=120, sigma=120 * 0.05, alpha_affine=120 * 0.03),
                 GridDistortion(p=0.5),
-                OpticalDistortion(p=1, distort_limit=2, shift_limit=0.5)
+                OpticalDistortion(p=0.5, distort_limit=2, shift_limit=0.5)
             ], p=0.5),
-            RandomBrightnessContrast(p=0.5),
-            RandomGamma(p=0.5)])
+            #OneOf([
+            #    ShiftScaleRotate(p=0.5),
+            ##    RandomRotate90(p=0.5),
+            #    Rotate(p=0.5)
+            #], p=0.5),
+            OneOf([
+                Blur(blur_limit=8, p=0.5),
+                MotionBlur(blur_limit=8,p=0.5),
+                MedianBlur(blur_limit=8,p=0.5),
+                GaussianBlur(blur_limit=8,p=0.5)
+            ], p=0.5),
+            OneOf([
+                #CLAHE(clip_limit=4, tile_grid_size=(4, 4), p=0.5),
+                RandomGamma(gamma_limit=(100,140), p=0.5),
+                RandomBrightnessContrast(p=0.5),
+                RandomBrightness(p=0.5),
+                RandomContrast(p=0.5)
+            ], p=0.5),
+            OneOf([
+                GaussNoise(p=0.5),
+                Cutout(num_holes=10, max_h_size=10, max_w_size=20, p=0.5)
+            ], p=0.5)
+        ])
         val_augmentation = None
 
         train_dataset = SeverDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
@@ -92,7 +138,7 @@ def main():
         model.to(device)
 
         criterion = torch.nn.BCEWithLogitsLoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=3e-3)
+        optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
         scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
         scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
 
