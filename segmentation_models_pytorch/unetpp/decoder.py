@@ -146,7 +146,7 @@ class UnetPPDecoder(Model):
             self.layer4_h = nn.Conv2d(out_channels[3], out_channels[4], kernel_size=(1, 1))
             self.final_conv = nn.Sequential(nn.Conv2d(int(out_channels[4] * 5), 64, kernel_size=3, padding=1),
                                             nn.ELU(True),
-                                            nn.Conv2d(64, 1, kernel_size=1, bias=False))
+                                            nn.Conv2d(64, final_channels, kernel_size=1, bias=False))
 
         self.initialize()
 
