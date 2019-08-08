@@ -139,6 +139,15 @@ class UnetPPDecoder(Model):
         self.final_conv2 = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
         self.final_conv3 = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
 
+        if self.h_columns:
+            self.layer1_h = nn.Conv2d(out_channels[0], out_channels[4], kernel_size=(1, 1))
+            self.layer2_h = nn.Conv2d(out_channels[1], out_channels[4], kernel_size=(1, 1))
+            self.layer3_h = nn.Conv2d(out_channels[2], out_channels[4], kernel_size=(1, 1))
+            self.layer4_h = nn.Conv2d(out_channels[3], out_channels[4], kernel_size=(1, 1))
+            self.final_conv = nn.Sequential(nn.Conv2d(int(out_channels[4] * 5), 64, kernel_size=3, padding=1),
+                                            nn.ELU(True),
+                                            nn.Conv2d(64, 1, kernel_size=1, bias=False))
+
         self.initialize()
 
     def compute_channels(self, encoder_channels, decoder_channels):
@@ -173,7 +182,16 @@ class UnetPPDecoder(Model):
         d2 = self.layer1_4(d3, [skips[3], d2_1, d2_2, d2_3])
 
         d1 = self.layer0(d2, None)
+
+        if self.h_columns:
+            d1 = torch.cat((d1,
+                            self.layer4_h(F.upsample(d2, scale_factor=2, mode='bilinear', align_corners=True)),
+                            self.layer3_h(F.upsample(d3, scale_factor=4, mode='bilinear', align_corners=True)),
+                            self.layer2_h(F.upsample(d4, scale_factor=8, mode='bilinear', align_corners=True)),
+                            self.layer1_h(F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True))), 1)
+
         x = self.final_conv(d1)
+
         if self.deep_supervision:
             d1_1 = self.layer0_1(d2_1, None)
             d1_2 = self.layer0_2(d2_2, None)
