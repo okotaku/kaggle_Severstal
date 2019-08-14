@@ -90,20 +90,30 @@ def train_one_epoch_mixup(model, train_loader, criterion, optimizer, device, ste
 
 
 def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
-                    accumulation_steps=1, steps_upd_logging=500, scheduler=None):
+                    accumulation_steps=1, steps_upd_logging=500, scheduler=None, classification=False, seg_weight=0.5):
     model.train()
 
     total_loss = 0.0
-    for step, (features, targets) in enumerate(train_loader):
-        features, targets = features.to(device), targets.to(device)
+    for step, batch in enumerate(train_loader):
+        features, targets = batch[0].to(device), batch[1].to(device)
+        if len(batch) == 3:
+            true_y = batch[2].to(device)
+        del batch
+        gc.collect()
 
         optimizer.zero_grad()
 
-        logits = model(features)
+        out_dic = model(features)
+        logits = out_dic["mask"]
         loss = 0
         for l in logits:
             loss += criterion(l, targets)
         loss /= len(logits)
+
+        if classification:
+            pred_y = out_dic["class"]
+            class_loss = criterion(pred_y, true_y)
+            loss = (loss*seg_weight + class_loss*(1-seg_weight)) * 2
 
         with amp.scale_loss(loss, optimizer) as scaled_loss:
             scaled_loss.backward()
@@ -156,10 +166,12 @@ def validate_dsv(model, valid_loader, criterion, device):
     preds_cat = []
     with torch.no_grad():
 
-        for step, (features, targets) in enumerate(valid_loader):
-            features, targets = features.to(device), targets.to(device)
+        for step, batch in enumerate(valid_loader):
+            features, targets = batch[0].to(device), batch[1].to(device)
+            del batch
+            gc.collect()
 
-            logits = model(features)
+            logits = model(features)["mask"]
             loss = 0
             for l in logits:
                 loss += criterion(l, targets)

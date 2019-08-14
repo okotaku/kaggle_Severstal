@@ -38,7 +38,8 @@ class UnetPP(EncoderDecoder):
             encoder_se_module=False,
             decoder_semodule=False,
             h_columns=False,
-            deep_supervision=False
+            deep_supervision=False,
+            classification=False
     ):
         encoder = get_encoder(
             encoder_name,
@@ -54,7 +55,8 @@ class UnetPP(EncoderDecoder):
             center=center,
             se_module=decoder_semodule,
             h_columns=h_columns,
-            deep_supervision=deep_supervision
+            deep_supervision=deep_supervision,
+            classification=classification
         )
 
         super().__init__(encoder, decoder, activation)

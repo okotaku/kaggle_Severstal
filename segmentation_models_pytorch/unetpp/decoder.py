@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..common.blocks import Conv2dReLU
+from ..common.blocks import Conv2dReLU, SEBlock, AdaptiveConcatPool2d, Flatten
 from ..base.model import Model
 from ..encoders.scse import SCse
 
@@ -94,11 +94,13 @@ class UnetPPDecoder(Model):
             center=False,
             se_module=False,
             h_columns=False,
-            deep_supervision=False
+            deep_supervision=False,
+            classification=False
     ):
         super().__init__()
         self.h_columns = h_columns
         self.deep_supervision = deep_supervision
+        self.classification = classification
 
         if center:
             channels = encoder_channels[0]
@@ -148,6 +150,15 @@ class UnetPPDecoder(Model):
                                             nn.ELU(True),
                                             nn.Conv2d(64, final_channels, kernel_size=1, bias=False))
 
+        if self.classification:
+            self.last_linear = nn.Sequential(
+                AdaptiveConcatPool2d(),
+                Flatten(),
+                SEBlock(encoder_channels[0] * 2),
+                nn.Dropout(),
+                nn.Linear(encoder_channels[0] * 2, final_channels)
+            )
+
         self.initialize()
 
     def compute_channels(self, encoder_channels, decoder_channels):
@@ -192,6 +203,12 @@ class UnetPPDecoder(Model):
 
         x = self.final_conv(d1)
 
+        return_y = {"class": None, "mask": None}
+
+        if self.classification:
+            class_y = self.last_linear(encoder_head)
+            return_y["class"] = class_y
+
         if self.deep_supervision:
             d1_1 = self.layer0_1(d2_1, None)
             d1_2 = self.layer0_2(d2_2, None)
@@ -200,6 +217,8 @@ class UnetPPDecoder(Model):
             x1 = self.final_conv1(d1_1)
             x2 = self.final_conv2(d1_2)
             x3 = self.final_conv3(d1_3)
-            return [x, x1, x2, x3]
+            return_y["mask"] = [x, x1, x2, x3]
+        else:
+            return_y["mask"] = x
 
-        return x
+        return return_y

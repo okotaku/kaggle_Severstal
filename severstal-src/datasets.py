@@ -21,7 +21,8 @@ class SeverDataset(Dataset):
                  mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
                  transforms=None,
                  means=[0.485, 0.456, 0.406],
-                 stds=[0.229, 0.224, 0.225]
+                 stds=[0.229, 0.224, 0.225],
+                 class_y=None
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -33,6 +34,7 @@ class SeverDataset(Dataset):
         self.mask_colname = mask_colname
         self.n_classes = n_classes
         self.crop_rate = crop_rate
+        self.class_y = class_y
 
     def __len__(self):
         return self.df.shape[0]
@@ -68,7 +70,11 @@ class SeverDataset(Dataset):
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
 
-        return torch.from_numpy(img), torch.from_numpy(mask)
+        if self.class_y is None:
+            return torch.from_numpy(img), torch.from_numpy(mask)
+        else:
+            class_y_ = self.class_y[idx]
+            return torch.from_numpy(img), torch.from_numpy(mask), torch.tensor(class_y_)
 
 
 def pytorch_image_to_tensor_transform(image, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
