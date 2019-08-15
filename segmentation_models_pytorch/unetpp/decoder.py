@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..common.blocks import Conv2dReLU, SEBlock, AdaptiveConcatPool2d, Flatten
-from ..base.model import Model
-from ..encoders.scse import SCse
+from segmentation_models_pytorch.common.blocks import Conv2dReLU, SEBlock, AdaptiveConcatPool2d, Flatten
+from segmentation_models_pytorch.base.model import Model
+from segmentation_models_pytorch.encoders.scse import SCse
 
 
 class DecoderBlock(nn.Module):
@@ -25,7 +25,7 @@ class DecoderBlock(nn.Module):
     def forward(self, x, skips):
         x = F.interpolate(x, scale_factor=2, mode='nearest')
         if skips is not None:
-            x = torch.cat([x]+skips, dim=1)
+            x = torch.cat([x] + skips, dim=1)
         x = self.block(x)
         return x
 
@@ -95,7 +95,8 @@ class UnetPPDecoder(Model):
             se_module=False,
             h_columns=False,
             deep_supervision=False,
-            classification=False
+            classification=False,
+            linear_feature_unit=64
     ):
         super().__init__()
         self.h_columns = h_columns
@@ -104,7 +105,7 @@ class UnetPPDecoder(Model):
 
         if center:
             channels = encoder_channels[0]
-            #self.center = CenterBlock(channels, channels, use_batchnorm=use_batchnorm)
+            # self.center = CenterBlock(channels, channels, use_batchnorm=use_batchnorm)
             self.center = FPAv2(channels, channels)
         else:
             self.center = None
@@ -114,23 +115,23 @@ class UnetPPDecoder(Model):
 
         self.layer4_1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer3_1 = DecoderBlock(encoder_channels[1] + encoder_channels[2], out_channels[1],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer3_2 = DecoderBlock(in_channels[1] + out_channels[1], out_channels[1],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer2_1 = DecoderBlock(encoder_channels[2] + encoder_channels[3], out_channels[2],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer2_2 = DecoderBlock(in_channels[2] + out_channels[2], out_channels[2],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer2_3 = DecoderBlock(in_channels[2] + out_channels[2] * 2, out_channels[2],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer1_1 = DecoderBlock(encoder_channels[3] + encoder_channels[4], out_channels[3],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer1_2 = DecoderBlock(in_channels[3] + out_channels[3], out_channels[3],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer1_3 = DecoderBlock(in_channels[3] + out_channels[3], out_channels[3],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer1_4 = DecoderBlock(in_channels[3] + out_channels[3] * 3, out_channels[3],
-                                       use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer0 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer0_1 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
         self.layer0_2 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
@@ -151,13 +152,17 @@ class UnetPPDecoder(Model):
                                             nn.Conv2d(64, final_channels, kernel_size=1, bias=False))
 
         if self.classification:
-            self.last_linear = nn.Sequential(
+            self.linear_feature = nn.Sequential(
                 AdaptiveConcatPool2d(),
                 Flatten(),
                 SEBlock(encoder_channels[0] * 2),
                 nn.Dropout(),
-                nn.Linear(encoder_channels[0] * 2, final_channels)
+                nn.Linear(encoder_channels[0] * 2, linear_feature_unit),
+                nn.ELU(True)
             )
+            self.last_linear = nn.Linear(linear_feature_unit, final_channels)
+
+            self.final_conv = nn.Conv2d(out_channels[4] + linear_feature_unit, final_channels, kernel_size=(1, 1))
 
         self.initialize()
 
@@ -201,13 +206,19 @@ class UnetPPDecoder(Model):
                             self.layer2_h(F.upsample(d4, scale_factor=8, mode='bilinear', align_corners=True)),
                             self.layer1_h(F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True))), 1)
 
-        x = self.final_conv(d1)
-
         return_y = {"class": None, "mask": None}
 
         if self.classification:
-            class_y = self.last_linear(encoder_head)
+            l_feature = self.linear_feature(encoder_head)
+            class_y = self.last_linear(l_feature)
             return_y["class"] = class_y
+
+            d1 = torch.cat((d1,
+                            F.upsample(l_feature.view(len(d1), -1, 1, 1), scale_factor=(d1.shape[2], d1.shape[3]),
+                                       mode='bilinear',
+                                       align_corners=True)), 1)
+
+        x = self.final_conv(d1)
 
         if self.deep_supervision:
             d1_1 = self.layer0_1(d2_1, None)
