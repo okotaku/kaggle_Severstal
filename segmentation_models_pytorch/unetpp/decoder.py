@@ -162,7 +162,7 @@ class UnetPPDecoder(Model):
             )
             self.last_linear = nn.Linear(linear_feature_unit, final_channels)
 
-            self.final_conv = nn.Conv2d(out_channels[4] + linear_feature_unit, final_channels, kernel_size=(1, 1))
+            self.final_conv_with_class = nn.Conv2d(out_channels[4] + linear_feature_unit, final_channels, kernel_size=(1, 1))
 
         self.initialize()
 
@@ -207,6 +207,10 @@ class UnetPPDecoder(Model):
                             self.layer1_h(F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True))), 1)
 
         return_y = {"class": None, "mask": None}
+        masks = []
+
+        x = self.final_conv(d1)
+        masks.append(x)
 
         if self.classification:
             l_feature = self.linear_feature(encoder_head)
@@ -217,8 +221,8 @@ class UnetPPDecoder(Model):
                             F.upsample(l_feature.view(len(d1), -1, 1, 1), scale_factor=(d1.shape[2], d1.shape[3]),
                                        mode='bilinear',
                                        align_corners=True)), 1)
-
-        x = self.final_conv(d1)
+            x_pixel = self.final_conv_with_class(d1)
+            return_y["pixel"] = x_pixel
 
         if self.deep_supervision:
             d1_1 = self.layer0_1(d2_1, None)
@@ -228,8 +232,8 @@ class UnetPPDecoder(Model):
             x1 = self.final_conv1(d1_1)
             x2 = self.final_conv2(d1_2)
             x3 = self.final_conv3(d1_3)
-            return_y["mask"] = [x, x1, x2, x3]
-        else:
-            return_y["mask"] = x
+            masks.extend([x1, x2, x3])
+
+        return_y["mask"] = masks
 
         return return_y
