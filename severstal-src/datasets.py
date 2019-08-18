@@ -22,7 +22,8 @@ class SeverDataset(Dataset):
                  transforms=None,
                  means=[0.485, 0.456, 0.406],
                  stds=[0.229, 0.224, 0.225],
-                 class_y=None
+                 class_y=None,
+                 cut_h=False
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -35,6 +36,7 @@ class SeverDataset(Dataset):
         self.n_classes = n_classes
         self.crop_rate = crop_rate
         self.class_y = class_y
+        self.cut_h = cut_h
 
     def __len__(self):
         return self.df.shape[0]
@@ -63,6 +65,8 @@ class SeverDataset(Dataset):
             augmented = self.transforms(image=img, mask=mask)
             img = augmented['image']
             mask = augmented['mask']
+        if self.cut_h:
+            img, mask = cutout_h(img, mask, self.img_size)
 
         img = img / 255
         img -= self.means
@@ -105,3 +109,28 @@ def random_cropping(image, mask, ratio = 0.8, is_random = True):
 
     #crop = cv2.resize(zeros ,(width,height)) #pad to original size
     return crop, crop_mask
+
+def cutout_h(img, mask, img_size, mask_value="zeros", min_h=10, max_h=60):
+    if mask_value == "mean":
+        mask_value = [
+            int(np.mean(img[:, :, 0])),
+            int(np.mean(img[:, :, 1])),
+            int(np.mean(img[:, :, 2])),
+        ]
+    elif mask_value == "zeros":
+        mask_value = [0, 0, 0]
+
+    mask_size_h = int(np.random.randint(min_h, max_h))
+
+    cutout_left = np.random.randint(
+        0 - mask_size_h // 2, img_size[0] - mask_size_h
+    )
+    cutout_right = cutout_left + mask_size_h
+
+    if cutout_left < 0:
+        cutout_left = 0
+
+    img[:, cutout_left:cutout_right, :] = mask_value
+    mask[:, cutout_left:cutout_right, :] = [0, 0, 0]
+
+    return img, mask

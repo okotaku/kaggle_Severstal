@@ -134,6 +134,46 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
     return total_loss / (step + 1)
 
 
+def train_one_epoch_dsv_mixup(model, train_loader, criterion, optimizer, device, img_size,
+                        accumulation_steps=1, steps_upd_logging=500, scheduler=None):
+    model.train()
+
+    total_loss = 0.0
+    for step, (features, targets) in enumerate(train_loader):
+        features, targets = features.to(device), targets.to(device)
+
+        inputs, targets_a, targets_b, lam = mixup_data(features, targets, device, alpha=mixup_alpha)
+        inputs, targets_a, targets_b = map(Variable, (inputs,
+                                                      targets_a, targets_b))
+
+        optimizer.zero_grad()
+
+        loss = 0
+        for l in logits:
+            loss += mixup_criterion(criterion, l.view(len(l), 1, img_size, img_size),
+                                    targets_a.view(len(l), 1, img_size, img_size),
+                                    targets_b.view(len(l), 1, img_size, img_size), lam)
+        loss /= len(logits)
+
+        with amp.scale_loss(loss, optimizer) as scaled_loss:
+            scaled_loss.backward()
+
+        if (step + 1) % accumulation_steps == 0:
+            optimizer.step()
+            optimizer.zero_grad()
+            if scheduler is not None:
+                scheduler.step()
+
+        total_loss += loss.item()
+
+        if (step + 1) % steps_upd_logging == 0:
+            LOGGER.info(f'Train loss on step {step + 1} was {round(total_loss / (step + 1), 5)}')
+        del features, targets, logits
+        gc.collect()
+
+    return total_loss / (step + 1)
+
+
 def validate(model, valid_loader, criterion, device):
     model.eval()
     test_loss = 0.0

@@ -8,25 +8,42 @@ from segmentation_models_pytorch.encoders.scse import SCse
 
 
 class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False):
+    def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False, use_elu=False, skip=False):
         super().__init__()
         if se_module:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                           use_batchnorm=use_batchnorm),
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                           use_batchnorm=use_batchnorm),
                 SCse(out_channels)
             )
         else:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                           use_batchnorm=use_batchnorm),
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                           use_batchnorm=use_batchnorm),
+            )
+
+        self.skip = skip
+        if self.skip:
+            self.downsample = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
+                nn.BatchNorm2d(out_channels),
+                nn.ELU(True)
             )
 
     def forward(self, x, skips):
         x = F.interpolate(x, scale_factor=2, mode='nearest')
         if skips is not None:
             x = torch.cat([x] + skips, dim=1)
+        identity = x
         x = self.block(x)
+        if self.skip:
+            identity = self.downsample(identity)
+            x = x + identity
+
         return x
 
 
@@ -96,7 +113,9 @@ class UnetPPDecoder(Model):
             h_columns=False,
             deep_supervision=False,
             classification=False,
-            linear_feature_unit=64
+            linear_feature_unit=64,
+            use_elu=False,
+            skip=False
     ):
         super().__init__()
         self.h_columns = h_columns
@@ -113,29 +132,34 @@ class UnetPPDecoder(Model):
         in_channels = self.compute_channels(encoder_channels, decoder_channels)
         out_channels = decoder_channels
 
-        self.layer4_1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm, se_module=se_module)
+        self.layer4_1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm,
+                                     se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer3_1 = DecoderBlock(encoder_channels[1] + encoder_channels[2], out_channels[1],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer3_2 = DecoderBlock(in_channels[1] + out_channels[1], out_channels[1],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer2_1 = DecoderBlock(encoder_channels[2] + encoder_channels[3], out_channels[2],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer2_2 = DecoderBlock(in_channels[2] + out_channels[2], out_channels[2],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer2_3 = DecoderBlock(in_channels[2] + out_channels[2] * 2, out_channels[2],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer1_1 = DecoderBlock(encoder_channels[3] + encoder_channels[4], out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer1_2 = DecoderBlock(in_channels[3] + out_channels[3], out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer1_3 = DecoderBlock(in_channels[3] + out_channels[3], out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
         self.layer1_4 = DecoderBlock(in_channels[3] + out_channels[3] * 3, out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer0 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer0_1 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer0_2 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer0_3 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+        self.layer0 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
+                                   se_module=se_module, use_elu=use_elu, skip=skip)
+        self.layer0_1 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
+                                     se_module=se_module, use_elu=use_elu, skip=skip)
+        self.layer0_2 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
+                                     se_module=se_module, use_elu=use_elu, skip=skip)
+        self.layer0_3 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
+                                     se_module=se_module, use_elu=use_elu, skip=skip)
 
         self.final_conv = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
         self.final_conv1 = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))

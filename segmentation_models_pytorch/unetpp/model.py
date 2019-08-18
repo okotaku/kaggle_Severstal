@@ -40,7 +40,9 @@ class UnetPP(EncoderDecoder):
             h_columns=False,
             deep_supervision=False,
             classification=False,
-            linear_feature_unit=64
+            linear_feature_unit=64,
+            use_elu=False,
+            skip=False
     ):
         encoder = get_encoder(
             encoder_name,
@@ -58,7 +60,9 @@ class UnetPP(EncoderDecoder):
             h_columns=h_columns,
             deep_supervision=deep_supervision,
             classification=classification,
-            linear_feature_unit=linear_feature_unit
+            linear_feature_unit=linear_feature_unit,
+            use_elu=use_elu,
+            skip=skip
         )
 
         super().__init__(encoder, decoder, activation)
