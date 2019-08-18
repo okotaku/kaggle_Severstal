@@ -66,7 +66,7 @@ class SeverDataset(Dataset):
             img = augmented['image']
             mask = augmented['mask']
         if self.cut_h:
-            img, mask = cutout_h(img, mask, self.img_size)
+            img, mask = cutout_h(img, mask, self.img_size, self.n_classes)
 
         img = img / 255
         img -= self.means
@@ -110,7 +110,7 @@ def random_cropping(image, mask, ratio = 0.8, is_random = True):
     #crop = cv2.resize(zeros ,(width,height)) #pad to original size
     return crop, crop_mask
 
-def cutout_h(img, mask, img_size, mask_value="zeros", min_h=10, max_h=60):
+def cutout_h(img, mask, img_size, n_classes, mask_value="zeros", min_h=10, max_h=60):
     if mask_value == "mean":
         mask_value = [
             int(np.mean(img[:, :, 0])),
@@ -131,6 +131,6 @@ def cutout_h(img, mask, img_size, mask_value="zeros", min_h=10, max_h=60):
         cutout_left = 0
 
     img[:, cutout_left:cutout_right, :] = mask_value
-    mask[:, cutout_left:cutout_right, :] = [0, 0, 0]
+    mask[:, cutout_left:cutout_right, :] = [0 for _ in range(n_classes)]
 
     return img, mask
