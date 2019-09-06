@@ -37,7 +37,9 @@ class Unet(EncoderDecoder):
             center=False,  # usefull for VGG models
             encoder_se_module=False,
             decoder_semodule=False,
-            h_columns=False
+            h_columns=False,
+            use_elu=False,
+            skip=False
     ):
         encoder = get_encoder(
             encoder_name,
@@ -52,7 +54,9 @@ class Unet(EncoderDecoder):
             use_batchnorm=decoder_use_batchnorm,
             center=center,
             se_module=decoder_semodule,
-            h_columns=h_columns
+            h_columns=h_columns,
+            use_elu=use_elu,
+            skip=skip
         )
 
         super().__init__(encoder, decoder, activation)

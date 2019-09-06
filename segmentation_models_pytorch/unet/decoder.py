@@ -7,18 +7,26 @@ from ..base.model import Model
 from ..encoders.scse import SCse
 
 class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False):
+    def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False, use_elu=False, skip=False):
         super().__init__()
         if se_module:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu, use_batchnorm=use_batchnorm),
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu, use_batchnorm=use_batchnorm),
                 SCse(out_channels)
             )
         else:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm),
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu, use_batchnorm=use_batchnorm),
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu, use_batchnorm=use_batchnorm),
+            )
+
+        self.skip = skip
+        if self.skip:
+            self.downsample = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=1, bias=False),
+                nn.BatchNorm2d(out_channels),
+                nn.ELU(True)
             )
 
     def forward(self, x):
@@ -26,7 +34,11 @@ class DecoderBlock(nn.Module):
         x = F.interpolate(x, scale_factor=2, mode='nearest')
         if skip is not None:
             x = torch.cat([x, skip], dim=1)
+        identity = x
         x = self.block(x)
+        if self.skip:
+            identity = self.downsample(identity)
+            x = x + identity
         return x
 
 
@@ -93,7 +105,9 @@ class UnetDecoder(Model):
             use_batchnorm=True,
             center=False,
             se_module=False,
-            h_columns=False
+            h_columns=False,
+            use_elu=False,
+            skip=False
     ):
         super().__init__()
         self.h_columns = h_columns
@@ -108,11 +122,16 @@ class UnetDecoder(Model):
         in_channels = self.compute_channels(encoder_channels, decoder_channels)
         out_channels = decoder_channels
 
-        self.layer1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer2 = DecoderBlock(in_channels[1], out_channels[1], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer3 = DecoderBlock(in_channels[2], out_channels[2], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer4 = DecoderBlock(in_channels[3], out_channels[3], use_batchnorm=use_batchnorm, se_module=se_module)
-        self.layer5 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module)
+        self.layer1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm, se_module=se_module,
+                                   use_elu=use_elu, skip=skip)
+        self.layer2 = DecoderBlock(in_channels[1], out_channels[1], use_batchnorm=use_batchnorm, se_module=se_module,
+                                   use_elu=use_elu, skip=skip)
+        self.layer3 = DecoderBlock(in_channels[2], out_channels[2], use_batchnorm=use_batchnorm, se_module=se_module,
+                                   use_elu=use_elu, skip=skip)
+        self.layer4 = DecoderBlock(in_channels[3], out_channels[3], use_batchnorm=use_batchnorm, se_module=se_module,
+                                   use_elu=use_elu, skip=skip)
+        self.layer5 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module,
+                                   use_elu=use_elu, skip=skip)
         if self.h_columns:
             self.layer1_h = nn.Conv2d(out_channels[0], out_channels[4], kernel_size=(1, 1))
             self.layer2_h = nn.Conv2d(out_channels[1], out_channels[4], kernel_size=(1, 1))
