@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import sys
-sys.path.append("src/")
+sys.path.append("severstal-src/")
 from util import seed_torch, search_threshold
 from losses import FocalLovaszLoss
 from datasets import SeverDataset
