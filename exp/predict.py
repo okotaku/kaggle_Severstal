@@ -92,7 +92,7 @@ def main(seed):
         score_all = np.array(score_all).mean(0)
         best_th = np.array(ths)[score_all == np.max(score_all)]
         best_score = np.max(score_all)
-        LOGGER.info(f'dice={best_score} on th={best_th}')
+        LOGGER.info('dice={} on th={}'.format(best_score, best_th))
 
 
 if __name__ == '__main__':
