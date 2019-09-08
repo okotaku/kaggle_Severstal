@@ -23,8 +23,8 @@ from datasets import SeverDataset
 from logger import setup_logger, LOGGER
 from trainer import train_one_epoch, validate
 from scheduler import GradualWarmupScheduler
-sys.path.append("segmentation_models_pytorch/")
-import segmentation_models_pytorch as smp
+#sys.path.append("segmentation_models_pytorch/")
+from segmentation_models_pytorch import Unet
 
 
 # ===============
@@ -99,7 +99,7 @@ def main():
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        model = Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True)
         #model.load_state_dict(torch.load(model_path))
         model.to(device)
