@@ -48,7 +48,7 @@ BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp14_unet_seresnext50"
-base_ckpt = 1
+base_ckpt = 2
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
