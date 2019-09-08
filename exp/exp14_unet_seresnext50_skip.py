@@ -110,6 +110,7 @@ def main(seed):
         scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
+        model = torch.nn.DataParallel(model)
 
     with timer('train'):
         train_losses = []
@@ -138,7 +139,7 @@ def main(seed):
             scheduler.step()
 
             if valid_loss < best_model_loss:
-                torch.save(model.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
+                torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                 best_model_loss = valid_loss
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
