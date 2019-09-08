@@ -45,7 +45,7 @@ device = "cuda:0"
 IMG_SIZE = (800, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 8
-EPOCHS = 11
+EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp14_unet_seresnext50"
 #model_path = "../input/sev-exp6-unetpp-seresnext50-fold0-3-256-skip/exp6_unet_seresnext_fold0_ckpt1.pth"
@@ -92,8 +92,8 @@ def main():
                                     transforms=train_augmentation, crop_rate=1.0)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
-        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=16)
+        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=16)
 
         del train_df, val_df, df, train_dataset, val_dataset
         gc.collect()
