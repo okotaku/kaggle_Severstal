@@ -62,7 +62,7 @@ def timer(name):
     LOGGER.info('[{}] done in {} s'.format(name, round(time.time() - t0, 2)))
 
 
-def main():
+def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
 
@@ -120,7 +120,8 @@ def main():
         checkpoint = 0
 
         for epoch in range(1, EPOCHS + 1):
-            SEED = SEED + epoch
+            seed = seed + epoch
+            seed_torch(seed)
             if epoch % (CLR_CYCLE * 2) == 0:
                 checkpoint += 1
                 best_model_loss = 999
@@ -155,4 +156,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(SEED)
