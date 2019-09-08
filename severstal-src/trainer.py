@@ -1,10 +1,13 @@
 import gc
+import sys
 import torch
 import numpy as np
-
 from apex import amp
 from logger import LOGGER
 from torch.autograd import Variable
+
+sys.path.append("../severstal-src/")
+from util import seed_torch, search_threshold
 
 
 def get_cutmix_data(inputs, target, beta=1, device=0):
@@ -238,3 +241,28 @@ def validate_dsv(model, valid_loader, criterion, device):
         all_preds = np.concatenate(preds_cat, axis=0)
 
     return test_loss / (step + 1), all_preds, all_true_ans
+
+
+def predict(model, valid_loader, criterion, device):
+    model.eval()
+    test_loss = 0.0
+    score_all = []
+    with torch.no_grad():
+
+        for step, (features, targets) in enumerate(valid_loader):
+            features, targets = features.to(device), targets.to(device)
+
+            logits = model(features)
+            loss = criterion(logits, targets)
+
+            test_loss += loss.item()
+            th, score, ths, scores = search_threshold(targets.float().cpu().numpy().astype("int8"),
+                                                      torch.sigmoid(
+                                                          logits.view(targets.shape)).float().cpu().numpy().astype(
+                                                          "float16"))
+            score_all.append(scores)
+
+            del features, targets, logits
+            gc.collect()
+
+    return test_loss / (step + 1), np.array(score_all), ths
