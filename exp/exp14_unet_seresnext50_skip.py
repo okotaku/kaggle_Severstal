@@ -48,7 +48,9 @@ BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp14_unet_seresnext50"
-#model_path = "../input/sev-exp6-unetpp-seresnext50-fold0-3-256-skip/exp6_unet_seresnext_fold0_ckpt1.pth"
+base_ckpt = 3
+#base_model = None
+base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -101,13 +103,18 @@ def main(seed):
     with timer('create model'):
         model = smp.Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True)
-        #model.load_state_dict(torch.load(model_path))
+        if base_model is not None:
+            model.load_state_dict(torch.load(base_model))
         model.to(device)
 
         criterion = torch.nn.BCEWithLogitsLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
-        scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
-        scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
+        if base_model is None:
+            scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
+            scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
+        else:
+            scheduler = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
+
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
         model = torch.nn.DataParallel(model)
@@ -118,7 +125,7 @@ def main(seed):
 
         best_model_loss = 999
         best_model_ep = 0
-        checkpoint = 0
+        checkpoint = base_ckpt+1
 
         for epoch in range(1, EPOCHS + 1):
             seed = seed + epoch
