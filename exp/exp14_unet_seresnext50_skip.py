@@ -16,14 +16,14 @@ from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import sys
-sys.path.append("../input/severstal-src/")
+sys.path.append("src/")
 from util import seed_torch, search_threshold
 from losses import FocalLovaszLoss
 from datasets import SeverDataset
 from logger import setup_logger, LOGGER
 from trainer import train_one_epoch, validate
 from scheduler import GradualWarmupScheduler
-sys.path.append("../input/smp-model/segmentation_models_pytorch/")
+sys.path.append("segmentation_models_pytorch/")
 import segmentation_models_pytorch as smp
 
 
@@ -137,7 +137,7 @@ def main():
             scheduler.step()
 
             if valid_loss < best_model_loss:
-                torch.save(model.state_dict(), '{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
+                torch.save(model.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                 best_model_loss = valid_loss
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
