@@ -106,7 +106,7 @@ def main(seed):
 
         criterion = ComboLoss({'bce': 1,
                         'dice': 1,
-                        'focal': 1})
+                        'focal': 1}, channel_weights=[1, 1, 1, 1])
         optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
         scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
         scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
