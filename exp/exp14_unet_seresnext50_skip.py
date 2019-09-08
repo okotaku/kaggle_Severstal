@@ -30,9 +30,9 @@ import segmentation_models_pytorch as smp
 # ===============
 # Constants
 # ===============
-IMG_DIR = "../input/severstal-steel-defect-detection/train_images/"
+IMG_DIR = "../input/train_images/"
 LOGGER_PATH = "log.txt"
-FOLD_PATH = "../input/make-folds-severstal/severstal_folds01.csv"
+FOLD_PATH = "../input/severstal_folds01.csv"
 ID_COLUMNS = "ImageId"
 N_CLASSES = 4
 
