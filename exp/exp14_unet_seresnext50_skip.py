@@ -23,7 +23,7 @@ from datasets import SeverDataset
 from logger import setup_logger, LOGGER
 from trainer import train_one_epoch, validate
 from scheduler import GradualWarmupScheduler
-sys.path.append("../segmentation_models_pytorch/")
+sys.path.append("../")
 import segmentation_models_pytorch as smp
 
 
