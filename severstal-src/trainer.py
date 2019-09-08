@@ -63,7 +63,7 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
 
 
 def train_one_epoch(model, train_loader, criterion, optimizer, device,
-                    accumulation_steps=1, steps_upd_logging=500, scheduler=None):
+                    accumulation_steps=1, steps_upd_logging=500, scheduler=None, cutmix_prob=0.3, beta=1):
     model.train()
 
     total_loss = 0.0
