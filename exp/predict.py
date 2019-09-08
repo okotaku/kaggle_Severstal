@@ -3,6 +3,7 @@
 # ===============
 import os
 import gc
+import cv2
 import time
 import numpy as np
 import pandas as pd
@@ -12,13 +13,13 @@ from apex import amp
 from contextlib import contextmanager
 from albumentations import *
 import torch
+from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import sys
 sys.path.append("../severstal-src/")
-from util import seed_torch, search_threshold
-from datasets import SeverDataset
+from util import seed_torch, search_threshold, rle2mask
 from logger import setup_logger, LOGGER
 from trainer import predict
 sys.path.append("../")
@@ -53,6 +54,66 @@ base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
 LOGGER.info("seed={}".format(SEED))
+
+
+class SeverDataset(Dataset):
+
+    def __init__(self,
+                 df,
+                 img_dir,
+                 img_size,
+                 n_classes,
+                 crop_rate=1.0,
+                 id_colname="ImageId",
+                 mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
+                 transforms=None,
+                 means=[0.485, 0.456, 0.406],
+                 stds=[0.229, 0.224, 0.225],
+                 class_y=None,
+                 cut_h=False
+                 ):
+        self.df = df
+        self.img_dir = img_dir
+        self.img_size = img_size
+        self.transforms = transforms
+        self.means = np.array(means)
+        self.stds = np.array(stds)
+        self.id_colname = id_colname
+        self.mask_colname = mask_colname
+        self.n_classes = n_classes
+        self.crop_rate = crop_rate
+        self.class_y = class_y
+        self.cut_h = cut_h
+
+    def __len__(self):
+        return self.df.shape[0]
+
+    def __getitem__(self, idx):
+        cur_idx_row = self.df.iloc[idx]
+        img_id = cur_idx_row[self.id_colname]
+        img_path = os.path.join(self.img_dir, img_id)
+
+        img = cv2.imread(img_path)
+        w, h, _ = img.shape
+        mask = np.zeros((w, h, self.n_classes))
+        for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
+            if encoded in "-1":
+                continue
+            else:
+                mask[:, :, i] = rle2mask(encoded, (w, h))
+
+        img = cv2.resize(img, self.img_size)
+        mask = cv2.resize(mask, self.img_size)
+        mask[mask != 0] = 1
+
+        img = img / 255
+        img -= self.means
+        img /= self.stds
+        img = img.transpose((2, 0, 1))
+        mask = mask.transpose((2, 0, 1))
+
+        if self.class_y is None:
+            return torch.Tensor(img), torch.Tensor(mask)
 
 
 @contextmanager
