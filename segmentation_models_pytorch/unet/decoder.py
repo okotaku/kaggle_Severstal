@@ -139,7 +139,7 @@ class UnetDecoder(Model):
             #self.layer4_h = nn.Conv2d(out_channels[3], out_channels[4], kernel_size=(1, 1))
             self.final_conv = nn.Sequential(nn.Conv2d(int(out_channels[4] * 2), 32, kernel_size=3, padding=1),
                                             nn.ELU(True),
-                                            nn.Conv2d(32, 1, kernel_size=1, bias=False))
+                                            nn.Conv2d(32, final_channels, kernel_size=1, bias=False))
         else:
             self.final_conv = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
 
