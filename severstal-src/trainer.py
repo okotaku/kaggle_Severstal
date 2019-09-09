@@ -246,7 +246,10 @@ def validate_dsv(model, valid_loader, criterion, device):
 def predict(model, valid_loader, criterion, device):
     model.eval()
     test_loss = 0.0
-    score_all = []
+    score_all1 = []
+    score_all2 = []
+    score_all3 = []
+    score_all4 = []
     with torch.no_grad():
 
         for step, (features, targets) in enumerate(valid_loader):
@@ -256,13 +259,21 @@ def predict(model, valid_loader, criterion, device):
             loss = criterion(logits, targets)
 
             test_loss += loss.item()
-            th, score, ths, scores = search_threshold(targets.float().cpu().numpy().astype("int8"),
-                                                      torch.sigmoid(
+            for i in range(4):
+                th, score, ths, scores = search_threshold(targets.float().cpu().numpy().astype("int8"),
+                                                          torch.sigmoid(
                                                           logits.view(targets.shape)).float().cpu().numpy().astype(
                                                           "float16"))
-            score_all.append(scores)
+                if i == 0:
+                    score_all1.append(scores)
+                if i == 1:
+                    score_all2.append(scores)
+                if i == 2:
+                    score_all3.append(scores)
+                if i == 3:
+                    score_all4.append(scores)
 
             del features, targets, logits
             gc.collect()
 
-    return test_loss / (step + 1), np.array(score_all), ths
+    return test_loss / (step + 1), np.array(score_all1), np.array(score_all2), np.array(score_all3), np.array(score_all4), ths

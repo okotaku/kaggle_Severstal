@@ -147,13 +147,28 @@ def main(seed):
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        valid_loss, score_all, ths = predict(model, val_loader, criterion, device)
+        valid_loss, score_all1, score_all2, score_all3, score_all4, ths = predict(model, val_loader, criterion, device)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
-        score_all = np.array(score_all).mean(0)
-        best_th = np.array(ths)[score_all == np.max(score_all)]
-        best_score = np.max(score_all)
-        LOGGER.info('dice={} on th={}'.format(best_score, best_th))
+        score_all1 = np.array(score_all1).mean(0)
+        best_th = np.array(ths)[score_all1 == np.max(score_all1)]
+        best_score = np.max(score_all1)
+        LOGGER.info('class 1 dice={} on th={}'.format(best_score, best_th))
+
+        score_all2 = np.array(score_all2).mean(0)
+        best_th = np.array(ths)[score_all2 == np.max(score_all2)]
+        best_score = np.max(score_all2)
+        LOGGER.info('class 2 dice={} on th={}'.format(best_score, best_th))
+
+        score_all3 = np.array(score_all3).mean(0)
+        best_th = np.array(ths)[score_all3 == np.max(score_all3)]
+        best_score = np.max(score_all3)
+        LOGGER.info('class 3 dice={} on th={}'.format(best_score, best_th))
+
+        score_all4 = np.array(score_all4).mean(0)
+        best_th = np.array(ths)[score_all4 == np.max(score_all4)]
+        best_score = np.max(score_all4)
+        LOGGER.info('class 4 dice={} on th={}'.format(best_score, best_th))
 
 
 if __name__ == '__main__':
