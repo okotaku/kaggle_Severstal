@@ -52,9 +52,9 @@ BATCH_SIZE = 32
 EPOCHS = 53
 FOLD_ID = 0
 EXP_ID = "exp17_unet_resnet"
-base_ckpt = 3
-base_model = None
-#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_ckpt = 12
+#base_model = None
+base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -136,6 +136,7 @@ def main(seed):
             seed = seed + epoch
             seed_torch(seed)
             if epoch % (CLR_CYCLE * 2) == 0:
+                LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
                 checkpoint += 1
                 best_model_loss = 999
 
@@ -158,6 +159,8 @@ def main(seed):
 
             #del val_pred
             gc.collect()
+
+    LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
 
     xs = list(range(1, len(train_losses) + 1))
     plt.plot(xs, train_losses, label='Train loss')
