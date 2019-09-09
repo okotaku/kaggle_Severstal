@@ -3,17 +3,28 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 
+class Swish(nn.Module):
+    def forward(self, x):
+        return x * torch.sigmoid(x)
+
+
 class Conv2dReLU(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, padding=0,
-                 stride=1, use_batchnorm=True, use_elu=False, **batchnorm_params):
+                 stride=1, use_batchnorm=True, act="relu", **batchnorm_params):
 
         super().__init__()
 
-        if use_elu:
+        if act == "elu":
             layers = [
                 nn.Conv2d(in_channels, out_channels, kernel_size,
                           stride=stride, padding=padding, bias=not (use_batchnorm)),
                 nn.ELU(True),
+            ]
+        elif act == "swish":
+            layers = [
+                nn.Conv2d(in_channels, out_channels, kernel_size,
+                          stride=stride, padding=padding, bias=not (use_batchnorm)),
+                Swish(),
             ]
         else:
             layers = [

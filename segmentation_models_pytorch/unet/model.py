@@ -38,7 +38,7 @@ class Unet(EncoderDecoder):
             encoder_se_module=False,
             decoder_semodule=False,
             h_columns=False,
-            use_elu=False,
+            act="relu",
             skip=False
     ):
         encoder = get_encoder(
@@ -55,7 +55,7 @@ class Unet(EncoderDecoder):
             center=center,
             se_module=decoder_semodule,
             h_columns=h_columns,
-            use_elu=use_elu,
+            act=act,
             skip=skip
         )
 
