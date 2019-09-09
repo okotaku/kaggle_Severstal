@@ -7,7 +7,7 @@ from .vgg import vgg_encoders
 from .senet import senet_encoders, SENetEncoderSE
 from .densenet import densenet_encoders, DenseNetSE
 from .inceptionresnetv2 import inception_encoders, InceptionResNetV2SE
-from .efficient import efficientnet_encoders
+#from .efficient import efficientnet_encoders
 from .scse import SCse
 
 from ._preprocessing import preprocess_input
@@ -19,7 +19,7 @@ encoders.update(vgg_encoders)
 encoders.update(senet_encoders)
 encoders.update(densenet_encoders)
 encoders.update(inception_encoders)
-encoders.update(efficientnet_encoders)
+#encoders.update(efficientnet_encoders)
 
 
 def get_encoder(name, encoder_weights=None, se_module=False):
