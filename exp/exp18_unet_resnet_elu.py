@@ -53,8 +53,8 @@ EPOCHS = 101
 FOLD_ID = 0
 EXP_ID = "exp18_unet_resnet"
 base_ckpt = 0
-#base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = None
+#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
