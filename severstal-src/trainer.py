@@ -5,6 +5,7 @@ import numpy as np
 from apex import amp
 from logger import LOGGER
 from torch.autograd import Variable
+from fastprogress import progress_bar
 
 sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold
@@ -252,7 +253,7 @@ def predict(model, valid_loader, criterion, device):
     score_all4 = []
     with torch.no_grad():
 
-        for step, (features, targets) in enumerate(valid_loader):
+        for step, (features, targets) in enumerate(progress_bar(valid_loader)):
             features, targets = features.to(device), targets.to(device)
 
             logits = model(features)

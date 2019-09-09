@@ -156,6 +156,8 @@ def main(seed):
             #del val_pred
             gc.collect()
 
+    LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
+
     xs = list(range(1, len(train_losses) + 1))
     plt.plot(xs, train_losses, label='Train loss')
     plt.plot(xs, valid_losses, label='Val loss')
