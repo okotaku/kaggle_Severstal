@@ -1,5 +1,7 @@
 # ===============
-# Unet+Resnet34
+# best_ckpt=11
+# 2019-09-09 04:32:41,216 - INFO - Mean train loss: 1.72622
+# 2019-09-09 04:33:18,951 - INFO - Mean valid loss: 1.80533
 # ===============
 import os
 import gc
