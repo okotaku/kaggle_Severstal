@@ -297,8 +297,8 @@ def predict2(model, valid_loader, criterion, device):
 
             test_loss += loss.item()
 
-            true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
-            preds_cat.append(torch.sigmoid(logits).float().cpu().numpy().astype("float16"))
+            true_ans_list.append(targets)
+            preds_cat.append(logits)
 
             del features, targets, logits
             gc.collect()
