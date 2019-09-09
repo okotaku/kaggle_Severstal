@@ -151,6 +151,8 @@ def main(seed):
 
         scores = []
         for i, th in enumerate(ths):
+            if i <= 0:
+                continue
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
 
             for n_th, remove_mask_pixel in enumerate([200, 400, 600, 800, 1000, 1200]):
