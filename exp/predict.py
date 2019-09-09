@@ -122,7 +122,7 @@ def timer(name):
 
 def main(seed):
     with timer('load data'):
-        df = pd.read_csv(FOLD_PATH)[:100]
+        df = pd.read_csv(FOLD_PATH)
 
     with timer('preprocessing'):
         val_df = df[df.fold_id == FOLD_ID]
