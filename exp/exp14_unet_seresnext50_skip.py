@@ -1,5 +1,8 @@
 # ===============
-# Unet+Resnet34
+# best_ckpt=4
+# 2019-09-08 09:26:52,691 - INFO - Starting 29 epoch...
+# 2019-09-08 09:31:13,726 - INFO - Mean train loss: 0.00741
+# 2019-09-08 09:31:51,524 - INFO - Mean valid loss: 0.0084
 # ===============
 import os
 import gc
