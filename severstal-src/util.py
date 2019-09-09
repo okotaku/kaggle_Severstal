@@ -17,6 +17,7 @@ def seed_torch(seed=1029):
 def search_threshold(mask, pred):
     best_score = 0
     best_th = 0
+    count = 0
     results = []
     ths = []
 
@@ -31,8 +32,14 @@ def search_threshold(mask, pred):
         if np.mean(scores) > best_score:
             best_score = np.mean(scores)
             best_th = th
+            count = 0
         results.append(np.mean(scores))
         ths.append(th)
+
+        if np.mean(scores) < best_score:
+            count += 1
+        if count == 5:
+            break
 
     return best_th, best_score, ths, results
 

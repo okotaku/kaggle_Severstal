@@ -259,12 +259,12 @@ def predict(model, valid_loader, criterion, device):
             logits = model(features)
             loss = criterion(logits, targets)
 
+            targets = targets.float().cpu().numpy().astype("int8")
+            logits = torch.sigmoid(logits.view(targets.shape)).float().cpu().numpy().astype("float16")
+
             test_loss += loss.item()
             for i in range(4):
-                th, score, ths, scores = search_threshold(targets.float().cpu().numpy().astype("int8"),
-                                                          torch.sigmoid(
-                                                          logits.view(targets.shape)).float().cpu().numpy().astype(
-                                                          "float16"))
+                th, score, ths, scores = search_threshold(targets[:, i, :, :],logits[:, i, :, :])
                 if i == 0:
                     score_all1.append(scores)
                 if i == 1:
