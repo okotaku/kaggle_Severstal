@@ -48,7 +48,7 @@ EXP_ID = "exp14_unet_seresnext50"
 base_ckpt = 11
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-ths = []
+ths = [0.68, 0.76, 0.6, 0.57]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
