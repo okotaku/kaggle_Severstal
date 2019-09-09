@@ -37,7 +37,7 @@ def search_threshold(mask, pred):
 
         if np.mean(scores) < best_score:
             count += 1
-        if count == 5:
+        if count == 20:
             break
     results = results + [0 for _ in range(len(ths) - len(results))]
 
