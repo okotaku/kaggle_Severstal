@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 from apex import amp
 from contextlib import contextmanager
 from albumentations import *
-from sync_batchnorm import convert_model
 import torch
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
@@ -29,6 +28,7 @@ from trainer import train_one_epoch, validate
 from scheduler import GradualWarmupScheduler
 sys.path.append("../")
 import segmentation_models_pytorch as smp
+from sync_batchnorm import convert_model
 
 
 # ===============
