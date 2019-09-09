@@ -45,10 +45,10 @@ device = "cuda:0"
 IMG_SIZE = (800, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 71
+EPOCHS = 35
 FOLD_ID = 0
 EXP_ID = "exp14_unet_seresnext50"
-base_ckpt = 2
+base_ckpt = 5
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
