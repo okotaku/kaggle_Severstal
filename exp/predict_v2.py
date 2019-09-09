@@ -151,15 +151,20 @@ def main(seed):
 
         scores = []
         for i, th in enumerate(ths):
-            if i <= 0:
+            if i <= 2:
                 continue
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
 
+            best = 0
             for n_th, remove_mask_pixel in enumerate([200, 400, 600, 800, 1000, 1200]):
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 val_preds_[sum_val_preds < remove_mask_pixel] = 0
                 threshold_after_remove, score, _, _ = search_threshold(y_true[:, i, :, :], val_preds_)
                 LOGGER.info('dice={} on th={} on {}'.format(score, threshold_after_remove, remove_mask_pixel))
+                if score > best:
+                    best = score
+                else:
+                    break
             scores.append(score)
 
         LOGGER.info('holdout dice={}'.format(np.mean(scores)))
