@@ -1,8 +1,5 @@
 # ===============
-# best_ckpt=4
-# 2019-09-08 09:26:52,691 - INFO - Starting 29 epoch...
-# 2019-09-08 09:31:13,726 - INFO - Mean train loss: 0.00741
-# 2019-09-08 09:31:51,524 - INFO - Mean valid loss: 0.0084
+# best_ckpt=
 # ===============
 import os
 import gc
@@ -49,12 +46,12 @@ device = "cuda:0"
 IMG_SIZE = (800, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 101
+EPOCHS = 53
 FOLD_ID = 0
 EXP_ID = "exp18_unet_resnet"
-base_ckpt = 0
-base_model = None
-#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_ckpt = 9
+#base_model = None
+base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
