@@ -19,9 +19,9 @@ def search_threshold(mask, pred):
     best_th = 0
     count = 0
     results = []
-    ths = []
+    ths = np.linspace(0, 1, 101)
 
-    for th in np.linspace(0, 1, 101):
+    for th in ths:
         scores = []
         for y_val_, y_pred_ in zip(mask, pred):
             score = dice(y_val_, y_pred_ > th)
@@ -34,12 +34,12 @@ def search_threshold(mask, pred):
             best_th = th
             count = 0
         results.append(np.mean(scores))
-        ths.append(th)
 
         if np.mean(scores) < best_score:
             count += 1
         if count == 5:
             break
+    results = results + [0 for _ in range(len(ths) - len(results))]
 
     return best_th, best_score, ths, results
 
