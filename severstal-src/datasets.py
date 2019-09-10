@@ -8,6 +8,7 @@ from torch.utils.data import Dataset
 from torch.utils.data.sampler import Sampler
 
 from util import rle2mask
+from logger import LOGGER
 
 
 class SeverDataset(Dataset):
@@ -149,6 +150,7 @@ class MaskProbSampler(Sampler):
 
         self.n_positive = self.positive_idxs.shape[0]
         self.n_negative = int(self.n_positive * (1 - self.positive_proba) / self.positive_proba)
+        LOGGER.info("len data = {}".format(self.n_positive + self.n_negative))
 
     def __iter__(self):
         negative_sample = np.random.choice(self.negative_idxs, size=self.n_negative)

@@ -1,5 +1,7 @@
 # ===============
-#
+# best_ckpt=10
+# 2019-09-10 10:44:40,705 - INFO - Mean train loss: 0.0083
+# 2019-09-10 10:45:06,576 - INFO - Mean valid loss: 0.00842
 # ===============
 import os
 import gc
@@ -43,7 +45,7 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(100000)
 device = "cuda:0"
-IMG_SIZE = (800, 256)
+IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 101
@@ -95,7 +97,7 @@ def main(seed):
                                     transforms=train_augmentation, crop_rate=1.0)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
+        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.8)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
