@@ -5,6 +5,7 @@ import random
 import pydicom
 import numpy as np
 from torch.utils.data import Dataset
+from torch.utils.data.sampler import Sampler
 
 from util import rle2mask
 
@@ -134,3 +135,25 @@ def cutout_h(img, mask, img_size, n_classes, mask_value="zeros", min_h=10, max_h
     mask[:, cutout_left:cutout_right, :] = [0 for _ in range(n_classes)]
 
     return img, mask
+
+
+class MaskProbSampler(Sampler):
+    def __init__(self, train_df, demand_non_empty_proba):
+        assert demand_non_empty_proba > 0, 'frequensy of non-empty images must be greater then zero'
+        self.positive_proba = demand_non_empty_proba
+
+        self.train_df = train_df.reset_index(drop=True)
+
+        self.positive_idxs = self.train_df[self.train_df.sum_target != 0].index.values
+        self.negative_idxs = self.train_df[self.train_df.sum_target == 0].index.values
+
+        self.n_positive = self.positive_idxs.shape[0]
+        self.n_negative = int(self.n_positive * (1 - self.positive_proba) / self.positive_proba)
+
+    def __iter__(self):
+        negative_sample = np.random.choice(self.negative_idxs, size=self.n_negative)
+        shuffled = np.random.permutation(np.hstack((negative_sample, self.positive_idxs)))
+        return iter(shuffled.tolist())
+
+    def __len__(self):
+        return self.n_positive + self.n_negative

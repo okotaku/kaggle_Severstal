@@ -141,7 +141,7 @@ class UnetDecoder(Model):
                                             nn.ELU(True),
                                             nn.Conv2d(32, final_channels, kernel_size=1, bias=False))
         else:
-            self.final_conv = nn.Conv2d(out_channels[4], final_channels, kernel_size=(3, 3), padding=1)
+            self.final_conv = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
 
         self.initialize()
 
