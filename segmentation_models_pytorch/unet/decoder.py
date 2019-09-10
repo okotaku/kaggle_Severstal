@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..common.blocks import Conv2dReLU
+from ..common.blocks import Conv2dReLU, ASPP
 from ..base.model import Model
 from ..encoders.scse import SCse
 
@@ -115,7 +115,8 @@ class UnetDecoder(Model):
         if center:
             channels = encoder_channels[0]
             #self.center = CenterBlock(channels, channels, use_batchnorm=use_batchnorm)
-            self.center = FPAv2(channels, channels)
+            #self.center = FPAv2(channels, channels)
+            self.center = ASPP(channels, channels)
         else:
             self.center = None
 
