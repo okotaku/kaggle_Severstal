@@ -170,10 +170,11 @@ class UnetDecoder(Model):
             d2 = self.layer4([d3, skips[3]])
             d1 = self.layer5([d2, None])
             x = torch.cat((d1,
-                            #self.layer4_h(F.upsample(d2, scale_factor=2, mode='bilinear', align_corners=True)),
-                            #self.layer3_h(F.upsample(d3, scale_factor=4, mode='bilinear', align_corners=True)),
-                            #self.layer2_h(F.upsample(d4, scale_factor=8, mode='bilinear', align_corners=True)),
-                            self.layer1_h(F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True))), 1)
+                           #self.layer4_h(F.upsample(d2, scale_factor=2, mode='bilinear', align_corners=True)),
+                           #self.layer3_h(F.upsample(d3, scale_factor=4, mode='bilinear', align_corners=True)),
+                           #self.layer2_h(F.upsample(d4, scale_factor=8, mode='bilinear', align_corners=True)),
+                           #self.layer1_h(F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True))), 1)
+                           F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True)), 1)
         else:
             x = self.layer1([encoder_head, skips[0]])
             x = self.layer2([x, skips[1]])
