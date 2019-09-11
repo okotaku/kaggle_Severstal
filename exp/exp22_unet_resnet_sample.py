@@ -14,6 +14,9 @@
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
 # 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
 # 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
+# add best_ckpt=14, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6
+# 2019-09-11 13:56:25,598 - INFO - Mean train loss: 0.00748
+# 2019-09-11 13:56:44,776 - INFO - Mean valid loss: 0.00873
 # ===============
 import os
 import gc
@@ -60,12 +63,12 @@ device = "cuda:0"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 53
+EPOCHS = 101
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
-base_ckpt = 10
-#base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_ckpt = 0 #14
+base_model = None
+#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -109,7 +112,7 @@ def main(seed):
                                     transforms=train_augmentation, crop_rate=1.0)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
+        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.4)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
