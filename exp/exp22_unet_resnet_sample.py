@@ -2,6 +2,9 @@
 # best_ckpt=10, IMG_SIZE = (800, 256), demand_non_empty_proba=0.6
 # 2019-09-10 10:44:40,705 - INFO - Mean train loss: 0.0083
 # 2019-09-10 10:45:06,576 - INFO - Mean valid loss: 0.00842
+# best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6
+# 2019-09-11 05:54:07,740 - INFO - Mean train loss: 0.00842
+# 2019-09-11 05:54:26,865 - INFO - Mean valid loss: 0.00858
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
 # 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
 # 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
@@ -50,13 +53,13 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
-BATCH_SIZE = 128
-EPOCHS = 47
+BATCH_SIZE = 8
+EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet_check"
-base_ckpt = 6
+base_ckpt = 0
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
