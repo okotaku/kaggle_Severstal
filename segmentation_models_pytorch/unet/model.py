@@ -39,7 +39,8 @@ class Unet(EncoderDecoder):
             decoder_semodule=False,
             h_columns=False,
             act="relu",
-            skip=False
+            skip=False,
+            use_transpose=False
     ):
         encoder = get_encoder(
             encoder_name,
@@ -56,7 +57,8 @@ class Unet(EncoderDecoder):
             se_module=decoder_semodule,
             h_columns=h_columns,
             act=act,
-            skip=skip
+            skip=skip,
+            use_transpose=use_transpose
         )
 
         super().__init__(encoder, decoder, activation)
