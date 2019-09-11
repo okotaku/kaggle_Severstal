@@ -8,10 +8,12 @@
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6, bs=128
 # 2019-09-11 07:18:26,369 - INFO - Mean train loss: 0.008
 # 2019-09-11 07:18:42,241 - INFO - Mean valid loss: 0.00865
+# best_ckpt=14, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6, bs=8
+# 2019-09-11 12:34:41,499 - INFO - Mean train loss: 0.0085
+# 2019-09-11 12:35:26,501 - INFO - Mean valid loss: 0.00889
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
 # 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
 # 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
-
 # ===============
 import os
 import gc
@@ -57,12 +59,12 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
-BATCH_SIZE = 128 #8
-EPOCHS = 35
+BATCH_SIZE = 32
+EPOCHS = 53
 FOLD_ID = 0
-EXP_ID = "exp22_unet_resnet_check"
-base_ckpt = 14
-base_model = None
+EXP_ID = "exp22_unet_resnet"
+base_ckpt = 10
+#base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
