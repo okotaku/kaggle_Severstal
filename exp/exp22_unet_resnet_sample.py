@@ -1,7 +1,10 @@
 # ===============
-# best_ckpt=10
+# best_ckpt=10, IMG_SIZE = (800, 256), demand_non_empty_proba=0.6
 # 2019-09-10 10:44:40,705 - INFO - Mean train loss: 0.0083
 # 2019-09-10 10:45:06,576 - INFO - Mean valid loss: 0.00842
+# best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
+# 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
+# 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
 # ===============
 import os
 import gc
@@ -48,7 +51,7 @@ device = "cuda:0"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 101
+EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
 base_ckpt = 0
