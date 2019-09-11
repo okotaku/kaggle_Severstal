@@ -5,9 +5,13 @@
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6
 # 2019-09-11 05:54:07,740 - INFO - Mean train loss: 0.00842
 # 2019-09-11 05:54:26,865 - INFO - Mean valid loss: 0.00858
+# best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6, bs=128
+# 2019-09-11 07:18:26,369 - INFO - Mean train loss: 0.008
+# 2019-09-11 07:18:42,241 - INFO - Mean valid loss: 0.00865
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
 # 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
 # 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
+
 # ===============
 import os
 import gc
