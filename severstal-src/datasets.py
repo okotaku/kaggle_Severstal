@@ -58,7 +58,7 @@ class SeverDataset(Dataset):
                 mask[:, :, i] = rle2mask(encoded, (w, h))
 
         if self.crop_rate < 1:
-            img = random_cropping(img, mask, is_random=True, ratio=self.crop_rate)
+            img, mask = random_cropping(img, mask, is_random=True, ratio=self.crop_rate)
         img = cv2.resize(img, self.img_size)
         mask = cv2.resize(mask, self.img_size)
         mask[mask != 0] = 1
