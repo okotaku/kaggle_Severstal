@@ -11,7 +11,7 @@ sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold
 
 
-def get_cutmix_data(inputs, target, beta=1, device=0):
+def get_cutmixv4_data(inputs, target, beta=1, device=0):
     def _rand_bbox(size, lam):
         W = size[2]
         H = size[3]
@@ -73,6 +73,14 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device,
     total_loss = 0.0
     for step, (features, targets) in enumerate(train_loader):
         features, targets = features.to(device), targets.to(device)
+
+        if np.random.rand() < cutmix_prob:
+            features, targets = get_cutmixv4_data(
+                features,
+                targets,
+                beta=beta,
+                device=device
+            )
 
         optimizer.zero_grad()
 
