@@ -58,7 +58,7 @@ EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet_check"
 base_ckpt = 0
-#base_model = None
+base_model = None
 #base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
