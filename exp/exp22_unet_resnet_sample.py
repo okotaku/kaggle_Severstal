@@ -53,7 +53,7 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 83
 FOLD_ID = 0
-EXP_ID = "exp22_unet_resnet"
+EXP_ID = "exp22_unet_resnet_check"
 base_ckpt = 0
 base_model = None
 #base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
@@ -100,7 +100,7 @@ def main(seed):
                                     transforms=train_augmentation, crop_rate=1.0)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.8)
+        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
