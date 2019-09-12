@@ -69,12 +69,12 @@ device = "cuda:0"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 53
+EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
-base_ckpt = 14
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -110,7 +110,8 @@ def main(seed):
             OneOf([
                 GaussNoise(p=0.5),
                 Cutout(num_holes=10, max_h_size=10, max_w_size=20, p=0.5)
-            ], p=0.5)
+            ], p=0.5),
+            ShiftScaleRotate(rotate_limit=20, p=0.5),
         ])
         val_augmentation = None
 
@@ -118,7 +119,7 @@ def main(seed):
                                     transforms=train_augmentation, crop_rate=1.0)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.4)
+        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
@@ -177,6 +178,8 @@ def main(seed):
                 best_model_loss = valid_loss
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
+
+            torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
 
             #del val_pred
             gc.collect()
