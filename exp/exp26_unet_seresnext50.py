@@ -50,10 +50,10 @@ accumulation_steps = 4
 EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp26_unet_seresnext50"
-base_ckpt = 1
+base_ckpt = 2
 base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-base_ckpt = 0
+#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -132,7 +132,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(5, EPOCHS + 1):
+        for epoch in range(8, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
             if epoch % (CLR_CYCLE * 2) == 0:
