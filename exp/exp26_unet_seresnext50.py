@@ -132,7 +132,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(2, EPOCHS + 1):
+        for epoch in range(4, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
             if epoch % (CLR_CYCLE * 2) == 0:
