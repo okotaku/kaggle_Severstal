@@ -1,28 +1,5 @@
 # ===============
-# best_ckpt=10, IMG_SIZE = (800, 256), demand_non_empty_proba=0.6
-# 2019-09-10 10:44:40,705 - INFO - Mean train loss: 0.0083
-# 2019-09-10 10:45:06,576 - INFO - Mean valid loss: 0.00842
-# best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6
-# 2019-09-11 05:54:07,740 - INFO - Mean train loss: 0.00842
-# 2019-09-11 05:54:26,865 - INFO - Mean valid loss: 0.00858
-# best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6, bs=128
-# 2019-09-11 07:18:26,369 - INFO - Mean train loss: 0.008
-# 2019-09-11 07:18:42,241 - INFO - Mean valid loss: 0.00865
-# best_ckpt=14, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6, bs=8
-# 2019-09-11 12:34:41,499 - INFO - Mean train loss: 0.0085
-# 2019-09-11 12:35:26,501 - INFO - Mean valid loss: 0.00889
-# best_ckpt=12, IMG_SIZE = (800, 128), demand_non_empty_proba=0.4
-# 2019-09-11 17:49:03,984 - INFO - Mean train loss: 0.00572
-# 2019-09-11 17:49:23,174 - INFO - Mean valid loss: 0.00863
-# best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
-# 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
-# 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
-# add best_ckpt=14, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6
-# 2019-09-11 13:56:25,598 - INFO - Mean train loss: 0.00748
-# 2019-09-11 13:56:44,776 - INFO - Mean valid loss: 0.00873
-# add best_ckpt=20, IMG_SIZE = (800, 128), demand_non_empty_proba=0.4
-# 2019-09-12 04:16:15,333 - INFO - Mean train loss: 0.00528
-# 2019-09-12 04:16:36,188 - INFO - Mean valid loss: 0.00864
+
 # ===============
 import os
 import gc
@@ -111,6 +88,7 @@ def main(seed):
                 GaussNoise(p=0.5),
                 Cutout(num_holes=10, max_h_size=10, max_w_size=20, p=0.5)
             ], p=0.5),
+            ShiftScaleRotate(rotate_limit=20, p=0.5),
         ])
         val_augmentation = None
 
