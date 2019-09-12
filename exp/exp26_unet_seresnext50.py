@@ -139,7 +139,7 @@ def main(seed):
                 best_model_loss = 999
 
             LOGGER.info("Starting {} epoch...".format(epoch))
-            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.3)
+            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
