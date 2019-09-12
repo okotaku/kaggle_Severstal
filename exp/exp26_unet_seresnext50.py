@@ -103,7 +103,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        model = smp.UnetPP('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish")
         model = convert_model(model)
         if base_model is not None:
