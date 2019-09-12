@@ -190,7 +190,7 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
         optimizer.zero_grad()
 
         if np.random.rand() < cutmix_prob:
-            input_var, target_var = get_cutmix_data(
+            input_var, target_var = get_cutmixv5_data(
                 features,
                 targets,
                 beta=beta,
@@ -271,23 +271,20 @@ def validate_dsv(model, valid_loader, criterion, device):
             del batch
             gc.collect()
 
-            logits = model(features)["mask"]
-            loss = 0
-            for l in logits:
-                loss += criterion(l, targets)
-            loss /= len(logits)
+            logits = model(features)["mask"][0]
+            loss = criterion(logits, targets)
 
             test_loss += loss.item()
-            true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
-            preds_cat.append(torch.sigmoid(logits[0]).float().cpu().numpy().astype("float16"))
+            #true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
+            #preds_cat.append(torch.sigmoid(logits[0]).float().cpu().numpy().astype("float16"))
 
             del features, targets, logits
             gc.collect()
 
-        all_true_ans = np.concatenate(true_ans_list, axis=0)
-        all_preds = np.concatenate(preds_cat, axis=0)
+        #all_true_ans = np.concatenate(true_ans_list, axis=0)
+        #all_preds = np.concatenate(preds_cat, axis=0)
 
-    return test_loss / (step + 1), all_preds, all_true_ans
+    return test_loss / (step + 1)#, all_preds, all_true_ans
 
 
 def predict(model, valid_loader, criterion, device):

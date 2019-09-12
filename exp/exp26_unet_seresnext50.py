@@ -21,7 +21,7 @@ from util import seed_torch, search_threshold
 from losses import FocalLovaszLoss
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
-from trainer import train_one_epoch, validate
+from trainer import train_one_epoch_dsv, validate_dsv
 from scheduler import GradualWarmupScheduler
 sys.path.append("../")
 import segmentation_models_pytorch as smp
@@ -104,7 +104,7 @@ def main(seed):
 
     with timer('create model'):
         model = smp.UnetPP('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=False, skip=True, act="swish")
+                         decoder_semodule=True, h_columns=False, skip=True, act="swish", deep_supervision=True)
         model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
@@ -139,11 +139,11 @@ def main(seed):
                 best_model_loss = 999
 
             LOGGER.info("Starting {} epoch...".format(epoch))
-            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0)
+            tr_loss = train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
-            valid_loss = validate(model, val_loader, criterion, device)
+            valid_loss = validate_dsv(model, val_loader, criterion, device)
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 

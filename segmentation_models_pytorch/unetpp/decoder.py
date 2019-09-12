@@ -8,21 +8,21 @@ from segmentation_models_pytorch.encoders.scse import SCse
 
 
 class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False, use_elu=False, skip=False):
+    def __init__(self, in_channels, out_channels, use_batchnorm=True, se_module=False, act="relu", skip=False):
         super().__init__()
         if se_module:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, act=act,
                            use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, act=act,
                            use_batchnorm=use_batchnorm),
                 SCse(out_channels)
             )
         else:
             self.block = nn.Sequential(
-                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, act=act,
                            use_batchnorm=use_batchnorm),
-                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, use_elu=use_elu,
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, act=act,
                            use_batchnorm=use_batchnorm),
             )
 
@@ -114,7 +114,7 @@ class UnetPPDecoder(Model):
             deep_supervision=False,
             classification=False,
             linear_feature_unit=64,
-            use_elu=False,
+            act="relu",
             skip=False
     ):
         super().__init__()
@@ -133,33 +133,33 @@ class UnetPPDecoder(Model):
         out_channels = decoder_channels
 
         self.layer4_1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm,
-                                     se_module=se_module, use_elu=use_elu, skip=skip)
+                                     se_module=se_module, act=act, skip=skip)
         self.layer3_1 = DecoderBlock(encoder_channels[1] + encoder_channels[2], out_channels[1],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer3_2 = DecoderBlock(in_channels[1] + out_channels[1], out_channels[1],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer2_1 = DecoderBlock(encoder_channels[2] + encoder_channels[3], out_channels[2],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer2_2 = DecoderBlock(in_channels[2] + out_channels[2], out_channels[2],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer2_3 = DecoderBlock(in_channels[2] + out_channels[2] * 2, out_channels[2],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer1_1 = DecoderBlock(encoder_channels[3] + encoder_channels[4], out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer1_2 = DecoderBlock(in_channels[3] + out_channels[3], out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer1_3 = DecoderBlock(in_channels[3] + out_channels[3], out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer1_4 = DecoderBlock(in_channels[3] + out_channels[3] * 3, out_channels[3],
-                                     use_batchnorm=use_batchnorm, se_module=se_module, use_elu=use_elu, skip=skip)
+                                     use_batchnorm=use_batchnorm, se_module=se_module, act=act, skip=skip)
         self.layer0 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
-                                   se_module=se_module, use_elu=use_elu, skip=skip)
+                                   se_module=se_module, act=act, skip=skip)
         self.layer0_1 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
-                                     se_module=se_module, use_elu=use_elu, skip=skip)
+                                     se_module=se_module, act=act, skip=skip)
         self.layer0_2 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
-                                     se_module=se_module, use_elu=use_elu, skip=skip)
+                                     se_module=se_module, act=act, skip=skip)
         self.layer0_3 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm,
-                                     se_module=se_module, use_elu=use_elu, skip=skip)
+                                     se_module=se_module, act=act, skip=skip)
 
         self.final_conv = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
         self.final_conv1 = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))

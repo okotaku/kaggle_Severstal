@@ -41,7 +41,7 @@ class UnetPP(EncoderDecoder):
             deep_supervision=False,
             classification=False,
             linear_feature_unit=64,
-            use_elu=False,
+            act="relu",
             skip=False
     ):
         encoder = get_encoder(
@@ -61,7 +61,7 @@ class UnetPP(EncoderDecoder):
             deep_supervision=deep_supervision,
             classification=classification,
             linear_feature_unit=linear_feature_unit,
-            use_elu=use_elu,
+            act=act,
             skip=skip
         )
 
