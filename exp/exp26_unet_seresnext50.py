@@ -45,7 +45,7 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp26_unet_seresnext50"
@@ -104,7 +104,7 @@ def main(seed):
 
     with timer('create model'):
         model = smp.Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=True, skip=True, act="swish")
+                         decoder_semodule=True, h_columns=False, skip=True, act="swish")
         model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
