@@ -11,6 +11,9 @@
 # best_ckpt=14, IMG_SIZE = (800, 128), demand_non_empty_proba=0.6, bs=8
 # 2019-09-11 12:34:41,499 - INFO - Mean train loss: 0.0085
 # 2019-09-11 12:35:26,501 - INFO - Mean valid loss: 0.00889
+# best_ckpt=12, IMG_SIZE = (800, 128), demand_non_empty_proba=0.4
+# 2019-09-11 17:49:03,984 - INFO - Mean train loss: 0.00572
+# 2019-09-11 17:49:23,174 - INFO - Mean valid loss: 0.00863
 # best_ckpt=10, IMG_SIZE = (800, 128), demand_non_empty_proba=0.8
 # 2019-09-11 02:48:12,352 - INFO - Mean train loss: 0.01106
 # 2019-09-11 02:48:31,482 - INFO - Mean valid loss: 0.00872
