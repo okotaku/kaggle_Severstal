@@ -132,7 +132,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(4, EPOCHS + 1):
+        for epoch in range(5, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
             if epoch % (CLR_CYCLE * 2) == 0:
@@ -157,6 +157,8 @@ def main(seed):
                 best_model_loss = valid_loss
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
+
+            torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
 
             #del val_pred
             gc.collect()
