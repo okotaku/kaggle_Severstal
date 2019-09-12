@@ -46,6 +46,7 @@ device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 8
+accumulation_steps = 4
 EPOCHS = 83
 FOLD_ID = 0
 EXP_ID = "exp26_unet_seresnext50"
@@ -139,7 +140,8 @@ def main(seed):
                 best_model_loss = 999
 
             LOGGER.info("Starting {} epoch...".format(epoch))
-            tr_loss = train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0)
+            tr_loss = train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
+                                          accumulation_steps=accumulation_steps)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 

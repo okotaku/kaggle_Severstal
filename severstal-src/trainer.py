@@ -221,8 +221,8 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
         if (step + 1) % accumulation_steps == 0:
             optimizer.step()
             optimizer.zero_grad()
-            if scheduler is not None:
-                scheduler.step()
+            #if scheduler is not None:
+            #    scheduler.step()
 
         total_loss += loss.item()
 
