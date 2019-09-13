@@ -8,7 +8,7 @@ from pretrainedmodels.models.senet import SEResNetBottleneck
 from pretrainedmodels.models.senet import SEResNeXtBottleneck
 from pretrainedmodels.models.senet import pretrained_settings
 from .scse import SCse
-from ..blocks import CBAM
+from ..common.blocks import CBAM
 
 
 class SENetEncoder(SENet):

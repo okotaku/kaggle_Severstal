@@ -7,7 +7,7 @@ import sys
 sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 from .scse import SCse
-from ..blocks import CBAM
+from ..common.blocks import CBAM
 
 
 class ResNetEncoder(ResNet):

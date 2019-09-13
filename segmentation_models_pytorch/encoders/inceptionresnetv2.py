@@ -5,7 +5,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.inceptionresnetv2 import InceptionResNetV2
 from pretrainedmodels.models.inceptionresnetv2 import pretrained_settings
 from .scse import SCse
-from ..blocks import CBAM
+from ..common.blocks import CBAM
 
 
 class InceptionResNetV2Encoder(InceptionResNetV2):
