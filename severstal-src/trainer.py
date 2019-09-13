@@ -197,8 +197,8 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
 
         if classification:
             logits, cls = model(features)
-            loss = criterion(logits, targets) * 1024
-            loss += criterion(cls.view(targets_cls.shape), targets_cls)
+            loss = criterion(logits, targets)
+            loss += criterion(cls.view(targets_cls.shape), targets_cls) / 1024
         else:
             logits = model(features)
             loss = criterion(logits, targets)

@@ -1,5 +1,7 @@
 # ===============
-# best_ckpt=
+# best_ckpt=13
+# 2019-09-13 12:08:47,380 - INFO - Mean train loss: 9.38722
+# 2019-09-13 12:09:08,798 - INFO - Mean valid loss: 0.00844
 # ===============
 import os
 import gc
