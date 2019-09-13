@@ -18,6 +18,7 @@ class SeverDataset(Dataset):
                  img_dir,
                  img_size,
                  n_classes,
+                 mode,
                  crop_rate=1.0,
                  id_colname="ImageId",
                  mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
@@ -58,7 +59,9 @@ class SeverDataset(Dataset):
                 mask[:, :, i] = rle2mask(encoded, (w, h))
 
         if self.crop_rate < 1:
-            img, mask = random_cropping(img, mask, is_random=True, ratio=self.crop_rate)
+            img, mask = random_wcropping(img, mask, is_random=True, ratio=self.crop_rate)
+        if self.crop_320:
+            img, mask = random_320cropping(img, mask)
         img = cv2.resize(img, self.img_size)
         mask = cv2.resize(mask, self.img_size)
         mask[mask != 0] = 1
@@ -94,7 +97,8 @@ def pytorch_image_to_tensor_transform(image, mean=[0.485, 0.456, 0.406], std=[0.
 
     return tensor
 
-def random_cropping(image, mask, ratio = 0.8, is_random = True):
+
+def random_cropping(image, mask, ratio=0.8, is_random=True):
     height, width, _ = image.shape
     target_h = int(height*ratio)
     target_w = int(width*ratio)
@@ -103,14 +107,47 @@ def random_cropping(image, mask, ratio = 0.8, is_random = True):
         start_x = random.randint(0, width - target_w)
         start_y = random.randint(0, height - target_h)
     else:
-        start_x = ( width - target_w ) // 2
-        start_y = ( height - target_h ) // 2
+        start_x = (width - target_w) // 2
+        start_y = (height - target_h) // 2
+
+    crop = image[start_y:start_y+target_h, start_x:start_x+target_w, :]
+    crop_mask = mask[start_y:start_y+target_h, start_x:start_x+target_w, :]
+
+    return crop, crop_mask
+
+
+def random_wcropping(image, mask, ratio=0.8, is_random=True):
+    height, width, _ = image.shape
+    target_w = int(width*ratio)
+
+    if is_random:
+        start_x = random.randint(0, width - target_w)
+    else:
+        start_x = (width - target_w) // 2
+
+    crop = image[:, start_x:start_x+target_w, :]
+    crop_mask = mask[:, start_x:start_x+target_w, :]
+
+    return crop, crop_mask
+
+
+def random_320cropping(image, mask, is_random=True):
+    height, width, _ = image.shape
+    target_h = 256
+    target_w = 320
+
+    if is_random:
+        start_x = random.randint(0, width - target_w)
+        start_y = random.randint(0, height - target_h)
+    else:
+        start_x = (width - target_w) // 2
+        start_y = (height - target_h) // 2
 
     crop = image[start_y:start_y+target_h,start_x:start_x+target_w,:]
     crop_mask = mask[start_y:start_y+target_h,start_x:start_x+target_w,:]
 
-    #crop = cv2.resize(zeros ,(width,height)) #pad to original size
     return crop, crop_mask
+
 
 def cutout_h(img, mask, img_size, n_classes, mask_value="zeros", min_h=10, max_h=60):
     if mask_value == "mean":

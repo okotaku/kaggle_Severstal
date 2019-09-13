@@ -327,6 +327,30 @@ def validate(model, valid_loader, criterion, device):
 
     return test_loss / (step + 1)#, all_preds, all_true_ans
 
+
+def validate_crop(model, valid_loader, criterion, device):
+    model.eval()
+    test_loss = 0.0
+    with torch.no_grad():
+
+        for step, (features, targets) in enumerate(valid_loader):
+            start_w = 0
+            for i in range(5):
+                f = features[:, :, :, start_w:start_w+320].to(device)
+                t = targets[:, :, :, start_w:start_w+320].to(device)
+                logits = model(f)
+                loss = criterion(logits, t)
+                test_loss += loss.item() / 5
+                start_w += 320
+                del f, t
+                gc.collect()
+
+            del features, targets, logits
+            gc.collect()
+
+    return test_loss / (step + 1)
+
+
 def validate_dsv(model, valid_loader, criterion, device):
     model.eval()
     test_loss = 0.0

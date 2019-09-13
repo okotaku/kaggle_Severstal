@@ -73,10 +73,8 @@ class Unet(EncoderDecoder):
 
         self.name = 'u-{}'.format(encoder_name)
 
+    """
     def train(self, mode=True):
-        """
-        Override the default train() to freeze the BN parameters
-        """
         super(Unet, self).train(mode)
         if self.freeze_bn:
             print("Freezing Mean/Var of BatchNorm2D.")
@@ -89,3 +87,4 @@ class Unet(EncoderDecoder):
                     if self.freeze_bn_affine:
                         m.weight.requires_grad = False
                         m.bias.requires_grad = False
+    """
