@@ -178,7 +178,7 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
 
     total_loss = 0.0
     for step, (features, targets) in enumerate(train_loader):
-        features = features.to(device),
+        features = features.to(device)
         if classification:
             targets, targets_cls = targets["mask"].to(device), targets["class_y"].to(device)
         else:
