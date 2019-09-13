@@ -9,6 +9,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.dpn import DPN
 from pretrainedmodels.models.dpn import pretrained_settings
 from .scse import SCse
+from ..blocks import CBAM
 
 
 class DPNEncorder(DPN):
@@ -56,7 +57,7 @@ class DPNEncorder(DPN):
 
 class DPNEncorderSE(nn.Module):
 
-    def __init__(self, encoder):
+    def __init__(self, encoder, attention_type="scse"):
         super().__init__()
         self.encoder = encoder
         self.feature_blocks = encoder.feature_blocks
@@ -64,10 +65,16 @@ class DPNEncorderSE(nn.Module):
                                     encoder.features[0].bn,
                                     encoder.features[0].act)
         self.encode2 = nn.Sequential(encoder.features[0].pool)
-        self.se1 = SCse(encoder.out_shapes[3])
-        self.se2 = SCse(encoder.out_shapes[2])
-        self.se3 = SCse(encoder.out_shapes[1])
-        self.se4 = SCse(encoder.out_shapes[0])
+        if attention_type == "scse":
+            self.se1 = SCse(encoder.out_shapes[3])
+            self.se2 = SCse(encoder.out_shapes[2])
+            self.se3 = SCse(encoder.out_shapes[1])
+            self.se4 = SCse(encoder.out_shapes[0])
+        elif attention_type == "cbam":
+            self.se1 = CBAM(encoder.out_shapes[3])
+            self.se2 = CBAM(encoder.out_shapes[2])
+            self.se3 = CBAM(encoder.out_shapes[1])
+            self.se4 = CBAM(encoder.out_shapes[0])
 
     def forward(self, x):
 

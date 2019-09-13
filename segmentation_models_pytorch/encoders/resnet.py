@@ -7,6 +7,7 @@ import sys
 sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 from .scse import SCse
+from ..blocks import CBAM
 
 
 class ResNetEncoder(ResNet):
@@ -38,20 +39,30 @@ class ResNetEncoder(ResNet):
 
 class ResNetEncoderSE(nn.Module):
 
-    def __init__(self, encoder):
+    def __init__(self, encoder, attention_type="scse"):
         super().__init__()
         self.encode1 = nn.Sequential(encoder.conv1,
                                      encoder.bn1,
                                      encoder.relu)
         self.maxpool = encoder.maxpool
-        self.encode2 = nn.Sequential(encoder.layer1,
-                                     SCse(encoder.out_shapes[3]))
-        self.encode3 = nn.Sequential(encoder.layer2,
-                                     SCse(encoder.out_shapes[2]))
-        self.encode4 = nn.Sequential(encoder.layer3,
-                                     SCse(encoder.out_shapes[1]))
-        self.encode5 = nn.Sequential(encoder.layer4,
-                                     SCse(encoder.out_shapes[0]))
+        if attention_type == "scse":
+            self.encode2 = nn.Sequential(encoder.layer1,
+                                         SCse(encoder.out_shapes[3]))
+            self.encode3 = nn.Sequential(encoder.layer2,
+                                         SCse(encoder.out_shapes[2]))
+            self.encode4 = nn.Sequential(encoder.layer3,
+                                         SCse(encoder.out_shapes[1]))
+            self.encode5 = nn.Sequential(encoder.layer4,
+                                         SCse(encoder.out_shapes[0]))
+        elif attention_type == "cbam":
+            self.encode2 = nn.Sequential(encoder.layer1,
+                                         CBAM(encoder.out_shapes[3]))
+            self.encode3 = nn.Sequential(encoder.layer2,
+                                         CBAM(encoder.out_shapes[2]))
+            self.encode4 = nn.Sequential(encoder.layer3,
+                                         CBAM(encoder.out_shapes[1]))
+            self.encode5 = nn.Sequential(encoder.layer4,
+                                         CBAM(encoder.out_shapes[0]))
 
     def forward(self, x):
         x0 = self.encode1(x)

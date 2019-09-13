@@ -2,22 +2,29 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..common.blocks import Conv2dReLU, ASPP, Flatten
+from ..common.blocks import Conv2dReLU, ASPP, Flatten, CBAM
 from ..base.model import Model
 from ..encoders.scse import SCse
 
 class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, use_transpose=False, use_batchnorm=True, se_module=False, act="relu", skip=False):
+    def __init__(self, in_channels, out_channels, use_transpose=False, use_batchnorm=True, se_module=False, act="relu",
+                 skip=False, attention_type="scse"):
         super().__init__()
         self.use_transpose = use_transpose
         if self.use_transpose:
             self.upsample = nn.ConvTranspose2d(in_channels, in_channels, kernel_size=4, stride=2,
                                padding=1)
-        if se_module:
+        if se_module and attention_type="scse":
             self.block = nn.Sequential(
                 Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
                 Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
                 SCse(out_channels)
+            )
+        elif se_module and attention_type="cbam":
+            self.block = nn.Sequential(
+                Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
+                Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
+                CBAM(out_channels)
             )
         else:
             self.block = nn.Sequential(
@@ -116,7 +123,8 @@ class UnetDecoder(Model):
             act="relu",
             skip=False,
             use_transpose=False,
-            classification=False
+            classification=False,
+            attention_type="scse"
     ):
         super().__init__()
         self.h_columns = h_columns
@@ -134,15 +142,15 @@ class UnetDecoder(Model):
         out_channels = decoder_channels
 
         self.layer1 = DecoderBlock(in_channels[0], out_channels[0], use_batchnorm=use_batchnorm, se_module=se_module,
-                                   act=act, skip=skip, use_transpose=use_transpose)
+                                   act=act, skip=skip, use_transpose=use_transpose, attention_type=attention_type)
         self.layer2 = DecoderBlock(in_channels[1], out_channels[1], use_batchnorm=use_batchnorm, se_module=se_module,
-                                   act=act, skip=skip, use_transpose=use_transpose)
+                                   act=act, skip=skip, use_transpose=use_transpose, attention_type=attention_type)
         self.layer3 = DecoderBlock(in_channels[2], out_channels[2], use_batchnorm=use_batchnorm, se_module=se_module,
-                                   act=act, skip=skip, use_transpose=use_transpose)
+                                   act=act, skip=skip, use_transpose=use_transpose, attention_type=attention_type)
         self.layer4 = DecoderBlock(in_channels[3], out_channels[3], use_batchnorm=use_batchnorm, se_module=se_module,
-                                   act=act, skip=skip, use_transpose=use_transpose)
+                                   act=act, skip=skip, use_transpose=use_transpose, attention_type=attention_type)
         self.layer5 = DecoderBlock(in_channels[4], out_channels[4], use_batchnorm=use_batchnorm, se_module=se_module,
-                                   act=act, skip=skip, use_transpose=use_transpose)
+                                   act=act, skip=skip, use_transpose=use_transpose, attention_type=attention_type)
         if self.h_columns:
             self.layer1_h = nn.Conv2d(out_channels[0], out_channels[4], kernel_size=(1, 1))
             #self.layer2_h = nn.Conv2d(out_channels[1], out_channels[4], kernel_size=(1, 1))

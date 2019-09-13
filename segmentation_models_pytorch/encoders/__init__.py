@@ -22,7 +22,7 @@ encoders.update(inception_encoders)
 #encoders.update(efficientnet_encoders)
 
 
-def get_encoder(name, encoder_weights=None, se_module=False):
+def get_encoder(name, encoder_weights=None, se_module=False, attention_type="scse"):
     Encoder = encoders[name]['encoder']
     encoder = Encoder(**encoders[name]['params'])
     encoder.out_shapes = encoders[name]['out_shapes']
@@ -32,19 +32,19 @@ def get_encoder(name, encoder_weights=None, se_module=False):
         encoder.load_state_dict(model_zoo.load_url(settings['url']))
     if se_module:
         if name in resnet_encoders.keys():
-            encoder = ResNetEncoderSE(encoder)
+            encoder = ResNetEncoderSE(encoder, attention_type=attention_type)
             encoder.out_shapes = encoders[name]['out_shapes']
         elif name in senet_encoders.keys():
-            encoder = SENetEncoderSE(encoder)
+            encoder = SENetEncoderSE(encoder, attention_type=attention_type)
             encoder.out_shapes = encoders[name]['out_shapes']
         elif name in inception_encoders.keys():
-            encoder = InceptionResNetV2SE(encoder)
+            encoder = InceptionResNetV2SE(encoder, attention_type=attention_type)
             encoder.out_shapes = encoders[name]['out_shapes']
         elif name in densenet_encoders.keys():
-            encoder = DenseNetSE(encoder)
+            encoder = DenseNetSE(encoder, attention_type=attention_type)
             encoder.out_shapes = encoders[name]['out_shapes']
         elif name in dpn_encoders.keys():
-            encoder = DPNEncorderSE(encoder)
+            encoder = DPNEncorderSE(encoder, attention_type=attention_type)
             encoder.out_shapes = encoders[name]['out_shapes']
 
     return encoder

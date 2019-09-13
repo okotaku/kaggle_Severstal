@@ -5,6 +5,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.inceptionresnetv2 import InceptionResNetV2
 from pretrainedmodels.models.inceptionresnetv2 import pretrained_settings
 from .scse import SCse
+from ..blocks import CBAM
 
 
 class InceptionResNetV2Encoder(InceptionResNetV2):
@@ -63,29 +64,47 @@ class InceptionResNetV2Encoder(InceptionResNetV2):
 
 class InceptionResNetV2SE(nn.Module):
 
-    def __init__(self, encoder):
+    def __init__(self, encoder, attention_type="scse"):
         super().__init__()
         self.encoder = encoder
 
         self.encode1 = nn.Sequential(encoder.conv2d_1a,
                                     encoder.conv2d_2a,
                                     encoder.conv2d_2b)
-        self.encode2 = nn.Sequential(encoder.maxpool_3a,
-                                     encoder.conv2d_3b,
-                                     encoder.conv2d_4a,
-                                     SCse(encoder.out_shapes[3]))
-        self.encode3 = nn.Sequential(encoder.maxpool_5a,
-                                     encoder.mixed_5b,
-                                     encoder.repeat,
-                                     SCse(encoder.out_shapes[2]))
-        self.encode4 = nn.Sequential(encoder.mixed_6a,
-                                     encoder.repeat_1,
-                                     SCse(encoder.out_shapes[1]))
-        self.encode5 = nn.Sequential(encoder.mixed_7a,
-                                     encoder.repeat_2,
-                                     encoder.block8,
-                                     encoder.conv2d_7b,
-                                     SCse(encoder.out_shapes[0]))
+        if attention_type == "scse":
+            self.encode2 = nn.Sequential(encoder.maxpool_3a,
+                                         encoder.conv2d_3b,
+                                         encoder.conv2d_4a,
+                                         SCse(encoder.out_shapes[3]))
+            self.encode3 = nn.Sequential(encoder.maxpool_5a,
+                                         encoder.mixed_5b,
+                                         encoder.repeat,
+                                         SCse(encoder.out_shapes[2]))
+            self.encode4 = nn.Sequential(encoder.mixed_6a,
+                                         encoder.repeat_1,
+                                         SCse(encoder.out_shapes[1]))
+            self.encode5 = nn.Sequential(encoder.mixed_7a,
+                                         encoder.repeat_2,
+                                         encoder.block8,
+                                         encoder.conv2d_7b,
+                                         SCse(encoder.out_shapes[0]))
+        elif attention_type == "cbam":
+            self.encode2 = nn.Sequential(encoder.maxpool_3a,
+                                         encoder.conv2d_3b,
+                                         encoder.conv2d_4a,
+                                         CBAM(encoder.out_shapes[3]))
+            self.encode3 = nn.Sequential(encoder.maxpool_5a,
+                                         encoder.mixed_5b,
+                                         encoder.repeat,
+                                         CBAM(encoder.out_shapes[2]))
+            self.encode4 = nn.Sequential(encoder.mixed_6a,
+                                         encoder.repeat_1,
+                                         CBAM(encoder.out_shapes[1]))
+            self.encode5 = nn.Sequential(encoder.mixed_7a,
+                                         encoder.repeat_2,
+                                         encoder.block8,
+                                         encoder.conv2d_7b,
+                                         CBAM(encoder.out_shapes[0]))
 
     def forward(self, x):
         x0 = self.encode1(x)

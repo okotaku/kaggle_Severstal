@@ -6,6 +6,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 from torchvision.models.densenet import DenseNet
 from .scse import SCse
+from ..blocks import CBAM
 
 
 class DenseNetEncoder(DenseNet):
@@ -73,7 +74,7 @@ class DenseNetEncoder(DenseNet):
 
 
 class DenseNetSE(nn.Module):
-    def __init__(self, encoder):
+    def __init__(self, encoder, attention_type="scse"):
         super().__init__()
         self.encoder = encoder
         self.encode1 = nn.Sequential(encoder.features.conv0,
@@ -81,17 +82,25 @@ class DenseNetSE(nn.Module):
                                      encoder.features.relu0)
         self.encode2 = nn.Sequential(encoder.features.pool0,
                                      encoder.features.denseblock1)
-        self.se2_1 = SCse(int(encoder.out_shapes[3] / 2))
-        self.se2_2 = SCse(encoder.out_shapes[3])
         self.encode3 = encoder.features.denseblock2
-        self.se3_1 = SCse(int(encoder.out_shapes[2] / 2))
-        self.se3_2 = SCse(encoder.out_shapes[2])
         self.encode4 = encoder.features.denseblock3
-        self.se4_1 = SCse(int(encoder.out_shapes[1] / 2))
-        self.se4_2 = SCse(encoder.out_shapes[1])
         self.encode5 = nn.Sequential(encoder.features.denseblock4,
                                      encoder.features.norm5,
                                      SCse(encoder.out_shapes[0]))
+        if attention_type=="scse":
+            self.se2_1 = SCse(int(encoder.out_shapes[3] / 2))
+            self.se2_2 = SCse(encoder.out_shapes[3])
+            self.se3_1 = SCse(int(encoder.out_shapes[2] / 2))
+            self.se3_2 = SCse(encoder.out_shapes[2])
+            self.se4_1 = SCse(int(encoder.out_shapes[1] / 2))
+            self.se4_2 = SCse(encoder.out_shapes[1])
+        elif attention_type=="cbam":
+            self.se2_1 = CBAM(int(encoder.out_shapes[3] / 2))
+            self.se2_2 = CBAM(encoder.out_shapes[3])
+            self.se3_1 = CBAM(int(encoder.out_shapes[2] / 2))
+            self.se3_2 = CBAM(encoder.out_shapes[2])
+            self.se4_1 = CBAM(int(encoder.out_shapes[1] / 2))
+            self.se4_2 = CBAM(encoder.out_shapes[1])
 
     def forward(self, x):
         x = self.encode1(x)

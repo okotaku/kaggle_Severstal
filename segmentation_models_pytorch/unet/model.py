@@ -47,14 +47,16 @@ class Unet(EncoderDecoder):
             use_transpose=False,
             freeze_bn=False,
             freeze_bn_affine=False,
-            classification=False
+            classification=False,
+            attention_type="scse"
     ):
         self.freeze_bn = freeze_bn
         self.freeze_bn_affine = freeze_bn_affine
         encoder = get_encoder(
             encoder_name,
             encoder_weights=encoder_weights,
-            se_module=encoder_se_module
+            se_module=encoder_se_module,
+            attention_type=attention_type
         )
 
         decoder = UnetDecoder(
@@ -68,7 +70,8 @@ class Unet(EncoderDecoder):
             act=act,
             skip=skip,
             use_transpose=use_transpose,
-            classification=classification
+            classification=classification,
+            attention_type=attention_type
         )
 
         super().__init__(encoder, decoder, activation)
