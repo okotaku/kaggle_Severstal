@@ -51,7 +51,7 @@ BATCH_SIZE = 64
 EPOCHS = 83 * 5
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
-base_ckpt = 8
+base_ckpt = 9
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
