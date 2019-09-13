@@ -51,9 +51,9 @@ BATCH_SIZE = 64
 EPOCHS = 241
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
-base_ckpt = 12
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
