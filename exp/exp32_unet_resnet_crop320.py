@@ -94,7 +94,7 @@ def main(seed):
         ])
         val_augmentation = None
 
-        train_dataset = SeverDataset(train_df, IMG_DIR, (256, 256), N_CLASSES, id_colname=ID_COLUMNS,
+        train_dataset = SeverDataset(train_df, IMG_DIR, (320, 256), N_CLASSES, id_colname=ID_COLUMNS,
                                     transforms=train_augmentation, crop_rate=1.0, crop_320=True)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
