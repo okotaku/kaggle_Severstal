@@ -78,7 +78,6 @@ class Unet(EncoderDecoder):
 
         self.name = 'u-{}'.format(encoder_name)
 
-    """
     def train(self, mode=True):
         super(Unet, self).train(mode)
         if self.freeze_bn:
@@ -92,4 +91,3 @@ class Unet(EncoderDecoder):
                     if self.freeze_bn_affine:
                         m.weight.requires_grad = False
                         m.bias.requires_grad = False
-    """
