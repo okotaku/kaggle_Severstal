@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 from .decoder import UnetDecoder
 from ..base import EncoderDecoder
 from ..encoders import get_encoder
@@ -40,8 +44,12 @@ class Unet(EncoderDecoder):
             h_columns=False,
             act="relu",
             skip=False,
-            use_transpose=False
+            use_transpose=False,
+            freeze_bn=False,
+            freeze_bn_affine=False
     ):
+        self.freeze_bn = freeze_bn
+        self.freeze_bn_affine = freeze_bn_affine
         encoder = get_encoder(
             encoder_name,
             encoder_weights=encoder_weights,
@@ -64,3 +72,20 @@ class Unet(EncoderDecoder):
         super().__init__(encoder, decoder, activation)
 
         self.name = 'u-{}'.format(encoder_name)
+
+    def train(self, mode=True):
+        """
+        Override the default train() to freeze the BN parameters
+        """
+        super(Unet, self).train(mode)
+        if self.freeze_bn:
+            print("Freezing Mean/Var of BatchNorm2D.")
+            if self.freeze_bn_affine:
+                print("Freezing Weight/Bias of BatchNorm2D.")
+        if self.freeze_bn:
+            for m in self.encoder.modules():
+                if isinstance(m, nn.BatchNorm2d):
+                    m.eval()
+                    if self.freeze_bn_affine:
+                        m.weight.requires_grad = False
+                        m.bias.requires_grad = False
