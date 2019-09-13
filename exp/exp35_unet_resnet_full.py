@@ -43,12 +43,12 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(100000)
 device = "cuda:0"
-IMG_SIZE = (800, 128)
+IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 83
+EPOCHS = 101
 FOLD_ID = 0
-EXP_ID = "exp22_unet_resnet"
+EXP_ID = "exp35_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
 base_model = None
