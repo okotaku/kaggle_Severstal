@@ -2,6 +2,9 @@
 # best_ckpt=15, 3e-3, 3e-4
 # 2019-09-13 03:43:57,582 - INFO - Mean train loss: 0.00852
 # 2019-09-13 03:44:15,836 - INFO - Mean valid loss: 0.00844
+# best_ckpt=11, 3e-4, 3e-5
+# 2019-09-13 07:30:22,085 - INFO - Mean train loss: 0.00806
+# 2019-09-13 07:30:43,908 - INFO - Mean valid loss: 0.00851
 # ===============
 import os
 import gc
@@ -116,8 +119,8 @@ def main(seed):
         criterion = torch.nn.BCEWithLogitsLoss()
         #optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
         optimizer = torch.optim.Adam([
-            {'params': model.decoder.parameters(), 'lr': 3e-4},
-            {'params': model.encoder.parameters(), 'lr': 3e-5},
+            {'params': model.decoder.parameters(), 'lr': 3e-3},
+            {'params': model.encoder.parameters(), 'lr': 3e-4},
         ])
         if base_model is None:
             scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
