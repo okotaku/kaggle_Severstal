@@ -14,13 +14,13 @@ class DecoderBlock(nn.Module):
         if self.use_transpose:
             self.upsample = nn.ConvTranspose2d(in_channels, in_channels, kernel_size=4, stride=2,
                                padding=1)
-        if se_module and attention_type="scse":
+        if se_module and attention_type=="scse":
             self.block = nn.Sequential(
                 Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
                 Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
                 SCse(out_channels)
             )
-        elif se_module and attention_type="cbam":
+        elif se_module and attention_type=="cbam":
             self.block = nn.Sequential(
                 Conv2dReLU(in_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
                 Conv2dReLU(out_channels, out_channels, kernel_size=3, padding=1, act=act, use_batchnorm=use_batchnorm),
