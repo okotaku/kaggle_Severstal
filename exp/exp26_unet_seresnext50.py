@@ -1,5 +1,7 @@
 # ===============
-# best_ckpt=
+# best_ckpt=11
+# 2019-09-13 06:14:06,590 - INFO - Mean train loss: 0.0125
+# 2019-09-13 06:16:38,521 - INFO - Mean valid loss: 0.00888
 # ===============
 import os
 import gc
@@ -46,11 +48,11 @@ device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 8
-accumulation_steps = 4
-EPOCHS = 83
+accumulation_steps = 1
+EPOCHS = 167
 FOLD_ID = 0
 EXP_ID = "exp26_unet_seresnext50"
-base_ckpt = 6
+base_ckpt = 14
 base_model = None
 #base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
@@ -132,7 +134,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(40, EPOCHS + 1):
+        for epoch in range(84, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
             if epoch % (CLR_CYCLE * 2) == 0:
