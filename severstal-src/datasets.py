@@ -79,12 +79,15 @@ class SeverDataset(Dataset):
         img /= self.stds
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
+        mask = torch.from_numpy(mask)
 
-        if self.class_y is None:
-            return torch.from_numpy(img), torch.from_numpy(mask)
-        else:
+        if self.class_y is not None:
             class_y_ = self.class_y[idx]
-            return torch.from_numpy(img), torch.from_numpy(mask), torch.tensor(class_y_)
+            target = {"mask": mask, "class_y": torch.tensor(class_y_)}
+        else:
+            target = mask
+
+        return torch.from_numpy(img), target
 
 
 def pytorch_image_to_tensor_transform(image, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):

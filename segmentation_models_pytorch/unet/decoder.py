@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..common.blocks import Conv2dReLU, ASPP
+from ..common.blocks import Conv2dReLU, ASPP, Flatten
 from ..base.model import Model
 from ..encoders.scse import SCse
 
@@ -115,10 +115,12 @@ class UnetDecoder(Model):
             h_columns=False,
             act="relu",
             skip=False,
-            use_transpose=False
+            use_transpose=False,
+            classification=False
     ):
         super().__init__()
         self.h_columns = h_columns
+        self.classification = classification
 
         if center:
             channels = encoder_channels[0]
@@ -151,6 +153,16 @@ class UnetDecoder(Model):
                                             nn.Conv2d(32, final_channels, kernel_size=1, bias=False))
         else:
             self.final_conv = nn.Conv2d(out_channels[4], final_channels, kernel_size=(1, 1))
+
+        if self.classification:
+            self.linear_feature = nn.Sequential(
+                nn.Conv2d(encoder_channels[0], 64, kernel_size=1),
+                nn.AdaptiveAvgPool2d(1),
+                Flatten(),
+                nn.Dropout(),
+                nn.Linear(64, 1)
+
+            )
 
         self.initialize()
 
@@ -191,4 +203,8 @@ class UnetDecoder(Model):
             x = self.layer5([x, None])
         x = self.final_conv(x)
 
-        return x
+        if self.classification:
+            cls = self.linear_feature(encoder_head)
+            return x, cls
+        else:
+            return x

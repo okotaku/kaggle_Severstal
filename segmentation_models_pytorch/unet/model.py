@@ -46,7 +46,8 @@ class Unet(EncoderDecoder):
             skip=False,
             use_transpose=False,
             freeze_bn=False,
-            freeze_bn_affine=False
+            freeze_bn_affine=False,
+            classification=False
     ):
         self.freeze_bn = freeze_bn
         self.freeze_bn_affine = freeze_bn_affine
@@ -66,7 +67,8 @@ class Unet(EncoderDecoder):
             h_columns=h_columns,
             act=act,
             skip=skip,
-            use_transpose=use_transpose
+            use_transpose=use_transpose,
+            classification=classification
         )
 
         super().__init__(encoder, decoder, activation)

@@ -172,13 +172,17 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
 
-def train_one_epoch(model, train_loader, criterion, optimizer, device,
-                    accumulation_steps=1, steps_upd_logging=500, scheduler=None, cutmix_prob=0.3, beta=1):
+def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulation_steps=1, steps_upd_logging=500,
+                    scheduler=None, cutmix_prob=0.3, beta=1, classification=False):
     model.train()
 
     total_loss = 0.0
     for step, (features, targets) in enumerate(train_loader):
-        features, targets = features.to(device), targets.to(device)
+        features = features.to(device),
+        if classification:
+            targets, targets_cls = targets["mask"].to(device), targets["class_y"].to(device)
+        else:
+            targets = targets.to(device)
 
         if np.random.rand() < cutmix_prob:
             features, targets = get_cutmixv2_data(
@@ -190,8 +194,14 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device,
 
         optimizer.zero_grad()
 
-        logits = model(features)
-        loss = criterion(logits, targets)
+
+        if classification:
+            logits, cls = model(features)
+            loss = criterion(logits, targets) * 1024
+            loss += criterion(cls, targets_cls)
+        else:
+            logits = model(features)
+            loss = criterion(logits, targets)
 
         with amp.scale_loss(loss, optimizer) as scaled_loss:
             scaled_loss.backward()
@@ -302,7 +312,7 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
     return total_loss / (step + 1)
 
 
-def validate(model, valid_loader, criterion, device):
+def validate(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
     true_ans_list = []
@@ -312,8 +322,12 @@ def validate(model, valid_loader, criterion, device):
         for step, (features, targets) in enumerate(valid_loader):
             features, targets = features.to(device), targets.to(device)
 
-            logits = model(features)
-            loss = criterion(logits, targets)
+            if classification:
+                logits, _ = model(features)
+                loss = criterion(logits, targets)
+            else:
+                logits = model(features)
+                loss = criterion(logits, targets)
 
             test_loss += loss.item()
             #true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
