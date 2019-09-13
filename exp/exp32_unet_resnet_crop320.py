@@ -48,10 +48,10 @@ device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 64
-EPOCHS = 83 * 5
+EPOCHS = 121 * 5
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
-base_ckpt = 9
+base_ckpt = 12
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
@@ -133,7 +133,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(270, EPOCHS + 1):
+        for epoch in range(360, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
             if epoch % (CLR_CYCLE * 2 * 5) == 0:
