@@ -18,7 +18,6 @@ class SeverDataset(Dataset):
                  img_dir,
                  img_size,
                  n_classes,
-                 mode,
                  crop_rate=1.0,
                  id_colname="ImageId",
                  mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
@@ -26,7 +25,8 @@ class SeverDataset(Dataset):
                  means=[0.485, 0.456, 0.406],
                  stds=[0.229, 0.224, 0.225],
                  class_y=None,
-                 cut_h=False
+                 cut_h=False,
+                 crop_320=False
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -40,6 +40,7 @@ class SeverDataset(Dataset):
         self.crop_rate = crop_rate
         self.class_y = class_y
         self.cut_h = cut_h
+        self.crop_320 = crop_320
 
     def __len__(self):
         return self.df.shape[0]
