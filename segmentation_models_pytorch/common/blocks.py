@@ -1,6 +1,7 @@
-import math
+import numpy as np
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 from torch.nn import functional as F
 
 
@@ -232,3 +233,93 @@ class CBAM(nn.Module):
         if not self.no_spatial:
             x_out = self.SpatialGate(x_out)
         return x_out
+
+
+def get_sinusoid_encoding_table(n_position, d_hid, padding_idx=None):
+    ''' Sinusoid position encoding table '''
+
+    def cal_angle(position, hid_idx):
+        return position / np.power(10000, 2 * (hid_idx // 2) / d_hid)
+
+    def get_posi_angle_vec(position):
+        return [cal_angle(position, hid_j) for hid_j in range(d_hid)]
+
+    sinusoid_table = np.array([get_posi_angle_vec(pos_i) for pos_i in range(n_position)])
+
+    sinusoid_table[:, 0::2] = np.sin(sinusoid_table[:, 0::2])  # dim 2i
+    sinusoid_table[:, 1::2] = np.cos(sinusoid_table[:, 1::2])  # dim 2i+1
+
+    if padding_idx is not None:
+        # zero vector for padding dimension
+        sinusoid_table[padding_idx] = 0.
+
+    return sinusoid_table
+
+def get_sinusoid_encoding_table_2d(H,W, d_hid):
+    ''' Sinusoid position encoding table '''
+    n_position=H*W
+    sinusoid_table=get_sinusoid_encoding_table(n_position,d_hid)
+    sinusoid_table=sinusoid_table.reshape(H,W,d_hid)
+    return sinusoid_table
+
+
+class CBAM_Module(nn.Module):
+    def __init__(self, channels, reduction=4,attention_kernel_size=3,position_encode=False):
+        super(CBAM_Module, self).__init__()
+        self.position_encode=position_encode
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+        self.fc1 = nn.Conv2d(channels, channels // reduction, kernel_size=1,
+                             padding=0)
+        self.relu = nn.ReLU(inplace=True)
+        self.fc2 = nn.Conv2d(channels // reduction, channels, kernel_size=1,
+                             padding=0)
+        self.sigmoid_channel = nn.Sigmoid()
+        if self.position_encode:
+            k=3
+        else:
+            k=2
+        self.conv_after_concat = nn.Conv2d(k, 1,
+                                           kernel_size = attention_kernel_size,
+                                           stride=1,
+                                           padding = attention_kernel_size//2)
+        self.sigmoid_spatial = nn.Sigmoid()
+        self.position_encoded=None
+
+    def forward(self, x):
+        # Channel attention module
+        module_input = x
+        avg = self.avg_pool(x)
+        mx = self.max_pool(x)
+        avg = self.fc1(avg)
+        mx = self.fc1(mx)
+        avg = self.relu(avg)
+        mx = self.relu(mx)
+        avg = self.fc2(avg)
+        mx = self.fc2(mx)
+        x = avg + mx
+        x = self.sigmoid_channel(x)
+        # Spatial attention module
+        x = module_input * x
+        module_input = x
+        b, c, h, w = x.size()
+        if self.position_encode:
+            if self.position_encoded is None:
+
+                pos_enc=get_sinusoid_encoding_table(h,w)
+                pos_enc=Variable(torch.FloatTensor(pos_enc),requires_grad=False)
+                if x.is_cuda:
+                    pos_enc=pos_enc.cuda()
+                self.position_encoded=pos_enc
+        avg = torch.mean(x, 1, True)
+        mx, _ = torch.max(x, 1, True)
+        if self.position_encode:
+            pos_enc=self.position_encoded
+            pos_enc = pos_enc.view(1, 1, h, w).repeat(b, 1, 1, 1)
+            x = torch.cat((avg, mx,pos_enc), 1)
+        else:
+            x = torch.cat((avg, mx), 1)
+        x = self.conv_after_concat(x)
+        x = self.sigmoid_spatial(x)
+        x = module_input * x
+        return x
