@@ -172,8 +172,17 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
 
+def accumulate(model1, model2, decay=0.99):
+    par1 = model1.state_dict()
+    par2 = model2.state_dict()
+
+    with torch.no_grad():
+        for k in par1.keys():
+            par1[k].data.copy_(par1[k].data * decay + par2[k].data * (1 - decay))
+
+
 def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulation_steps=1, steps_upd_logging=500,
-                    scheduler=None, cutmix_prob=0.3, beta=1, classification=False):
+                    scheduler=None, cutmix_prob=0.3, beta=1, classification=False, ema_model=None, ema_decay=0.99):
     model.train()
 
     total_loss = 0.0
@@ -213,6 +222,9 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
                 scheduler.step()
 
         total_loss += loss.item()
+        
+        if ema_model is not None:
+            accumulate(ema_model, model, decay=ema_decay)
 
         if (step + 1) % steps_upd_logging == 0:
             LOGGER.info('Train loss on step {} was {}'.format(step + 1, round(total_loss / (step + 1), 5)))
