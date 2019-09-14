@@ -222,7 +222,7 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
                 scheduler.step()
 
         total_loss += loss.item()
-        
+
         if ema_model is not None:
             accumulate(ema_model, model, decay=ema_decay)
 
