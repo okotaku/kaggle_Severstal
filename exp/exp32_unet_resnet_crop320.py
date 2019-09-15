@@ -51,7 +51,7 @@ BATCH_SIZE = 64
 EPOCHS = 241
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
-base_ckpt = 7
+base_ckpt = 11
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
@@ -133,7 +133,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(70, EPOCHS + 1):
+        for epoch in range(110, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
