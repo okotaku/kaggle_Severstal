@@ -2,6 +2,9 @@
 # best_ckpt=14
 # 2019-09-15 02:45:31,493 - INFO - Mean train loss: 0.00953
 # 2019-09-15 02:45:56,284 - INFO - Mean valid loss: 0.00848
+# best_ckpt=14 bestfitting ver
+# 2019-09-15 06:29:57,905 - INFO - Mean train loss: 0.00897
+# 2019-09-15 06:30:22,530 - INFO - Mean valid loss: 0.00838
 # ===============
 import os
 import gc
