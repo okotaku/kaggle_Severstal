@@ -154,8 +154,6 @@ def main(seed):
 
         scores = []
         for i, th in enumerate(ths):
-            if i <= 2:
-                continue
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
 
             best = 0
@@ -164,7 +162,7 @@ def main(seed):
                 val_preds_[sum_val_preds < remove_mask_pixel] = 0
                 score = dice(y_true[:, i, :, :], val_preds_ > 0.5)
                 LOGGER.info('dice={} on {}'.format(score, remove_mask_pixel))
-                if score > best:
+                if score >= best:
                     best = score
                 else:
                     break
