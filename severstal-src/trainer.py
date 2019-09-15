@@ -405,7 +405,7 @@ def validate_dsv(model, valid_loader, criterion, device):
     return test_loss / (step + 1)#, all_preds, all_true_ans
 
 
-def predict(model, valid_loader, criterion, device):
+def predict(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
     score_all1 = []
@@ -417,7 +417,10 @@ def predict(model, valid_loader, criterion, device):
         for step, (features, targets) in enumerate(tqdm(valid_loader)):
             features, targets = features.to(device), targets.to(device)
 
-            logits = model(features)
+            if classification:
+                logits, _ = model(features)
+            else:
+                logits = model(features)
             loss = criterion(logits, targets)
 
             targets = targets.float().cpu().numpy().astype("int8")
