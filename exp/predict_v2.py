@@ -39,16 +39,16 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(100000)
 device = "cuda:0"
-IMG_SIZE = (800, 256)
+IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp14_unet_seresnext50"
-base_ckpt = 4
+EXP_ID = "exp35_unet_resnet"
+base_ckpt = 16
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-ths = [0.68, 0.76, 0.6, 0.57]
+ths = [0.65, 0.76, 0.5, 0.54]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
