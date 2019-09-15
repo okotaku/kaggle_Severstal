@@ -6,6 +6,9 @@
 # 2019-09-15 04:21:29,827 - INFO - class 2 dice=0.9851993837063955 on th=[0.76]
 # 2019-09-15 04:21:29,827 - INFO - class 3 dice=0.8584596953347983 on th=[0.5]
 # 2019-09-15 04:21:29,827 - INFO - class 4 dice=0.9839085303699907 on th=[0.54]
+# fold=1, best_ckpt=14
+# 2019-09-15 12:14:07,511 - INFO - Mean train loss: 0.00818
+# 2019-09-15 12:14:50,431 - INFO - Mean valid loss: 0.00847
 # ===============
 import os
 import gc
@@ -53,7 +56,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 119 #101
-FOLD_ID = 1
+FOLD_ID = 2
 EXP_ID = "exp35_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
