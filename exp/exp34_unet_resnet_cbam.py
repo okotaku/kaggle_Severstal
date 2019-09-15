@@ -1,5 +1,7 @@
 # ===============
-
+# best_ckpt=14
+# 2019-09-15 02:45:31,493 - INFO - Mean train loss: 0.00953
+# 2019-09-15 02:45:56,284 - INFO - Mean valid loss: 0.00848
 # ===============
 import os
 import gc
@@ -46,7 +48,7 @@ device = "cuda:0"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 83
+EPOCHS = 89
 FOLD_ID = 0
 EXP_ID = "exp22_unet_resnet"
 base_ckpt = 3

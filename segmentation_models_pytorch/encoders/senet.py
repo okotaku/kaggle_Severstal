@@ -8,7 +8,7 @@ from pretrainedmodels.models.senet import SEResNetBottleneck
 from pretrainedmodels.models.senet import SEResNeXtBottleneck
 from pretrainedmodels.models.senet import pretrained_settings
 from .scse import SCse
-from ..common.blocks import CBAM
+from ..common.blocks import CBAM, CBAM_Module
 
 
 class SENetEncoder(SENet):
@@ -58,13 +58,13 @@ class SENetEncoderSE(nn.Module):
                                          SCse(encoder.out_shapes[0]))
         elif attention_type == "cbam":
             self.encode2 = nn.Sequential(encoder.layer1,
-                                         CBAM(encoder.out_shapes[3]))
+                                         CBAM_Module(encoder.out_shapes[3]))
             self.encode3 = nn.Sequential(encoder.layer2,
-                                         CBAM(encoder.out_shapes[2]))
+                                         CBAM_Module(encoder.out_shapes[2]))
             self.encode4 = nn.Sequential(encoder.layer3,
-                                         CBAM(encoder.out_shapes[1]))
+                                         CBAM_Module(encoder.out_shapes[1]))
             self.encode5 = nn.Sequential(encoder.layer4,
-                                         CBAM(encoder.out_shapes[0]))
+                                         CBAM_Module(encoder.out_shapes[0]))
 
     def forward(self, x):
         for module in self.encoder.layer0[:-1]:

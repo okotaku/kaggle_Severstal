@@ -5,7 +5,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.inceptionresnetv2 import InceptionResNetV2
 from pretrainedmodels.models.inceptionresnetv2 import pretrained_settings
 from .scse import SCse
-from ..common.blocks import CBAM
+from ..common.blocks import CBAM, CBAM_Module
 
 
 class InceptionResNetV2Encoder(InceptionResNetV2):
@@ -92,19 +92,19 @@ class InceptionResNetV2SE(nn.Module):
             self.encode2 = nn.Sequential(encoder.maxpool_3a,
                                          encoder.conv2d_3b,
                                          encoder.conv2d_4a,
-                                         CBAM(encoder.out_shapes[3]))
+                                         CBAM_Module(encoder.out_shapes[3]))
             self.encode3 = nn.Sequential(encoder.maxpool_5a,
                                          encoder.mixed_5b,
                                          encoder.repeat,
-                                         CBAM(encoder.out_shapes[2]))
+                                         CBAM_Module(encoder.out_shapes[2]))
             self.encode4 = nn.Sequential(encoder.mixed_6a,
                                          encoder.repeat_1,
-                                         CBAM(encoder.out_shapes[1]))
+                                         CBAM_Module(encoder.out_shapes[1]))
             self.encode5 = nn.Sequential(encoder.mixed_7a,
                                          encoder.repeat_2,
                                          encoder.block8,
                                          encoder.conv2d_7b,
-                                         CBAM(encoder.out_shapes[0]))
+                                         CBAM_Module(encoder.out_shapes[0]))
 
     def forward(self, x):
         x0 = self.encode1(x)

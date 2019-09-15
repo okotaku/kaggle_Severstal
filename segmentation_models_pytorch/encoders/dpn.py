@@ -9,7 +9,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.dpn import DPN
 from pretrainedmodels.models.dpn import pretrained_settings
 from .scse import SCse
-from ..common.blocks import CBAM
+from ..common.blocks import CBAM, CBAM_Module
 
 
 class DPNEncorder(DPN):
@@ -71,10 +71,10 @@ class DPNEncorderSE(nn.Module):
             self.se3 = SCse(encoder.out_shapes[1])
             self.se4 = SCse(encoder.out_shapes[0])
         elif attention_type == "cbam":
-            self.se1 = CBAM(encoder.out_shapes[3])
-            self.se2 = CBAM(encoder.out_shapes[2])
-            self.se3 = CBAM(encoder.out_shapes[1])
-            self.se4 = CBAM(encoder.out_shapes[0])
+            self.se1 = CBAM_Module(encoder.out_shapes[3])
+            self.se2 = CBAM_Module(encoder.out_shapes[2])
+            self.se3 = CBAM_Module(encoder.out_shapes[1])
+            self.se4 = CBAM_Module(encoder.out_shapes[0])
 
     def forward(self, x):
 

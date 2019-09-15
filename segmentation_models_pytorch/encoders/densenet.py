@@ -6,7 +6,7 @@ sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.
 from pretrainedmodels.models.torchvision_models import pretrained_settings
 from torchvision.models.densenet import DenseNet
 from .scse import SCse
-from ..common.blocks import CBAM
+from ..common.blocks import CBAM, CBAM_Module
 
 
 class DenseNetEncoder(DenseNet):
@@ -95,12 +95,12 @@ class DenseNetSE(nn.Module):
             self.se4_1 = SCse(int(encoder.out_shapes[1] / 2))
             self.se4_2 = SCse(encoder.out_shapes[1])
         elif attention_type=="cbam":
-            self.se2_1 = CBAM(int(encoder.out_shapes[3] / 2))
-            self.se2_2 = CBAM(encoder.out_shapes[3])
-            self.se3_1 = CBAM(int(encoder.out_shapes[2] / 2))
-            self.se3_2 = CBAM(encoder.out_shapes[2])
-            self.se4_1 = CBAM(int(encoder.out_shapes[1] / 2))
-            self.se4_2 = CBAM(encoder.out_shapes[1])
+            self.se2_1 = CBAM_Module(int(encoder.out_shapes[3] / 2))
+            self.se2_2 = CBAM_Module(encoder.out_shapes[3])
+            self.se3_1 = CBAM_Module(int(encoder.out_shapes[2] / 2))
+            self.se3_2 = CBAM_Module(encoder.out_shapes[2])
+            self.se4_1 = CBAM_Module(int(encoder.out_shapes[1] / 2))
+            self.se4_2 = CBAM_Module(encoder.out_shapes[1])
 
     def forward(self, x):
         x = self.encode1(x)
