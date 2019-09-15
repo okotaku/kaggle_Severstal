@@ -45,6 +45,7 @@ BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp35_unet_resnet"
+CLASSIFICATION = True
 base_ckpt = 16
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
@@ -146,7 +147,7 @@ def main(seed):
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        valid_loss, y_pred, y_true = predict2(model, val_loader, criterion, device)
+        valid_loss, y_pred, y_true = predict2(model, val_loader, criterion, device, classification=CLASSIFICATION)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
         scores = []
