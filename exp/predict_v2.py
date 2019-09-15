@@ -139,8 +139,9 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('se_resnext50_32x4d', encoder_weights=None, classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=False, skip=True)
+        model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+                         decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
+                         classification=CLASSIFICATION)
         model.load_state_dict(torch.load(base_model))
         model.to(device)
 
