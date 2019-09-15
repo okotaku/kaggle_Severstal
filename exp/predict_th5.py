@@ -40,13 +40,14 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(100000)
 device = "cuda:0"
-IMG_SIZE = (800, 256)
+IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp14_unet_seresnext50"
-base_ckpt = 4
+EXP_ID = "exp35_unet_resnet"
+CLASSIFICATION = True
+base_ckpt = 16
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
@@ -139,15 +140,16 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('se_resnext50_32x4d', encoder_weights=None, classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=False, skip=True)
+        model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+                         decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
+                         classification=CLASSIFICATION)
         model.load_state_dict(torch.load(base_model))
         model.to(device)
 
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        valid_loss, y_pred, y_true = predict2(model, val_loader, criterion, device)
+        valid_loss, y_pred, y_true = predict2(model, val_loader, criterion, device, classification=CLASSIFICATION)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
         scores = []

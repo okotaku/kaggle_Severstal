@@ -440,7 +440,7 @@ def predict(model, valid_loader, criterion, device):
 
     return test_loss / (step + 1), np.array(score_all1), np.array(score_all2), np.array(score_all3), np.array(score_all4), ths
 
-def predict2(model, valid_loader, criterion, device):
+def predict2(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
     true_ans_list = []
@@ -450,7 +450,10 @@ def predict2(model, valid_loader, criterion, device):
         for step, (features, targets) in enumerate(tqdm(valid_loader)):
             features, targets = features.to(device), targets.to(device)
 
-            logits = model(features)
+            if classification:
+                logits, _ = model(features)
+            else:
+                logits = model(features)
             loss = criterion(logits, targets)
 
             targets = targets.float().cpu().numpy().astype("int8")
