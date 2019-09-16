@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 from .decoder import UnetPPDecoder
 from ..base import EncoderDecoder
 from ..encoders import get_encoder
@@ -39,15 +43,21 @@ class UnetPP(EncoderDecoder):
             decoder_semodule=False,
             h_columns=False,
             deep_supervision=False,
-            classification=False,
-            linear_feature_unit=64,
             act="relu",
-            skip=False
+            skip=False,
+            use_transpose=False,
+            freeze_bn=False,
+            freeze_bn_affine=False,
+            classification=False,
+            attention_type="scse"
     ):
+        self.freeze_bn = freeze_bn
+        self.freeze_bn_affine = freeze_bn_affine
         encoder = get_encoder(
             encoder_name,
             encoder_weights=encoder_weights,
-            se_module=encoder_se_module
+            se_module=encoder_se_module,
+            attention_type=attention_type
         )
 
         decoder = UnetPPDecoder(
@@ -59,12 +69,27 @@ class UnetPP(EncoderDecoder):
             se_module=decoder_semodule,
             h_columns=h_columns,
             deep_supervision=deep_supervision,
-            classification=classification,
-            linear_feature_unit=linear_feature_unit,
             act=act,
-            skip=skip
+            skip=skip,
+            use_transpose=use_transpose,
+            classification=classification,
+            attention_type=attention_type
         )
 
         super().__init__(encoder, decoder, activation)
 
         self.name = 'u-{}'.format(encoder_name)
+
+    def train(self, mode=True):
+        super(UnetPP, self).train(mode)
+        if self.freeze_bn:
+            print("Freezing Mean/Var of BatchNorm2D.")
+            if self.freeze_bn_affine:
+                print("Freezing Weight/Bias of BatchNorm2D.")
+        if self.freeze_bn:
+            for m in self.encoder.modules():
+                if isinstance(m, nn.BatchNorm2d):
+                    m.eval()
+                    if self.freeze_bn_affine:
+                        m.weight.requires_grad = False
+                        m.bias.requires_grad = False
