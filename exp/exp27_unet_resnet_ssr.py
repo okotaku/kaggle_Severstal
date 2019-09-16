@@ -112,7 +112,7 @@ def main(seed):
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
         model.to(device)
-        
+
         criterion = torch.nn.BCEWithLogitsLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
         if base_model is None:
