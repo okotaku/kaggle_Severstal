@@ -139,6 +139,7 @@ def main(seed):
         valid_losses = []
 
         best_model_loss = 999
+        best_model_ema_loss = 999
         best_model_ep = 0
         ema_decay = 0
         checkpoint = base_ckpt+1
@@ -151,8 +152,10 @@ def main(seed):
                 torch.save(ema_model.module.state_dict(),
                            'models/{}_fold{}_latest_ema.pth'.format(EXP_ID, FOLD_ID))
                 LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
+                LOGGER.info('Best ema valid loss: {}'.format(round(best_model_ema_loss, 5)))
                 checkpoint += 1
                 best_model_loss = 999
+                best_model_ema_loss = 999
             if epoch >= EMA_START:
                 ema_decay = 0.99
 
@@ -170,11 +173,15 @@ def main(seed):
                 ema_valid_loss = validate(ema_model, val_loader, criterion, device)
                 LOGGER.info('Mean EMA valid loss: {}'.format(round(ema_valid_loss, 5)))
 
+                if ema_valid_loss < best_model_ema_loss:
+                    torch.save(ema_model.module.state_dict(),
+                               'models/{}_fold{}_ckpt{}_ema.pth'.format(EXP_ID, FOLD_ID, checkpoint))
+                    best_model_ema_loss = ema_valid_loss
+
             scheduler.step()
 
             if valid_loss < best_model_loss:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
-                torch.save(ema_model.module.state_dict(), 'models/{}_fold{}_ckpt{}_ema.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                 best_model_loss = valid_loss
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
