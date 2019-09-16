@@ -265,8 +265,8 @@ def train_one_epoch_mixup(model, train_loader, criterion, optimizer, device, ste
 
 
 def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
-                        accumulation_steps=1, steps_upd_logging=500, scheduler=None, classification=False,
-                        seg_weight=0.5, cutmix_prob=0.3, beta=1):
+                        accumulation_steps=1, steps_upd_logging=500, classification=False,
+                        seg_weight=0.5, cutmix_prob=0.0, beta=1, ema_model=None, ema_decay=0.99):
     model.train()
 
     total_loss = 0.0
@@ -280,30 +280,27 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
         optimizer.zero_grad()
 
         if np.random.rand() < cutmix_prob:
-            input_var, target_var = get_cutmixv5_data(
+            features, targets = get_cutmixv5_data(
                 features,
                 targets,
                 beta=beta,
                 device=device
             )
-            out_dic = model(input_var)
-            logits = out_dic["mask"]
-            loss = 0
-            for l in logits:
-                loss += criterion(l, target_var)
-            loss /= len(logits)
-        else:
-            out_dic = model(features)
-            logits = out_dic["mask"]
-            loss = 0
-            for l in logits:
-                loss += criterion(l, targets)
-            loss /= len(logits)
+
+        out_dic = model(features)
+        logits = out_dic["mask"]
+        loss = 0
+        for l in logits:
+            loss += criterion(l, targets)
+        loss /= len(logits)
 
         if classification:
             pred_y = out_dic["class"]
             class_loss = criterion(pred_y, true_y)
-            loss = (loss * seg_weight + class_loss * (1 - seg_weight)) * 2
+            loss += class_loss / 1024
+
+        if ema_model is not None:
+            accumulate(ema_model, model, decay=ema_decay)
 
         with amp.scale_loss(loss, optimizer) as scaled_loss:
             scaled_loss.backward()
@@ -311,8 +308,6 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
         if (step + 1) % accumulation_steps == 0:
             optimizer.step()
             optimizer.zero_grad()
-            #if scheduler is not None:
-            #    scheduler.step()
 
         total_loss += loss.item()
 
@@ -380,8 +375,6 @@ def validate_crop(model, valid_loader, criterion, device):
 def validate_dsv(model, valid_loader, criterion, device):
     model.eval()
     test_loss = 0.0
-    true_ans_list = []
-    preds_cat = []
     with torch.no_grad():
 
         for step, batch in enumerate(valid_loader):
@@ -393,16 +386,12 @@ def validate_dsv(model, valid_loader, criterion, device):
             loss = criterion(logits, targets)
 
             test_loss += loss.item()
-            #true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
-            #preds_cat.append(torch.sigmoid(logits[0]).float().cpu().numpy().astype("float16"))
 
             del features, targets, logits
             gc.collect()
 
-        #all_true_ans = np.concatenate(true_ans_list, axis=0)
-        #all_preds = np.concatenate(preds_cat, axis=0)
 
-    return test_loss / (step + 1)#, all_preds, all_true_ans
+    return test_loss / (step + 1)
 
 
 def predict(model, valid_loader, criterion, device, classification=False):
