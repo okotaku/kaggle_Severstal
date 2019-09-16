@@ -15,13 +15,13 @@ class SoftDiceLoss_binary(nn.Module):
         super(SoftDiceLoss_binary, self).__init__()
 
     def forward(self, input, target):
+        target = torch.HalfTensor(target)
         smooth = 0.01
         batch_size = input.size(0)
         input = F.sigmoid(input).view(batch_size, -1)
         # print(target.shape)
         # print(target.view(-1))
         target = target.clone().view(batch_size, -1)
-        print(input, target)
 
         inter = torch.sum(input * target, 1) + smooth
         union = torch.sum(input * input, 1) + torch.sum(target * target, 1) + smooth
