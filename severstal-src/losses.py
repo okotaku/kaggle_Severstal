@@ -15,7 +15,7 @@ class SoftDiceLoss_binary(nn.Module):
         super(SoftDiceLoss_binary, self).__init__()
 
     def forward(self, input, target):
-        target = torch.HalfTensor(target)
+        target = target.half()
         smooth = 0.01
         batch_size = input.size(0)
         input = F.sigmoid(input).view(batch_size, -1)
