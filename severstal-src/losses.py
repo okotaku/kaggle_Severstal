@@ -22,7 +22,7 @@ class SoftDiceLoss_binary(nn.Module):
         # print(target.view(-1))
         target = target.clone().view(batch_size, -1)
 
-        inter = torch.sum(input * target, 1) + smooth
+        inter = torch.sum(torch.HalfTensor(input) * target, 1) + smooth
         union = torch.sum(input * input, 1) + torch.sum(target * target, 1) + smooth
 
         score = torch.sum(2.0 * inter / union) / float(batch_size)
