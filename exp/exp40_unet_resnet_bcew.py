@@ -111,7 +111,7 @@ def main(seed):
             model.load_state_dict(torch.load(base_model))
         model.to(device)
 
-        class_weight = torch.FloatTensor([1.5])
+        class_weight = torch.FloatTensor([1.5]).cuda()
         train_criterion = torch.nn.BCEWithLogitsLoss(pos_weight=class_weight)
         criterion = torch.nn.BCEWithLogitsLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
