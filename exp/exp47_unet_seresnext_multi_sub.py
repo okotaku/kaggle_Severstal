@@ -43,7 +43,7 @@ N_CLASSES = 4
 # Settings
 # ===============
 SEED = np.random.randint(100000)
-device = "cuda:0"
+device = "cuda"
 IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
@@ -139,9 +139,13 @@ def main(seed):
         model = torch.nn.DataParallel(model)
 
         if EMA:
-            ema_model = copy.deepcopy(model)
             if base_model_ema is not None:
+                ema_model = smp.Unet('se_resnext101_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+                         decoder_semodule=True, h_columns=True, skip=True, act="swish", freeze_bn=True,
+                         classification=CLASSIFICATION, attention_type="cbam")
                 ema_model.load_state_dict(torch.load(base_model_ema))
+            else:
+                ema_model = copy.deepcopy(model)
             ema_model.to(device)
         else:
             ema_model = None
