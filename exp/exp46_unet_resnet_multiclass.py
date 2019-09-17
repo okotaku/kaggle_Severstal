@@ -147,11 +147,6 @@ def main(seed):
         for epoch in range(1, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
-            if epoch % (CLR_CYCLE * 2) == 0:
-                torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
-                LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
-                checkpoint += 1
-                best_model_loss = 999
 
             LOGGER.info("Starting {} epoch...".format(epoch))
             tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
@@ -170,6 +165,12 @@ def main(seed):
                 best_model_loss = valid_loss
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
+
+            if epoch % (CLR_CYCLE * 2) == CLR_CYCLE * 2 - 1:
+                torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
+                LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
+                checkpoint += 1
+                best_model_loss = 999
 
             #del val_pred
             gc.collect()
