@@ -1,7 +1,9 @@
+import torch
+import torch.nn as nn
 from collections import OrderedDict
 from .layers import *
 from .efficientnet import EfficientNet
-from .decoder import UnetDecoder
+from ..unet.decoder import UnetDecoder
 from ..base import EncoderDecoder
 
 __all__ = ['EfficientUnet', 'get_efficientunet_b0', 'get_efficientunet_b1', 'get_efficientunet_b2',
@@ -165,7 +167,10 @@ class EUnet(EncoderDecoder):
             decoder_semodule=False,
             h_columns=False,
             act="relu",
-            skip=False
+            skip=False,
+            use_transpose=False,
+            classification=False,
+            attention_type="scse"
     ):
         encoder = EfficientNet.encoder(encoder_name, pretrained=encoder_weights)
 
@@ -178,7 +183,10 @@ class EUnet(EncoderDecoder):
             se_module=decoder_semodule,
             h_columns=h_columns,
             act=act,
-            skip=skip
+            skip=skip,
+            use_transpose=use_transpose,
+            classification=classification,
+            attention_type=attention_type
         )
 
         super().__init__(encoder, decoder, activation)

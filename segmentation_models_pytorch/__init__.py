@@ -4,7 +4,7 @@ from .fpn import FPN
 from .pspnet import PSPNet
 from .unetpp import UnetPP
 from .linknetpp import LinknetPP
-from .efunet import EfficientNet_3_unet, EfficientNet_5_unet
+from .eunet import EUnet
 from .panet import PANet
 
 from . import encoders
