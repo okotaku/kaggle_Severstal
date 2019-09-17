@@ -323,3 +323,270 @@ class CBAM_Module(nn.Module):
         x = self.sigmoid_spatial(x)
         x = module_input * x
         return x
+
+
+#https://github.com/arc144/siim-pneumothorax/blob/master/Models/layers.py
+def Norm2d(planes):
+    return nn.BatchNorm2d(planes)
+
+
+class ConvBn2d(nn.Module):
+    def __init__(self, in_channels, out_channels,
+                 kernel_size=(3, 3), stride=(1, 1),
+                 padding=(1, 1), groups=1, dilation=1, act=False):
+        super(ConvBn2d, self).__init__()
+        self.act = act
+        self.conv = nn.Conv2d(in_channels, out_channels,
+                              kernel_size=kernel_size,
+                              stride=stride,
+                              padding=padding,
+                              bias=True,
+                              groups=groups,
+                              dilation=dilation)
+        self.bn = Norm2d(out_channels)
+        if self.act:
+            self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        x = self.conv(x)
+        x = self.bn(x)
+        if self.act:
+            x = self.relu(x)
+        return x
+
+
+class GlobalAttentionUpsample(nn.Module):
+    def __init__(self, skip_channels, channels, out_channels=None):
+        super(GlobalAttentionUpsample, self).__init__()
+        self.out_channels = out_channels
+        if out_channels is None:
+            out_channels = channels
+        self.conv3 = nn.Conv2d(skip_channels, channels, kernel_size=3, padding=1)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv1 = ConvBn2d(channels, channels, kernel_size=1, padding=0)
+        self.GPool = nn.AdaptiveAvgPool2d(output_size=1)
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        if out_channels is not None:
+            self.conv_out = ConvBn2d(channels, out_channels, kernel_size=1, padding=0)
+
+    def forward(self, x, skip, up=True):
+        # Reduce channels
+        skip = self.conv3(skip)
+        # Upsample
+        if up:
+            x = self.upsample(x)
+        # GlobalPool and conv1
+        cal1 = self.GPool(x)
+        cal1 = self.conv1(cal1)
+        cal1 = self.relu(cal1)
+
+        # Calibrate skip connection
+        skip = cal1 * skip
+        # Add
+        x = x + skip
+        if self.out_channels is not None:
+            x = self.conv_out(x)
+        return x
+
+
+###########################################################################
+############################ PANet BLOCKS #################################
+###########################################################################
+class FeaturePyramidAttention(nn.Module):
+    def __init__(self, channels, out_channels=None):
+        super(FeaturePyramidAttention, self).__init__()
+        if out_channels is None:
+            out_channels = channels
+        self.conv1 = nn.Conv2d(channels, out_channels, kernel_size=1, stride=1, padding=0)
+        self.conv1p = nn.Conv2d(channels, out_channels, kernel_size=1, stride=1, padding=0)
+
+        self.conv3a = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1)
+        self.conv3b = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1)
+
+        self.conv5a = nn.Conv2d(out_channels, out_channels, kernel_size=5, stride=1, padding=2)
+        self.conv5b = nn.Conv2d(out_channels, out_channels, kernel_size=5, stride=1, padding=2)
+
+        self.conv7a = nn.Conv2d(channels, out_channels, kernel_size=7, stride=1, padding=3)
+        self.conv7b = nn.Conv2d(out_channels, out_channels, kernel_size=7, stride=1, padding=3)
+
+        self.GPool = nn.AdaptiveAvgPool2d(output_size=1)
+
+        self.downsample = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+
+    def forward(self, x, mode='std'):
+        H, W = x.shape[2:]
+        # down-path
+        if mode == 'std':
+            xup1 = self.downsample(x)
+            xup1 = self.conv7a(xup1)
+        elif mode == 'reduced':
+            xup1 = self.conv7a(x)
+        elif mode == 'extended':
+            xup1 = F.avg_pool2d(x, kernel_size=4, stride=4)
+            xup1 = self.conv7a(xup1)
+
+        xup2 = self.downsample(xup1)
+        xup2 = self.conv5a(xup2)
+
+        xup3 = self.downsample(xup2)
+        xup3 = self.conv3a(xup3)
+
+        # Skips
+        x1 = self.conv1(x)
+        xup1 = self.conv7b(xup1)
+        xup2 = self.conv5b(xup2)
+        xup3 = self.conv3b(xup3)
+
+        # up-path
+        xup2 = self.upsample(xup3) + xup2
+        xup1 = self.upsample(xup2) + xup1
+
+        # Global Avg Pooling
+        gp = self.GPool(x)
+        gp = self.conv1p(gp)
+        gp = F.upsample(gp, size=(H, W), mode='bilinear', align_corners=True)
+
+        # Merge
+        if mode == 'std':
+            x1 = self.upsample(xup1) * x1
+        elif mode == 'reduced':
+            x1 = xup1 * x1
+        elif mode == 'extended':
+            x1 = F.upsample(xup1, scale_factor=4, mode='bilinear', align_corners=True) * x1
+        x1 = x1 + gp
+        return x1
+
+
+class FeaturePyramidAttention_v2(nn.Module):
+    def __init__(self, channels, out_channels=None):
+        super().__init__()
+        if out_channels is None:
+            out_channels = channels
+        self.conv1 = ConvBn2d(channels, out_channels, kernel_size=1, stride=1, padding=0, act=True)
+        self.conv1p = ConvBn2d(channels, out_channels, kernel_size=1, stride=1, padding=0, act=True)
+
+        self.conv3a = ConvBn2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, act=True)
+        self.conv3b = ConvBn2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, act=True)
+
+        self.conv5a = ConvBn2d(out_channels, out_channels, kernel_size=5, stride=1, padding=2, act=True)
+        self.conv5b = ConvBn2d(out_channels, out_channels, kernel_size=5, stride=1, padding=2, act=True)
+
+        self.conv7a = ConvBn2d(channels, out_channels, kernel_size=7, stride=1, padding=3, act=True)
+        self.conv7b = ConvBn2d(out_channels, out_channels, kernel_size=7, stride=1, padding=3, act=True)
+
+        self.GPool = nn.AdaptiveAvgPool2d(output_size=1)
+
+        self.downsample = nn.AvgPool2d(kernel_size=2, stride=2)
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+
+    def forward(self, x, mode='std'):
+        H, W = x.shape[2:]
+        # down-path
+        if mode == 'std':
+            xup1 = self.downsample(x)
+            xup1 = self.conv7a(xup1)
+        elif mode == 'reduced':
+            xup1 = self.conv7a(x)
+
+        xup2 = self.downsample(xup1)
+        xup2 = self.conv5a(xup2)
+
+        xup3 = self.downsample(xup2)
+        xup3 = self.conv3a(xup3)
+
+        # Skips
+        x1 = self.conv1(x)
+        xup1 = self.conv7b(xup1)
+        xup2 = self.conv5b(xup2)
+        xup3 = self.conv3b(xup3)
+
+        # up-path
+        xup2 = self.upsample(xup3) + xup2
+        xup1 = self.upsample(xup2) + xup1
+
+        # Global Avg Pooling
+        gp = self.GPool(x)
+        gp = self.conv1p(gp)
+        gp = F.upsample(gp, size=(H, W), mode='bilinear', align_corners=True)
+
+        # Merge
+        if mode == 'std':
+            x1 = self.upsample(xup1) * x1
+        elif mode == 'reduced':
+            x1 = xup1 * x1
+        x1 = x1 + gp
+        return x1
+
+
+class GlobalAttentionUpsample(nn.Module):
+    def __init__(self, skip_channels, channels, out_channels=None):
+        super(GlobalAttentionUpsample, self).__init__()
+        self.out_channels = out_channels
+        if out_channels is None:
+            out_channels = channels
+        self.conv3 = nn.Conv2d(skip_channels, channels, kernel_size=3, padding=1)
+        self.relu = nn.ReLU(inplace=True)
+        self.conv1 = ConvBn2d(channels, channels, kernel_size=1, padding=0)
+        self.GPool = nn.AdaptiveAvgPool2d(output_size=1)
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        if out_channels is not None:
+            self.conv_out = ConvBn2d(channels, out_channels, kernel_size=1, padding=0)
+
+    def forward(self, x, skip, up=True):
+        # Reduce channels
+        skip = self.conv3(skip)
+        # Upsample
+        if up:
+            x = self.upsample(x)
+        # GlobalPool and conv1
+        cal1 = self.GPool(x)
+        cal1 = self.conv1(cal1)
+        cal1 = self.relu(cal1)
+
+        # Calibrate skip connection
+        skip = cal1 * skip
+        # Add
+        x = x + skip
+        if self.out_channels is not None:
+            x = self.conv_out(x)
+        return x
+
+
+class AttentionUpsample(nn.Module):
+    def __init__(self, skip_channels, channels, n_classes, out_channels=None):
+        super().__init__()
+        self.out_channels = out_channels
+        if out_channels is None:
+            out_channels = channels
+        self.conv3 = nn.Conv2d(skip_channels, channels, kernel_size=3, padding=1)
+        self.rconv1 = nn.Conv2d(channels, n_classes, kernel_size=1, padding=0)
+        self.gconv1 = nn.Conv2d(channels, channels, kernel_size=1, padding=0)
+        self.GPool = nn.AdaptiveAvgPool2d(output_size=1)
+        self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        if out_channels is not None:
+            self.conv_out = ConvBn2d(channels, out_channels, kernel_size=1, padding=0)
+
+    def forward(self, x, skip, up=True):
+        # Reduce channels
+        skip = self.conv3(skip)
+        # Upsample
+        if up:
+            x = self.upsample(x)
+
+        # GlobalPool and conv1
+        gcalib = self.GPool(x)
+        gcalib = self.gconv1(gcalib)
+        gcalib = torch.sigmoid(gcalib)
+
+        # RegionalPool
+        rcalib = self.rconv1(x)
+        rcalib = torch.sigmoid(rcalib)
+
+        # Calibrate skip connection
+        skip = (gcalib * skip) + (rcalib * skip)
+        # Add
+        x = x + skip
+        if self.out_channels is not None:
+            x = self.conv_out(x)
+        return x, rcalib
