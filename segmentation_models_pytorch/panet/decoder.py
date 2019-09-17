@@ -133,15 +133,9 @@ class PANetDecoder(Model):
         if center:
             channels = encoder_channels[0]
             #self.center = CenterBlock(channels, channels, use_batchnorm=use_batchnorm)
-            #self.center = FPAv2(channels, channels)
-            self.center = nn.Sequential(
-                ConvBn2d(channels, 64, kernel_size=3, padding=1),
-                nn.ReLU(inplace=True)
-            )
+            self.center = FPAv2(channels, channels)
         else:
             self.center = None
-
-        self.fpa = FPAv2(64, 64)
 
         in_channels = self.compute_channels(encoder_channels, decoder_channels)
         out_channels = decoder_channels
@@ -190,7 +184,6 @@ class PANetDecoder(Model):
 
         if self.center:
             encoder_head = self.center(encoder_head)
-        encoder_head = self.fpa(encoder_head)
 
         if self.h_columns:
             d5 = self.layer1(encoder_head, skips[0], up=True)
