@@ -51,12 +51,12 @@ EPOCHS = 101
 FOLD_ID = 0
 EXP_ID = "exp44_unet_resnet"
 CLASSIFICATION = True
-EMA = True
+EMA = False
 EMA_START = 6
-base_ckpt = 2
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+#base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
