@@ -56,19 +56,19 @@ class EfficientNet_3_Encoder(nn.Module):
 
 efficientnet_encoders = {
     'efficientnet-b0': {
-        'encoder': SENetEncoder,
+        'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 128),
     },
 
     'efficientnet-b1': {
-        'encoder': SENetEncoder,
+        'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 64),
     },
 
     'efficientnet-b2': {
-        'encoder': SENetEncoder,
+        'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 64),
     },
@@ -76,11 +76,11 @@ efficientnet_encoders = {
     'efficientnet-b3': {
         'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
-        'out_shapes': (2048, 1024, 512, 256, 64),
+        'out_shapes': (1536, 136, 48, 32, 24),
     },
 
     'efficientnet-b4': {
-        'encoder': SENetEncoder,
+        'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 64),
     },
@@ -88,6 +88,6 @@ efficientnet_encoders = {
     'efficientnet-b5': {
         'encoder': EfficientNet_5_Encoder,
         'pretrained_settings': None,
-        'out_shapes': (2048, 1024, 512, 256, 64),
+        'out_shapes': (2048, 176, 64, 40, 24),
     },
 }
