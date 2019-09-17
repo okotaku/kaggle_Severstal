@@ -1,3 +1,5 @@
+import torch
+import torch.nn as nn
 from torch.hub import load_state_dict_from_url
 from .utils import *
 
@@ -189,7 +191,7 @@ def _get_model_by_name(model_name, classes=1000, pretrained=False):
             model.load_state_dict(pretrained_state_dict)
 
     except KeyError as e:
-        print(f"NOTE: Currently model {e} doesn't have pretrained weights, therefore a model with randomly initialized"
-              " weights is returned.")
+        print("NOTE: Currently model {} doesn't have pretrained weights, therefore a model with randomly initialized"
+              " weights is returned.".format(e))
 
     return model
