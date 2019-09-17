@@ -51,11 +51,11 @@ EPOCHS = 121
 FOLD_ID = 0
 EXP_ID = "exp45_unet_seresnext"
 CLASSIFICATION = True
-EMA = True
-EMA_START = 6
-base_ckpt = 0
+EMA = False
+EMA_START = 999
+base_ckpt = 7
 base_model = None
-#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -149,7 +149,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(42, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
@@ -185,9 +185,9 @@ def main(seed):
 
             if epoch % (CLR_CYCLE * 2) == CLR_CYCLE * 2 - 1:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
-                torch.save(ema_model.module.state_dict(), 'models/{}_fold{}_latest_ema.pth'.format(EXP_ID, FOLD_ID))
+                #torch.save(ema_model.module.state_dict(), 'models/{}_fold{}_latest_ema.pth'.format(EXP_ID, FOLD_ID))
                 LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
-                LOGGER.info('Best ema valid loss: {}'.format(round(best_model_ema_loss, 5)))
+                #LOGGER.info('Best ema valid loss: {}'.format(round(best_model_ema_loss, 5)))
                 checkpoint += 1
                 best_model_loss = 999
 
