@@ -1,5 +1,5 @@
 # ===============
-# best_ckpt=2
+# best_ckpt=2, bce
 # 2019-09-16 13:31:43,173 - INFO - Mean train loss: 0.382
 # 2019-09-16 13:32:02,115 - INFO - Mean valid loss: 0.20758
 # ===============
@@ -113,8 +113,7 @@ def main(seed):
             model.load_state_dict(torch.load(base_model))
         model.to(device)
 
-        train_criterion = SymmetricLovaszLoss()
-        criterion = torch.nn.BCEWithLogitsLoss()
+        criterion = SymmetricLovaszLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
         if base_model is None:
             scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
