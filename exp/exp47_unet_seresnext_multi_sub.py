@@ -48,14 +48,14 @@ IMG_SIZE = (800, 128)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 121
-FOLD_ID = 1
+FOLD_ID = 2
 EXP_ID = "exp47_unet_seresnext"
 CLASSIFICATION = True
 EMA = False
 EMA_START = 999
-base_ckpt = 0
+base_ckpt = 2
 base_model = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 #base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
@@ -160,7 +160,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(12, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
