@@ -19,7 +19,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import sys
 sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold
-from losses import SymmetricLovaszLoss
+from losses import lovasz_hinge
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
 from trainer import train_one_epoch, validate
@@ -53,9 +53,9 @@ EXP_ID = "exp45_unet_seresnext"
 CLASSIFICATION = True
 EMA = False
 EMA_START = 999
-base_ckpt = 7
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -72,7 +72,11 @@ def timer(name):
 def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
-        y = (df.sum_target != 0).astype("float32").values
+        y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
+        y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
+        y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
+        y4 = (df.EncodedPixels_4 != "-1").astype("float32").values.reshape(-1, 1)
+        y = np.concatenate([y1, y2, y3, y4], axis=1)
 
     with timer('preprocessing'):
         train_df, val_df = df[df.fold_id != FOLD_ID], df[df.fold_id == FOLD_ID]
@@ -118,7 +122,7 @@ def main(seed):
             model.load_state_dict(torch.load(base_model))
         model.to(device)
 
-        criterion = SymmetricLovaszLoss()
+        criterion = lovasz_hinge
         optimizer = torch.optim.Adam([
             {'params': model.decoder.parameters(), 'lr': 3e-3},
             {'params': model.encoder.parameters(), 'lr': 3e-4},
@@ -149,7 +153,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(42, EPOCHS + 1):
+        for epoch in range(1, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
