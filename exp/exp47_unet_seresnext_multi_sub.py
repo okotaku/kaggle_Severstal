@@ -51,12 +51,12 @@ EPOCHS = 121
 FOLD_ID = 1
 EXP_ID = "exp47_unet_seresnext"
 CLASSIFICATION = True
-EMA = True
+EMA = False
 EMA_START = 6
-base_ckpt = 1
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
-base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+#base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
