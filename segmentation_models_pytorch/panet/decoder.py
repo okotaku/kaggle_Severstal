@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from ..common.blocks import Conv2dReLU, ASPP, Flatten, CBAM, FeaturePyramidAttention, ConvBn2d, GlobalAttentionUpsample
+from ..common.blocks import Conv2dReLU, ASPP, Flatten, CBAM, FeaturePyramidAttention, ConvBn2d, GlobalAttentionUpsample, FeaturePyramidAttention_v2
 from ..base.model import Model
 from ..encoders.scse import SCse
 
@@ -141,7 +141,8 @@ class PANetDecoder(Model):
         else:
             self.center = None
 
-        self.fpa = FeaturePyramidAttention(64, 64)
+        self.fpa = FeaturePyramidAttention(64)
+        #self.fpa = FeaturePyramidAttention_v2(64)
 
         in_channels = self.compute_channels(encoder_channels, decoder_channels)
         out_channels = decoder_channels
