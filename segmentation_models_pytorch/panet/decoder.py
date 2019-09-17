@@ -190,7 +190,7 @@ class PANetDecoder(Model):
 
         if self.center:
             encoder_head = self.center(encoder_head)
-        encoder_head = self.fpa(encoder_head, mode='std')
+        encoder_head = self.fpa(encoder_head)
 
         if self.h_columns:
             d5 = self.layer1(encoder_head, skips[0], up=True)
