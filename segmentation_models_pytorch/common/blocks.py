@@ -371,7 +371,8 @@ class GlobalAttentionUpsample(nn.Module):
 
     def forward(self, x, skip, up=True):
         # Reduce channels
-        skip = self.conv3(skip)
+        if skip is not None:
+            skip = self.conv3(skip)
         # Upsample
         if up:
             x = self.upsample(x)
@@ -380,10 +381,13 @@ class GlobalAttentionUpsample(nn.Module):
         cal1 = self.conv1(cal1)
         cal1 = self.relu(cal1)
 
-        # Calibrate skip connection
-        skip = cal1 * skip
-        # Add
-        x = x + skip
+        if skip is not None:
+            # Calibrate skip connection
+            skip = cal1 * skip
+            # Add
+            x = x + skip
+        else:
+            x = cal1
         if self.out_channels is not None:
             x = self.conv_out(x)
         return x

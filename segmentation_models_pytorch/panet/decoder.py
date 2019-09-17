@@ -146,11 +146,11 @@ class PANetDecoder(Model):
         in_channels = self.compute_channels(encoder_channels, decoder_channels)
         out_channels = decoder_channels
 
-        self.layer1 = GlobalAttentionUpsample(in_channels[0], out_channels[0], up=True)
-        self.layer2 = GlobalAttentionUpsample(in_channels[1], out_channels[1], up=True)
-        self.layer3 = GlobalAttentionUpsample(in_channels[2], out_channels[2], up=True)
-        self.layer4 = GlobalAttentionUpsample(in_channels[3], out_channels[3], up=True)
-        self.layer5 = GlobalAttentionUpsample(in_channels[4], out_channels[4], up=True)
+        self.layer1 = GlobalAttentionUpsample(in_channels[0], out_channels[0])
+        self.layer2 = GlobalAttentionUpsample(in_channels[1], out_channels[1])
+        self.layer3 = GlobalAttentionUpsample(in_channels[2], out_channels[2])
+        self.layer4 = GlobalAttentionUpsample(in_channels[3], out_channels[3])
+        self.layer5 = GlobalAttentionUpsample(in_channels[4], out_channels[4])
         if self.h_columns:
             self.layer1_h = nn.Conv2d(out_channels[0], out_channels[4], kernel_size=(1, 1))
             #self.layer2_h = nn.Conv2d(out_channels[1], out_channels[4], kernel_size=(1, 1))
@@ -193,11 +193,11 @@ class PANetDecoder(Model):
         encoder_head = self.fpa(encoder_head, mode='std')
 
         if self.h_columns:
-            d5 = self.layer1([encoder_head, skips[0]])
-            d4 = self.layer2([d5, skips[1]])
-            d3 = self.layer3([d4, skips[2]])
-            d2 = self.layer4([d3, skips[3]])
-            d1 = self.layer5([d2, None])
+            d5 = self.layer1(encoder_head, skips[0], up=True)
+            d4 = self.layer2(d5, skips[1], up=True)
+            d3 = self.layer3(d4, skips[2], up=True)
+            d2 = self.layer4(d3, skips[3], up=True)
+            d1 = self.layer5(d2, None)
             x = torch.cat((d1,
                            #self.layer4_h(F.upsample(d2, scale_factor=2, mode='bilinear', align_corners=True)),
                            #self.layer3_h(F.upsample(d3, scale_factor=4, mode='bilinear', align_corners=True)),
@@ -205,10 +205,10 @@ class PANetDecoder(Model):
                            #self.layer1_h(F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True))), 1)
                            F.upsample(d5, scale_factor=16, mode='bilinear', align_corners=True)), 1)
         else:
-            x = self.layer1([encoder_head, skips[0]])
-            x = self.layer2([x, skips[1]])
-            x = self.layer3([x, skips[2]])
-            x = self.layer4([x, skips[3]])
+            x = self.layer1([encoder_head, skips[0]], up=True)
+            x = self.layer2([x, skips[1]], up=True)
+            x = self.layer3([x, skips[2]], up=True)
+            x = self.layer4([x, skips[3]], up=True)
             x = self.layer5([x, None])
         x = self.final_conv(x)
 
