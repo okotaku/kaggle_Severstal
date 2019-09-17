@@ -98,7 +98,6 @@ class FPAv2(nn.Module):
         d3 = self.down3_2(d3)  # 256, 4, 4
 
         d3 = F.upsample(d3, scale_factor=2, mode='bilinear', align_corners=True)  # 256, 8, 8
-        print(d2.shape, d3.shape)
         d2 = d2 + d3
 
         d2 = F.upsample(d2, scale_factor=2, mode='bilinear', align_corners=True)  # 256, 16, 16
