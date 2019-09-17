@@ -172,8 +172,12 @@ class EUnet(EncoderDecoder):
             classification=False,
             attention_type="scse"
     ):
+        size_dict = {'efficientnet-b0': [592, 296, 152, 80, 35, 32], 'efficientnet-b1': [592, 296, 152, 80, 35, 32],
+                     'efficientnet-b2': [600, 304, 152, 80, 35, 32], 'efficientnet-b3': [608, 304, 160, 88, 35, 32],
+                     'efficientnet-b4': [624, 312, 160, 88, 35, 32], 'efficientnet-b5': [640, 320, 168, 88, 35, 32],
+                     'efficientnet-b6': [656, 328, 168, 96, 35, 32], 'efficientnet-b7': [672, 336, 176, 96, 35, 32]}
         encoder = EfficientNet.encoder(encoder_name, pretrained=encoder_weights)
-        encoder.out_shapes = encoder.size()
+        encoder.out_shapes = size_dict[encoder_name]
 
         decoder = UnetDecoder(
             encoder_channels=encoder.out_shapes,
