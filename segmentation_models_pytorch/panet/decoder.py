@@ -141,8 +141,7 @@ class PANetDecoder(Model):
         else:
             self.center = None
 
-        #self.fpa = FeaturePyramidAttention(64)
-        self.fpa = FeaturePyramidAttention_v2(64)
+        self.fpa = FPAv2(64, 64)
 
         in_channels = self.compute_channels(encoder_channels, decoder_channels)
         out_channels = decoder_channels
