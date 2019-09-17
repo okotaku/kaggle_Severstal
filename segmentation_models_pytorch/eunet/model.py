@@ -177,7 +177,7 @@ class EUnet(EncoderDecoder):
                      'efficientnet-b4': [624, 312, 160, 88, 35, 32], 'efficientnet-b5': [640, 320, 168, 88, 35, 32],
                      'efficientnet-b6': [656, 328, 168, 96, 35, 32], 'efficientnet-b7': [672, 336, 176, 96, 35, 32]}
         encoder = EfficientNet.encoder(encoder_name, pretrained=encoder_weights)
-        encoder.out_shapes = size_dict[encoder_name]
+        encoder.out_shapes = size_dict[encoder_name][:-1]
 
         decoder = UnetDecoder(
             encoder_channels=encoder.out_shapes,
