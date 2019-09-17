@@ -59,35 +59,41 @@ efficientnet_encoders = {
         'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 128),
+        "params": {},
     },
 
     'efficientnet-b1': {
         'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 64),
+        "params": {},
     },
 
     'efficientnet-b2': {
         'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 64),
+        "params": {},
     },
 
     'efficientnet-b3': {
         'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (1536, 136, 48, 32, 24),
+        "params": {},
     },
 
     'efficientnet-b4': {
         'encoder': EfficientNet_3_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 1024, 512, 256, 64),
+        "params": {},
     },
 
     'efficientnet-b5': {
         'encoder': EfficientNet_5_Encoder,
         'pretrained_settings': None,
         'out_shapes': (2048, 176, 64, 40, 24),
+        "params": {},
     },
 }
