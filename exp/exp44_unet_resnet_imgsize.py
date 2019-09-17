@@ -53,9 +53,10 @@ EXP_ID = "exp44_unet_resnet"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 0
+base_ckpt = 2
 base_model = None
-#base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -135,6 +136,8 @@ def main(seed):
 
         if EMA:
             ema_model = copy.deepcopy(model)
+            if base_model_ema is not None:
+                ema_model.load_state_dict(torch.load(base_model_ema))
             ema_model.to(device)
         else:
             ema_model = None
@@ -149,7 +152,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(12, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
