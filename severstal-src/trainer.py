@@ -382,8 +382,12 @@ def validate_dsv(model, valid_loader, criterion, device):
             del batch
             gc.collect()
 
-            logits = model(features)["mask"][0]
-            loss = criterion(logits, targets)
+            logits = model(features)["mask"]#[0]
+            #loss = criterion(logits, targets)
+            loss = 0
+            for l in logits:
+                loss += criterion(l, targets)
+            loss /= len(logits)
 
             test_loss += loss.item()
 
