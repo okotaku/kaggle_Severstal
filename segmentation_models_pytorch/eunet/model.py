@@ -173,6 +173,7 @@ class EUnet(EncoderDecoder):
             attention_type="scse"
     ):
         encoder = EfficientNet.encoder(encoder_name, pretrained=encoder_weights)
+        encoder.out_shapes = encoder.size()
 
         decoder = UnetDecoder(
             encoder_channels=encoder.out_shapes,
