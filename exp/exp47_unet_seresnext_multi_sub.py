@@ -160,7 +160,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(6, EPOCHS + 1):
+        for epoch in range(1, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
