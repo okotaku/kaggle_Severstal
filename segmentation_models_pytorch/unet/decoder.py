@@ -46,7 +46,7 @@ class DecoderBlock(nn.Module):
             x = self.upsample(x)
         else:
             x = F.interpolate(x, scale_factor=2, mode='nearest')
-        print(x.shape, skip.shape)
+
         if skip is not None:
             x = torch.cat([x, skip], dim=1)
         identity = x

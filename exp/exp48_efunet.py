@@ -114,8 +114,9 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.EUnet('efficientnet-b0', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=False, skip=True, act="swish", classification=CLASSIFICATION)
+        #model = smp.EUnet('efficientnet-b0', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        #                 decoder_semodule=True, h_columns=False, skip=True, act="swish", classification=CLASSIFICATION)
+        model = smp.get_efficientunet_b0(out_channels=N_CLASSES)
         model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
