@@ -52,7 +52,7 @@ FOLD_ID = 0
 EXP_ID = "exp44_unet_resnet"
 CLASSIFICATION = True
 EMA = False
-EMA_START = 6
+EMA_START = 999
 base_ckpt = 0
 base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID, base_ckpt)
@@ -192,9 +192,9 @@ def main(seed):
 
             if epoch % (CLR_CYCLE * 2) == CLR_CYCLE * 2 - 1:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
-                torch.save(ema_model.module.state_dict(), 'models/{}_fold{}_latest_ema.pth'.format(EXP_ID, FOLD_ID))
+                #torch.save(ema_model.module.state_dict(), 'models/{}_fold{}_latest_ema.pth'.format(EXP_ID, FOLD_ID))
                 LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
-                LOGGER.info('Best ema valid loss: {}'.format(round(best_model_ema_loss, 5)))
+                #LOGGER.info('Best ema valid loss: {}'.format(round(best_model_ema_loss, 5)))
                 checkpoint += 1
                 best_model_loss = 999
 
