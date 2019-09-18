@@ -137,7 +137,6 @@ def main(seed):
 
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
-        model = torch.nn.DataParallel(model)
 
         if EMA:
             if base_model_ema is not None:
@@ -151,6 +150,9 @@ def main(seed):
             ema_model.to(device)
         else:
             ema_model = None
+
+        model = torch.nn.DataParallel(model)
+        ema_model = torch.nn.DataParallel(ema_model)
 
     with timer('train'):
         train_losses = []
