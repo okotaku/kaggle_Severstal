@@ -135,7 +135,7 @@ class UnetDecoder(Model):
             channels = encoder_channels[0]
             #self.center = CenterBlock(channels, channels, use_batchnorm=use_batchnorm)
             #self.center = FPAv2(channels, channels)
-            self.center = ASPP(channels, channels)
+            self.center = ASPP(channels, int(channels/2), dilations=[1, (1, 6), (2, 12), (3, 18)])
         else:
             self.center = None
 
