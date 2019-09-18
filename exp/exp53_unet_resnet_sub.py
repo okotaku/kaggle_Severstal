@@ -137,19 +137,16 @@ def main(seed):
 
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
-        model = torch.nn.DataParallel(model)
 
         if EMA:
+            ema_model = copy.deepcopy(model)
             if base_model_ema is not None:
-                ema_model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=True, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION, attention_type="cbam")
                 ema_model.load_state_dict(torch.load(base_model_ema))
-            else:
-                ema_model = copy.deepcopy(model)
             ema_model.to(device)
         else:
             ema_model = None
+        model = torch.nn.DataParallel(model)
+        ema_model = torch.nn.DataParallel(ema_model)
 
     with timer('train'):
         train_losses = []
