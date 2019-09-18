@@ -44,7 +44,7 @@ N_CLASSES = 4
 # ===============
 SEED = np.random.randint(100000)
 device = "cuda"
-IMG_SIZE = (800, 128)
+IMG_SIZE = (800, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 121
