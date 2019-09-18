@@ -1,7 +1,7 @@
 # ===============
-# best_ckpt=14
-# 2019-09-17 08:54:21,641 - INFO - Mean train loss: 0.00945
-# 2019-09-17 08:54:42,875 - INFO - Mean valid loss: 0.00846
+# best_ckpt=9, b3
+# 2019-09-17 13:43:28,205 - INFO - Mean train loss: 0.0094
+# 2019-09-17 13:43:52,195 - INFO - Mean valid loss: 0.00842
 # ===============
 import os
 import gc
@@ -114,7 +114,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('efficientnet-b3', encoder_weights=None, classes=N_CLASSES, encoder_se_module=True,
+        model = smp.Unet('efficientnet-b5', encoder_weights=None, classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", classification=CLASSIFICATION)
         model = convert_model(model)
         if base_model is not None:
