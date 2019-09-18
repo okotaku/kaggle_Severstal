@@ -117,7 +117,7 @@ def main(seed):
 
     with timer('create model'):
         model = smp.Unet('se_resnext101_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=True, skip=True, act="swish", freeze_bn=True,
+                         decoder_semodule=True, h_columns=True, skip=True, act="elu", freeze_bn=True,
                          classification=CLASSIFICATION, attention_type="cbam")
         model = convert_model(model)
         if base_model is not None:
