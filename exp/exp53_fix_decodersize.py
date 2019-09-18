@@ -48,12 +48,12 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 101
-FOLD_ID = 3
+FOLD_ID = 2
 EXP_ID = "exp53_unet_resnet"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 6
+base_ckpt = 1
 base_model = None
 base_model_ema = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
@@ -158,7 +158,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(36, EPOCHS + 1):
+        for epoch in range(6, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
