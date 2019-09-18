@@ -1,5 +1,7 @@
 # ===============
-# best_ckpt=
+# best_ckpt=10
+# 2019-09-18 09:03:03,815 - INFO - Mean valid loss: 0.00942
+# 2019-09-18 09:03:38,613 - INFO - Mean EMA valid loss: 0.00847
 # ===============
 import os
 import gc
