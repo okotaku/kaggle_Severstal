@@ -155,7 +155,7 @@ def main(seed):
         valid_losses = []
 
         best_model_loss = 999
-        best_model_loss = 999
+        best_model_ema_loss = 999
         best_model_ep = 0
         ema_decay = 0
         checkpoint = base_ckpt+1
