@@ -51,11 +51,12 @@ EPOCHS = 121
 FOLD_ID = 0
 EXP_ID = "exp47_unet_seresnext"
 CLASSIFICATION = True
-EMA = False
-EMA_START = 999
-base_ckpt = 9
+EMA = True
+EMA_START = 6
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model_ema = None
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 #base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
@@ -141,7 +142,7 @@ def main(seed):
         if EMA:
             if base_model_ema is not None:
                 ema_model = smp.Unet('se_resnext101_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=True, skip=True, act="swish", freeze_bn=True,
+                         decoder_semodule=True, h_columns=True, skip=True, act="elu", freeze_bn=True,
                          classification=CLASSIFICATION, attention_type="cbam")
                 ema_model.load_state_dict(torch.load(base_model_ema))
             else:
@@ -160,7 +161,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(54, EPOCHS + 1):
+        for epoch in range(1, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
