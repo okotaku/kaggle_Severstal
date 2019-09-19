@@ -1,4 +1,8 @@
 # ===============
+# best_ckpt=16, fold=0
+# 2019-09-19 14:01:02,376 - INFO - Mean train loss: 0.00913
+# 2019-09-19 14:02:24,444 - INFO - Mean valid loss: 0.00862
+# 2019-09-19 14:03:46,694 - INFO - Mean EMA valid loss: 0.00785
 # best_ckpt=15, fold=3
 # 2019-09-19 08:33:45,477 - INFO - Mean train loss: 0.00916
 # 2019-09-19 08:35:08,925 - INFO - Mean valid loss: 0.01002
@@ -74,7 +78,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 101
-FOLD_ID = 2
+FOLD_ID = 1
 EXP_ID = "exp53_unet_resnet"
 CLASSIFICATION = True
 EMA = True
@@ -193,7 +197,8 @@ def main(seed):
 
             LOGGER.info("Starting {} epoch...".format(epoch))
             tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
-                                      classification=CLASSIFICATION, ema_model=ema_model, ema_decay=ema_decay)
+                                      classification=CLASSIFICATION, ema_model=ema_model, ema_decay=ema_decay,
+                                      clipnorm=1.0)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
