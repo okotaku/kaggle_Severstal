@@ -181,6 +181,12 @@ def validate(model, valid_loader, criterion, device, classification=False):
 
             test_loss += loss.item()
             print(loss.item())
+
+            if not loss.item() > 0:
+                print(logits)
+                print()
+                print(targets)
+                kk
             #true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
             #preds_cat.append(torch.sigmoid(logits).float().cpu().numpy().astype("float16"))
 
