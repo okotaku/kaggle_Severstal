@@ -1,5 +1,8 @@
 # ===============
-# best_ckpt=
+# best_ckpt=17
+# 2019-09-19 08:38:04,590 - INFO - Mean train loss: 0.00853
+# 2019-09-19 08:39:09,219 - INFO - Mean valid loss: 0.00827
+# 2019-09-19 08:40:13,552 - INFO - Mean EMA valid loss: 0.00779
 # ===============
 import os
 import gc
@@ -48,16 +51,16 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 101
-FOLD_ID = 0
+FOLD_ID = 1
 EXP_ID = "exp55_unet_resnet"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 5
+base_ckpt = 0
 base_model = None
 base_model_ema = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
-base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+#base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
