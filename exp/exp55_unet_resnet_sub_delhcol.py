@@ -3,10 +3,14 @@
 # 2019-09-19 08:38:04,590 - INFO - Mean train loss: 0.00853
 # 2019-09-19 08:39:09,219 - INFO - Mean valid loss: 0.00827
 # 2019-09-19 08:40:13,552 - INFO - Mean EMA valid loss: 0.00779
-# 2019-09-19 23:32:52,651 - INFO - dice=0.962045559337794 on 200
-# 2019-09-19 23:33:20,530 - INFO - dice=0.9888312076406942 on 200
-# 2019-09-19 23:33:48,441 - INFO - dice=0.8669293416255961 on 200
-# 2019-09-19 23:34:16,474 - INFO - dice=0.9848707832449948 on 200
+# 2019-09-19 23:47:45,337 - INFO - dice=0.9628946998017844 on 800
+# 2019-09-19 23:49:46,463 - INFO - dice=0.9909279885615222 on 1200
+# 2019-09-19 23:51:16,791 - INFO - dice=0.8709502685862224 on 800
+# 2019-09-19 23:52:47,977 - INFO - dice=0.9852685557191396 on 800
+# best_ckpt=17, fold=2
+# 2019-09-19 22:51:42,522 - INFO - Mean train loss: 0.00836
+# 2019-09-19 22:52:46,529 - INFO - Mean valid loss: 0.00904
+# 2019-09-19 22:53:50,059 - INFO - Mean EMA valid loss: 0.00812
 # ===============
 import os
 import gc
@@ -54,13 +58,13 @@ device = "cuda"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 101
-FOLD_ID = 1
+EPOCHS = 125
+FOLD_ID = 2
 EXP_ID = "exp55_unet_resnet"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 7
+base_ckpt = 17
 base_model = None
 base_model_ema = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
@@ -165,7 +169,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(42, EPOCHS + 1):
+        for epoch in range(102, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
