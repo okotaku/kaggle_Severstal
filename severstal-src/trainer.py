@@ -1,6 +1,7 @@
 import gc
 import sys
 import torch
+import torch.nn as nn
 import numpy as np
 from apex import amp
 from logger import LOGGER
@@ -182,7 +183,8 @@ def accumulate(model1, model2, decay=0.99):
 
 
 def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulation_steps=1, steps_upd_logging=500,
-                    scheduler=None, cutmix_prob=0.3, beta=1, classification=False, ema_model=None, ema_decay=0.99):
+                    scheduler=None, cutmix_prob=0.3, beta=1, classification=False, ema_model=None, ema_decay=0.99,
+                    clipnorm=None):
     model.train()
 
     total_loss = 0.0
@@ -216,6 +218,8 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
             scaled_loss.backward()
 
         if (step + 1) % accumulation_steps == 0:
+            if clipnorm is not None:
+                nn.utils.clip_grad_norm(model.parameters(), clipnorm)
             optimizer.step()
             optimizer.zero_grad()
             if scheduler is not None:
