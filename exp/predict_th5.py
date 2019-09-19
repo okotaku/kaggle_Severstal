@@ -141,7 +141,7 @@ def main(seed):
     with timer('create model'):
         model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION)
+                         classification=CLASSIFICATION, attention_type="cbam")
         model.load_state_dict(torch.load(base_model))
         model.to(device)
 
