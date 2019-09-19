@@ -1,5 +1,31 @@
 # ===============
-# best_ckpt=
+# best_ckpt=15, fold=3
+# 2019-09-19 08:33:45,477 - INFO - Mean train loss: 0.00916
+# 2019-09-19 08:35:08,925 - INFO - Mean valid loss: 0.01002
+# 2019-09-19 08:36:32,444 - INFO - Mean EMA valid loss: 0.00863
+####
+# fold=2 gcp=6 とちゅう
+# 2019-09-19 11:59:44,005 - INFO - Starting 65 epoch...
+# 2019-09-19 12:07:05,203 - INFO - Train loss on step 500 was 0.00961
+# 2019-09-19 12:07:53,514 - INFO - Mean train loss: 0.00979
+# 2019-09-19 12:09:22,192 - INFO - Mean valid loss: 0.00899
+# 2019-09-19 12:10:50,678 - INFO - Mean EMA valid loss: 0.00867
+# 2019-09-19 12:10:51,244 - INFO - Best valid loss: 0.00859 on epoch=62
+# 2019-09-19 12:10:51,764 - INFO - Best ema valid loss: 0.00841
+# 2019-09-19 12:10:51,840 - INFO - Starting 66 epoch...
+# 2019-09-19 12:18:10,958 - INFO - Train loss on step 500 was 0.01033
+# 2019-09-19 12:18:59,442 - INFO - Mean train loss: 0.01026
+# 2019-09-19 12:20:27,974 - INFO - Mean valid loss: 0.00948
+# 2019-09-19 12:21:55,914 - INFO - Mean EMA valid loss: 0.00846
+# 2019-09-19 12:21:56,092 - INFO - Starting 67 epoch...
+# 2019-09-19 12:29:16,692 - INFO - Train loss on step 500 was 0.00972
+# 2019-09-19 12:30:04,967 - INFO - Mean train loss: 0.00963
+# 2019-09-19 12:31:33,959 - INFO - Mean valid loss: 0.00868
+# 2019-09-19 12:33:02,727 - INFO - Mean EMA valid loss: 0.00847
+# 2019-09-19 12:33:03,309 - INFO - Starting 68 epoch...
+# 2019-09-19 12:40:24,482 - INFO - Train loss on step 500 was 0.00871
+# 2019-09-19 12:41:12,959 - INFO - Mean train loss: 0.00871
+# 2019-09-19 12:42:41,257 - INFO - Mean valid loss: 0.00866
 # ===============
 import os
 import gc
