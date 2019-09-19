@@ -20,6 +20,7 @@ sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold, rle2mask
 from logger import setup_logger, LOGGER
 from trainer import predict2
+from metric import dice
 sys.path.append("../")
 import segmentation_models_pytorch as smp
 
