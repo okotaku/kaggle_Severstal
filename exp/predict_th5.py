@@ -44,11 +44,11 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp35_unet_resnet"
+EXP_ID = "exp55_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 16
+base_ckpt = 17
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
 
 setup_logger(out_file=LOGGER_PATH)
