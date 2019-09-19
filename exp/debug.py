@@ -120,6 +120,7 @@ class SeverDataset(Dataset):
     def __getitem__(self, idx):
         cur_idx_row = self.df.iloc[idx]
         img_id = cur_idx_row[self.id_colname]
+        img_id = "17e12e6cb.jpg"
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
@@ -172,9 +173,13 @@ def validate(model, valid_loader, criterion, device, classification=False):
             features, targets = features.to(device), targets.to(device)
             print(ids)
 
+            print(features)
+            print()
             if classification:
                 logits, _ = model(features)
                 loss = criterion(logits, targets)
+                print(_)
+                print()
             else:
                 logits = model(features)
                 loss = criterion(logits, targets)
