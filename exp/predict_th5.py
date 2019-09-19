@@ -168,11 +168,11 @@ def main(seed):
                     else:
                         scores.append(score)
                 LOGGER.info('dice={} on {}'.format(np.mean(scores), remove_mask_pixel))
-                if score >= best:
-                    best = score
+                if np.mean(scores) >= best:
+                    best = np.mean(scores)
                 else:
                     break
-            scores.append(score)
+            scores.append(np.mean(scores))
 
         LOGGER.info('holdout dice={}'.format(np.mean(scores)))
 
