@@ -18,7 +18,6 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import sys
 sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold, rle2mask
-from metric import dice
 from logger import setup_logger, LOGGER
 from trainer import predict2
 sys.path.append("../")
@@ -157,11 +156,17 @@ def main(seed):
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
 
             best = 0
-            for n_th, remove_mask_pixel in enumerate([200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]):
+            for n_th, remove_mask_pixel in enumerate([200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]):
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 val_preds_[sum_val_preds < remove_mask_pixel] = 0
-                score = dice(y_true[:, i, :, :], val_preds_ > 0.5)
-                LOGGER.info('dice={} on {}'.format(score, remove_mask_pixel))
+                scores = []
+                for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
+                    score = dice(y_val_, y_pred_ > 0.5)
+                    if np.isnan(score):
+                        scores.append(1)
+                    else:
+                        scores.append(score)
+                LOGGER.info('dice={} on {}'.format(np.mean(scores), remove_mask_pixel))
                 if score >= best:
                     best = score
                 else:
