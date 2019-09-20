@@ -34,7 +34,7 @@ from sync_batchnorm import convert_model
 # ===============
 IMG_DIR = "../input/train_images/"
 LOGGER_PATH = "log.txt"
-FOLD_PATH = "../input/severstal_folds01.csv"
+FOLD_PATH = "../input/severstal_folds02.csv"
 ID_COLUMNS = "ImageId"
 N_CLASSES = 4
 
@@ -47,7 +47,7 @@ device = "cuda"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
-EPOCHS = 101
+EPOCHS = 119
 FOLD_ID = 0
 EXP_ID = "exp56_unet_seresnext"
 CLASSIFICATION = True
