@@ -130,7 +130,7 @@ def main(seed):
         df = pd.read_csv(FOLD_PATH)
 
     with timer('preprocessing'):
-        val_df = df[df.fold_id == FOLD_ID]
+        val_df = df[df.fold_id == FOLD_ID][:100]
 
         val_augmentation = None
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
