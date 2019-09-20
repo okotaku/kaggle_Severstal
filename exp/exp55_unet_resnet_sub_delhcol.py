@@ -7,10 +7,18 @@
 # 2019-09-19 23:49:46,463 - INFO - dice=0.9909279885615222 on 1200
 # 2019-09-19 23:51:16,791 - INFO - dice=0.8709502685862224 on 800
 # 2019-09-19 23:52:47,977 - INFO - dice=0.9852685557191396 on 800
-# best_ckpt=17, fold=2
-# 2019-09-19 22:51:42,522 - INFO - Mean train loss: 0.00836
-# 2019-09-19 22:52:46,529 - INFO - Mean valid loss: 0.00904
-# 2019-09-19 22:53:50,059 - INFO - Mean EMA valid loss: 0.00812
+# best_ckpt=20, fold=2
+# 2019-09-20 03:03:52,071 - INFO - Mean train loss: 0.00889
+# 2019-09-20 03:04:53,016 - INFO - Mean valid loss: 0.00904
+# 2019-09-20 03:05:54,019 - INFO - Mean EMA valid loss: 0.00809
+# best_ckpt=12, fold=3
+# 2019-09-20 00:01:36,664 - INFO - Mean train loss: 0.00988
+# 2019-09-20 00:02:39,863 - INFO - Mean valid loss: 0.0092
+# 2019-09-20 00:03:43,701 - INFO - Mean EMA valid loss: 0.00867
+# best_ckpt=15, fold=4
+# 2019-09-20 02:08:53,682 - INFO - Mean train loss: 0.0091
+# 2019-09-20 02:09:55,802 - INFO - Mean valid loss: 0.00941
+# 2019-09-20 02:10:57,574 - INFO - Mean EMA valid loss: 0.00802
 # ===============
 import os
 import gc
