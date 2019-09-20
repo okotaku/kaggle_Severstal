@@ -51,7 +51,7 @@ base_ckpt = 17
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
-remove_pixels = [1000, 1000, 1000, 1000]
+remove_pixels = [800, 1200, 800, 800]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
