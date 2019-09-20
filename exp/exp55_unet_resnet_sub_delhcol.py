@@ -7,6 +7,10 @@
 # 2019-09-19 23:49:46,463 - INFO - dice=0.9909279885615222 on 1200
 # 2019-09-19 23:51:16,791 - INFO - dice=0.8709502685862224 on 800
 # 2019-09-19 23:52:47,977 - INFO - dice=0.9852685557191396 on 800
+# best_ckpt=17, fold=1
+# 2019-09-20 07:10:23,185 - INFO - Mean train loss: 0.00763
+# 2019-09-20 07:11:23,938 - INFO - Mean valid loss: 0.00859
+# 2019-09-20 07:12:24,977 - INFO - Mean EMA valid loss: 0.00856
 # best_ckpt=20, fold=2
 # 2019-09-20 03:03:52,071 - INFO - Mean train loss: 0.00889
 # 2019-09-20 03:04:53,016 - INFO - Mean valid loss: 0.00904
@@ -67,12 +71,12 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 125
-FOLD_ID = 2
+FOLD_ID = 1
 EXP_ID = "exp55_unet_resnet"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 18
+base_ckpt = 17
 base_model = None
 base_model_ema = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
@@ -177,7 +181,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(108, EPOCHS + 1):
+        for epoch in range(102, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
