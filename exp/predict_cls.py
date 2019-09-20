@@ -20,6 +20,7 @@ sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold, rle2mask
 from logger import setup_logger, LOGGER
 from trainer import predict
+from metric import dice
 sys.path.append("../")
 import segmentation_models_pytorch as smp
 
@@ -44,12 +45,13 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp35_unet_resnet"
+EXP_ID = "exp55_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 16
+base_ckpt = 17
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-ths = [0.65, 0.76, 0.5, 0.54]
+base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+ths = [0.5, 0.5, 0.5, 0.5]
+remove_pixels = [1000, 1000, 1000, 1000]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -141,31 +143,39 @@ def main(seed):
     with timer('create model'):
         model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION)
+                         classification=CLASSIFICATION, attention_type="cbam")
         model.load_state_dict(torch.load(base_model))
         model.to(device)
 
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        valid_loss, y_pred, y_true = predict(model, val_loader, criterion, device, classification=CLASSIFICATION)
+        valid_loss, y_pred, y_true, cls = predict(model, val_loader, criterion, device, classification=CLASSIFICATION)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
         scores = []
-        for i, th in enumerate(ths):
+        for i, (th, remove_mask_pixel) in enumerate(zip(ths, remove_pixels)):
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
+            cls_ = cls[:, i]
 
             best = 0
-            for n_th, remove_mask_pixel in enumerate([200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]):
+            for th_cls in np.linspace(0, 1, 101):
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
-                val_preds_[sum_val_preds < remove_mask_pixel] = 0
-                threshold_after_remove, score, _, _ = search_threshold(y_true[:, i, :, :], val_preds_)
-                LOGGER.info('dice={} on th={} on {}'.format(score, threshold_after_remove, remove_mask_pixel))
-                if score >= best:
-                    best = score
+                val_preds_[sum_val_preds < remove_mask_pixel | cls_ <= th_cls] = 0
+                scores = []
+                for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
+                    score = dice(y_val_, y_pred_ > 0.5)
+                    if np.isnan(score):
+                        scores.append(1)
+                    else:
+                        scores.append(score)
+                if np.mean(scores) >= best:
+                    best = np.mean(scores)
+                    best_th = th_cls
                 else:
                     break
-            scores.append(score)
+            LOGGER.info('dice={} on {}'.format(best, best_th))
+            scores.append(best)
 
         LOGGER.info('holdout dice={}'.format(np.mean(scores)))
 
