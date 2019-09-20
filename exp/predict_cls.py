@@ -163,7 +163,11 @@ def main(seed):
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 print(cls_)
                 val_preds_[sum_val_preds < remove_mask_pixel] = 0
-                val_preds_[cls_.reshape(-1, 1) <= th_cls] = 0
+                print(sum_val_preds.shape)
+                print(len(val_preds_))
+                print(len(cls_))
+                print(th_cls)
+                val_preds_[cls_.reshape(-1, 1) < th_cls] = 0
                 scores = []
                 for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
                     score = dice(y_val_, y_pred_ > 0.5)
