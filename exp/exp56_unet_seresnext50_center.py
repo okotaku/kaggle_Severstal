@@ -46,7 +46,7 @@ SEED = np.random.randint(100000)
 device = "cuda"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 EPOCHS = 101
 FOLD_ID = 0
 EXP_ID = "exp56_unet_seresnext"
@@ -109,8 +109,8 @@ def main(seed):
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
         train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
-        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=16, pin_memory=True)
-        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=16, pin_memory=True)
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8, pin_memory=True)
+        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
 
         del train_df, val_df, df, train_dataset, val_dataset
         gc.collect()
