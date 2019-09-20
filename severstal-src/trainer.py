@@ -402,7 +402,7 @@ def validate_dsv(model, valid_loader, criterion, device):
     return test_loss / (step + 1)
 
 
-def predict(model, valid_loader, criterion, device, classification=False):
+def predict_sep(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
     score_all1 = []
@@ -440,34 +440,38 @@ def predict(model, valid_loader, criterion, device, classification=False):
 
     return test_loss / (step + 1), np.array(score_all1), np.array(score_all2), np.array(score_all3), np.array(score_all4), ths
 
-def predict2(model, valid_loader, criterion, device, classification=False):
+def predict(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
     true_ans_list = []
     preds_cat = []
+    cls = []
     with torch.no_grad():
 
         for step, (features, targets) in enumerate(tqdm(valid_loader)):
             features, targets = features.to(device), targets.to(device)
 
             if classification:
-                logits, _ = model(features)
+                logits, cls_ = model(features)
             else:
                 logits = model(features)
             loss = criterion(logits, targets)
 
             targets = targets.float().cpu().numpy().astype("int8")
             logits = torch.sigmoid(logits.view(targets.shape)).float().cpu().numpy().astype("float16")
+            cls_ = torch.sigmoid(cls_).float().cpu().numpy().astype("float16")
 
             test_loss += loss.item()
 
             true_ans_list.append(targets)
             preds_cat.append(logits)
+            cls.append(cls_)
 
             del features, targets, logits
             gc.collect()
 
         all_true_ans = np.concatenate(true_ans_list, axis=0)
         all_preds = np.concatenate(preds_cat, axis=0)
+        cls = np.concatenate(cls, axis=0)
 
-    return test_loss / (step + 1), all_preds, all_true_ans
+    return test_loss / (step + 1), all_preds, all_true_ans, cls
