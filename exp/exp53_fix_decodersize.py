@@ -3,6 +3,10 @@
 # 2019-09-19 14:01:02,376 - INFO - Mean train loss: 0.00913
 # 2019-09-19 14:02:24,444 - INFO - Mean valid loss: 0.00862
 # 2019-09-19 14:03:46,694 - INFO - Mean EMA valid loss: 0.00785
+# best_ckpt=10, fold=1
+# 2019-09-20 11:05:31,103 - INFO - Mean train loss: 0.00962
+# 2019-09-20 11:06:55,139 - INFO - Mean valid loss: 0.00903
+# 2019-09-20 11:08:19,083 - INFO - Mean EMA valid loss: 0.00851
 # best_ckpt=15, fold=3
 # 2019-09-19 08:33:45,477 - INFO - Mean train loss: 0.00916
 # 2019-09-19 08:35:08,925 - INFO - Mean valid loss: 0.01002
