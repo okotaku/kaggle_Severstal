@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 
-from src.logger import LOGGER
+from logger import LOGGER
 from torch.autograd import Variable
 
 
