@@ -59,6 +59,15 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
 
+def accumulate(model1, model2, decay=0.99):
+    par1 = model1.state_dict()
+    par2 = model2.state_dict()
+
+    with torch.no_grad():
+        for k in par1.keys():
+            par1[k].data.copy_(par1[k].data * decay + par2[k].data * (1 - decay))
+            
+
 def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulation_steps=1,
                     steps_upd_logging=500, scheduler=None, ema_model=None, ema_decay=0.0):
     model.train()
