@@ -73,11 +73,12 @@ def timer(name):
 def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
-        y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
-        y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
-        y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
-        y4 = (df.EncodedPixels_4 != "-1").astype("float32").values.reshape(-1, 1)
-        y = np.concatenate([y1, y2, y3, y4], axis=1)
+        #y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
+        #y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
+        #y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
+        #y4 = (df.EncodedPixels_4 != "-1").astype("float32").values.reshape(-1, 1)
+        #y = np.concatenate([y1, y2, y3, y4], axis=1)
+        y = (df.sum_target != 0).astype("float32").values
 
     with timer('preprocessing'):
         train_df, val_df = df[df.fold_id != FOLD_ID], df[df.fold_id == FOLD_ID]
