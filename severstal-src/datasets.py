@@ -116,8 +116,6 @@ class SeverCLSDataset(Dataset):
         self.n_classes = n_classes
         self.crop_rate = crop_rate
         self.class_y = class_y
-        self.cut_h = cut_h
-        self.crop_320 = crop_320
 
     def __len__(self):
         return self.df.shape[0]
