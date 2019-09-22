@@ -37,7 +37,7 @@ IMG_DIR = "../input/train_images/"
 LOGGER_PATH = "log.txt"
 FOLD_PATH = "../input/severstal_folds01.csv"
 ID_COLUMNS = "ImageId"
-N_CLASSES = 1
+N_CLASSES = 4
 
 
 # ===============
@@ -74,12 +74,12 @@ def timer(name):
 def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
-        #y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
-        #y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
-        #y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
-        #y4 = (df.EncodedPixels_4 != "-1").astype("float32").values.reshape(-1, 1)
-        #y = np.concatenate([y1, y2, y3, y4], axis=1)
-        y = (df.sum_target != 0).astype("float32").values
+        y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
+        y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
+        y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
+        y4 = (df.EncodedPixels_4 != "-1").astype("float32").values.reshape(-1, 1)
+        y = np.concatenate([y1, y2, y3, y4], axis=1)
+        #y = (df.sum_target != 0).astype("float32").values
 
     with timer('preprocessing'):
         train_df, val_df = df[df.fold_id != FOLD_ID], df[df.fold_id == FOLD_ID]
@@ -117,7 +117,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = ResNet(num_classes=N_CLASSES, pretrained="imagenet", net_cls=models.resnet34)
+        model = ResNet(num_classes=N_CLASSES, pretrained="imagenet", net_cls=models.resnet50)
         #model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
