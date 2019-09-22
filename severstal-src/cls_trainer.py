@@ -81,7 +81,9 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
         logits = model(features)
         loss = criterion(logits.view(targets.shape), targets)
 
-        loss.backward()
+        #loss.backward()
+        with amp.scale_loss(loss, optimizer) as scaled_loss:
+            scaled_loss.backward()
 
         if (step + 1) % accumulation_steps == 0:
             optimizer.step()
