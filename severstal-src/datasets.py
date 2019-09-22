@@ -90,6 +90,61 @@ class SeverDataset(Dataset):
         return torch.from_numpy(img), target
 
 
+class SeverCLSDataset(Dataset):
+
+    def __init__(self,
+                 df,
+                 img_dir,
+                 img_size,
+                 n_classes,
+                 class_y,
+                 crop_rate=1.0,
+                 id_colname="ImageId",
+                 mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
+                 transforms=None,
+                 means=[0.485, 0.456, 0.406],
+                 stds=[0.229, 0.224, 0.225],
+                 ):
+        self.df = df
+        self.img_dir = img_dir
+        self.img_size = img_size
+        self.transforms = transforms
+        self.means = np.array(means)
+        self.stds = np.array(stds)
+        self.id_colname = id_colname
+        self.mask_colname = mask_colname
+        self.n_classes = n_classes
+        self.crop_rate = crop_rate
+        self.class_y = class_y
+        self.cut_h = cut_h
+        self.crop_320 = crop_320
+
+    def __len__(self):
+        return self.df.shape[0]
+
+    def __getitem__(self, idx):
+        cur_idx_row = self.df.iloc[idx]
+        img_id = cur_idx_row[self.id_colname]
+        img_path = os.path.join(self.img_dir, img_id)
+
+        img = cv2.imread(img_path)
+        img = cv2.resize(img, self.img_size)
+
+        if self.transforms is not None:
+            augmented = self.transforms(image=img)
+            img = augmented['image']
+
+        img = img / 255
+        img -= self.means
+        img /= self.stds
+        img = img.transpose((2, 0, 1))
+
+        class_y_ = self.class_y[idx]
+        target = torch.tensor(class_y_)
+
+        return torch.from_numpy(img), target
+
+
 def pytorch_image_to_tensor_transform(image, mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     image = image.transpose((2, 0, 1))
@@ -120,7 +175,7 @@ def random_cropping(image, mask, ratio=0.8, is_random=True):
     return crop, crop_mask
 
 
-def random_wcropping(image, mask, ratio=0.8, is_random=True):
+def random_wcropping(image, mask=None, ratio=0.8, is_random=True):
     height, width, _ = image.shape
     target_w = int(width*ratio)
 
@@ -130,9 +185,11 @@ def random_wcropping(image, mask, ratio=0.8, is_random=True):
         start_x = (width - target_w) // 2
 
     crop = image[:, start_x:start_x+target_w, :]
-    crop_mask = mask[:, start_x:start_x+target_w, :]
-
-    return crop, crop_mask
+    if mask is not None:
+        crop_mask = mask[:, start_x:start_x+target_w, :]
+        return crop, crop_mask
+    else:
+        return crop
 
 
 def random_320cropping(image, mask, is_random=True):
