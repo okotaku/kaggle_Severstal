@@ -156,7 +156,7 @@ class ResNet(nn.Module):
         self.net.avgpool = AdaptiveConcatPool2d()
         self.net.fc = nn.Sequential(
             Flatten(),
-            SEBlock(2048*2),
+            #SEBlock(2048*2),
             nn.Dropout(),
             nn.Linear(2048*2, num_classes)
         )

@@ -13,6 +13,7 @@ from apex import amp
 from contextlib import contextmanager
 from albumentations import *
 import torch
+from torchvision import models
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
