@@ -116,7 +116,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = ResNet(num_classes=4, pretrained="imagenet")
+        model = ResNet(num_classes=N_CLASSES, pretrained="imagenet")
         model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
