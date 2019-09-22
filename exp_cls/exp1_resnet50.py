@@ -118,7 +118,7 @@ def main(seed):
 
     with timer('create model'):
         model = ResNet(num_classes=N_CLASSES, pretrained="imagenet", net_cls=models.resnet34)
-        model = convert_model(model)
+        #model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
         model.to(device)
