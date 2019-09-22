@@ -44,7 +44,7 @@ N_CLASSES = 1
 # ===============
 SEED = np.random.randint(100000)
 device = "cuda"
-IMG_SIZE = (512, 256)
+IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 64
 EPOCHS = 101
@@ -116,7 +116,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = ResNet(num_classes=N_CLASSES, pretrained="imagenet")
+        model = ResNet(num_classes=N_CLASSES, pretrained="imagenet", net_cls=models.resnet34)
         model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
