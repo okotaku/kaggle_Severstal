@@ -60,7 +60,7 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
 
 
 def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulation_steps=1,
-                    steps_upd_logging=500, scheduler=None):
+                    steps_upd_logging=500, scheduler=None, ema_model=None, ema_decay=0.0):
     model.train()
 
     total_loss = 0.0
@@ -81,6 +81,9 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
                 scheduler.step()
 
         total_loss += loss.item()
+
+        if ema_model is not None:
+            accumulate(ema_model, model, decay=ema_decay)
 
         if (step + 1) % steps_upd_logging == 0:
             LOGGER.info('Train loss on step {} was {}'.format(step + 1, round(total_loss / (step + 1), 5)))
