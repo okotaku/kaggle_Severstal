@@ -167,8 +167,7 @@ def main(seed):
 
             LOGGER.info("Starting {} epoch...".format(epoch))
             tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
-                                      classification=CLASSIFICATION, ema_model=ema_model, ema_decay=ema_decay,
-                                      clipnorm=1.0)
+                                      classification=CLASSIFICATION, ema_model=ema_model, ema_decay=ema_decay)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
