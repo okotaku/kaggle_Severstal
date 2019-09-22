@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from apex import amp
 
 from logger import LOGGER
 from torch.autograd import Variable
