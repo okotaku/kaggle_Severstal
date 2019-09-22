@@ -34,7 +34,7 @@ from sync_batchnorm import convert_model
 # ===============
 IMG_DIR = "../input/train_images/"
 LOGGER_PATH = "log.txt"
-FOLD_PATH = "../input/severstal_folds02.csv"
+FOLD_PATH = "../input/severstal_folds01.csv"
 ID_COLUMNS = "ImageId"
 N_CLASSES = 4
 
