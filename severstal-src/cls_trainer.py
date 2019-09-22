@@ -79,7 +79,7 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
         optimizer.zero_grad()
 
         logits = model(features)
-        loss = criterion(logits.view(targets.shape()), targets)
+        loss = criterion(logits.view(targets.shape), targets)
 
         loss.backward()
 
@@ -149,10 +149,10 @@ def train_one_epoch_cutmix(model, train_loader, criterion, optimizer, device, ac
                 device=device
             )
             output = model(input_var)
-            loss = criterion(output.view(target_a_var.shape()), target_a_var) * lam + criterion(output.view(target_b_var.shape()), target_b_var) * (1. - lam)
+            loss = criterion(output.view(target_a_var.shape), target_a_var) * lam + criterion(output.view(target_b_var.shape), target_b_var) * (1. - lam)
         else:
             logits = model(features)
-            loss = criterion(logits.view(targets.shape()), targets)
+            loss = criterion(logits.view(targets.shape), targets)
 
         loss.backward()
 
@@ -180,7 +180,7 @@ def validate(model, valid_loader, criterion, device):
             features, targets = features.to(device), targets.to(device)
 
             logits = model(features)
-            loss = criterion(logits.view(targets.shape()), targets)
+            loss = criterion(logits.view(targets.shape), targets)
 
             test_loss += loss.item()
             true_ans_list.append(targets)
