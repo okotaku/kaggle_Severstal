@@ -160,18 +160,17 @@ def main(seed):
                 ema_decay = 0.99
 
             LOGGER.info("Starting {} epoch...".format(epoch))
-            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
-                                      classification=CLASSIFICATION, ema_model=ema_model, ema_decay=ema_decay,
-                                      clipnorm=1.0)
+            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device,
+                                      ema_model=ema_model, ema_decay=ema_decay)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
-            valid_loss = validate(model, val_loader, criterion, device, classification=CLASSIFICATION)
+            valid_loss = validate(model, val_loader, criterion, device)
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
             if EMA and epoch >= EMA_START:
-                ema_valid_loss = validate(ema_model, val_loader, criterion, device, classification=CLASSIFICATION)
+                ema_valid_loss = validate(ema_model, val_loader, criterion, device)
                 LOGGER.info('Mean EMA valid loss: {}'.format(round(ema_valid_loss, 5)))
 
                 if ema_valid_loss < best_model_ema_loss:
