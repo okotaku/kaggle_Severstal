@@ -66,7 +66,7 @@ def accumulate(model1, model2, decay=0.99):
     with torch.no_grad():
         for k in par1.keys():
             par1[k].data.copy_(par1[k].data * decay + par2[k].data * (1 - decay))
-            
+
 
 def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulation_steps=1,
                     steps_upd_logging=500, scheduler=None, ema_model=None, ema_decay=0.0):
@@ -79,7 +79,7 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
         optimizer.zero_grad()
 
         logits = model(features)
-        loss = criterion(logits, targets)
+        loss = criterion(logits.view(targets.shape()), targets)
 
         loss.backward()
 
@@ -149,10 +149,10 @@ def train_one_epoch_cutmix(model, train_loader, criterion, optimizer, device, ac
                 device=device
             )
             output = model(input_var)
-            loss = criterion(output, target_a_var) * lam + criterion(output, target_b_var) * (1. - lam)
+            loss = criterion(output.view(target_a_var.shape()), target_a_var) * lam + criterion(output.view(target_b_var.shape()), target_b_var) * (1. - lam)
         else:
             logits = model(features)
-            loss = criterion(logits, targets)
+            loss = criterion(logits.view(targets.shape()), targets)
 
         loss.backward()
 
@@ -180,7 +180,7 @@ def validate(model, valid_loader, criterion, device):
             features, targets = features.to(device), targets.to(device)
 
             logits = model(features)
-            loss = criterion(logits, targets)
+            loss = criterion(logits.view(targets.shape()), targets)
 
             test_loss += loss.item()
             true_ans_list.append(targets)
