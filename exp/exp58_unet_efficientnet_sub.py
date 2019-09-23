@@ -73,7 +73,7 @@ def timer(name):
 
 def main(seed):
     with timer('load data'):
-        df = pd.read_csv(FOLD_PATH)[:100]
+        df = pd.read_csv(FOLD_PATH)
         y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
         y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
         y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
@@ -109,7 +109,8 @@ def main(seed):
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
         train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
-        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8, pin_memory=True)
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8,
+                                  pin_memory=True, drop_last=True)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
 
         del train_df, val_df, df, train_dataset, val_dataset
