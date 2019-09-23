@@ -151,6 +151,11 @@ def predict(model, valid_loader, criterion, device, classification=False):
 
             targets = targets.float().cpu().numpy().astype("int8")
             logits = torch.sigmoid(logits.view(targets.shape)).float().cpu().numpy().astype("float16")
+            if step == 0:
+                print(val_cls)
+            val_cls = torch.sigmoid(val_cls).numpy()
+            if step == 0:
+                print(val_cls)
 
             test_loss += loss.item()
 
