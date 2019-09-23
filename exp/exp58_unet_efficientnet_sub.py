@@ -73,7 +73,7 @@ def timer(name):
 
 def main(seed):
     with timer('load data'):
-        df = pd.read_csv(FOLD_PATH)
+        df = pd.read_csv(FOLD_PATH)[:100]
         y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
         y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
         y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
@@ -83,8 +83,6 @@ def main(seed):
     with timer('preprocessing'):
         train_df, val_df = df[df.fold_id != FOLD_ID], df[df.fold_id == FOLD_ID]
         y_train, y_val = y[df.fold_id != FOLD_ID], y[df.fold_id == FOLD_ID]
-        print(len(val_df), len(y_val))
-        kk
 
         train_augmentation = Compose([
             Flip(p=0.5),
