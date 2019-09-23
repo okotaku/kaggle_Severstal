@@ -49,7 +49,7 @@ EXP_ID = "exp57_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 11
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "../exp/models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
 remove_pixels = [800, 800, 800, 400]
 
