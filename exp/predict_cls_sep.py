@@ -121,7 +121,7 @@ class SeverDataset(Dataset):
         else:
             target = mask
 
-        return torch.from_numpy(img), target
+        return torch.Tensor(img), target
 
 
 @contextmanager
