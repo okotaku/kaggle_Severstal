@@ -49,7 +49,7 @@ EXP_ID = "exp57_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 11
 #base_model = None
-base_model = "../exp/models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
 remove_pixels = [800, 800, 800, 400]
 
@@ -168,7 +168,7 @@ def main(seed):
 
     with timer('preprocessing'):
         val_df = df[df.fold_id == FOLD_ID]
-        y_val = np.load("y_pred_ema_ckpt8.npy")
+        y_val = np.load("../exp_cls/y_pred_ema_ckpt8.npy")
 
         val_augmentation = None
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
