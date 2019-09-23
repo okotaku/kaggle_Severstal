@@ -45,7 +45,7 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp55_unet_resnet"
+EXP_ID = "exp57_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 17
 #base_model = None
@@ -142,7 +142,7 @@ def main(seed):
     with timer('create model'):
         model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION, attention_type="cbam")
+                         classification=CLASSIFICATION, attention_type="cbam", center=True)
         model.load_state_dict(torch.load(base_model))
         model.to(device)
 
