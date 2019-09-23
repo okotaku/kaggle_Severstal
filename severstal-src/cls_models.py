@@ -193,7 +193,7 @@ class DenseNet(nn.Module):
 
 
 class SEResNext(nn.Module):
-    def __init__(self, num_classes, pretrained="se_resnext101_32x4d", dropout=False, arcface=False):
+    def __init__(self, num_classes, pretrained="imagenet"):
         super().__init__()
         self.net = se_resnext101_32x4d(pretrained=pretrained)
         self.net.avg_pool = AdaptiveConcatPool2d()
