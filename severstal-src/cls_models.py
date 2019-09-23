@@ -158,7 +158,7 @@ class ResNet(nn.Module):
             Flatten(),
             #SEBlock(2048*2),
             nn.Dropout(),
-            nn.Linear(512*2, num_classes)
+            nn.Linear(2048*2, num_classes)
         )
 
     def fresh_params(self):
