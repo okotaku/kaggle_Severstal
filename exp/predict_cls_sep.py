@@ -115,8 +115,13 @@ class SeverDataset(Dataset):
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
 
-        if self.class_y is None:
-            return torch.Tensor(img), torch.Tensor(mask)
+        if self.class_y is not None:
+            class_y_ = self.class_y[idx]
+            target = {"mask": mask, "class_y": torch.tensor(class_y_)}
+        else:
+            target = mask
+
+        return torch.from_numpy(img), target
 
 
 @contextmanager
@@ -174,7 +179,7 @@ def main(seed):
         val_augmentation = None
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation, class_y=y_val)
-        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
+        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
         del val_df, df, val_dataset
         gc.collect()
