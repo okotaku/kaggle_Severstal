@@ -117,7 +117,7 @@ class SeverDataset(Dataset):
 
         if self.class_y is not None:
             class_y_ = self.class_y[idx]
-            target = {"mask": mask, "class_y": torch.tensor(class_y_)}
+            target = {"mask": torch.Tensor(mask), "class_y": torch.tensor(class_y_)}
         else:
             target = mask
 
