@@ -141,7 +141,7 @@ def predict(model, valid_loader, criterion, device, classification=False):
 
         for step, (features, targets) in enumerate(tqdm(valid_loader)):
             features = features.to(device)
-            targets, val_cls = targets["mask"].to(device), targets["class_y"].to(device)
+            targets, val_cls = targets["mask"].to(device), targets["class_y"]
 
             if classification:
                 logits, cls_ = model(features)
