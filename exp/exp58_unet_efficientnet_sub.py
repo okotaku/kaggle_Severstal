@@ -116,7 +116,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('efficientnet-b5', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        model = smp.Unet('efficientnet-b5', encoder_weights=None, classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
                          classification=CLASSIFICATION, attention_type="cbam", center=True)
         model = convert_model(model)
