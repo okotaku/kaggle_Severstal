@@ -83,6 +83,8 @@ def main(seed):
     with timer('preprocessing'):
         train_df, val_df = df[df.fold_id != FOLD_ID], df[df.fold_id == FOLD_ID]
         y_train, y_val = y[df.fold_id != FOLD_ID], y[df.fold_id == FOLD_ID]
+        print(len(val_df), len(y_val))
+        kk
 
         train_augmentation = Compose([
             Flip(p=0.5),
