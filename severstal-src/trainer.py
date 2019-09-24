@@ -246,9 +246,9 @@ def train_one_epoch_noapex(model, train_loader, criterion, optimizer, device, ac
 
     total_loss = 0.0
     for step, (features, targets) in enumerate(train_loader):
-        features = features.to(device)
+        features = features.to(device, dtype=torch.float)
         if classification:
-            targets, targets_cls = targets["mask"].to(device), targets["class_y"].to(device)
+            targets, targets_cls = targets["mask"].to(device, dtype=torch.float), targets["class_y"].to(device, dtype=torch.float)
         else:
             targets = targets.to(device)
 
