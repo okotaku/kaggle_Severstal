@@ -5,6 +5,8 @@ from torch import nn
 from torch.nn import functional as F
 from torchvision import models
 
+import sys
+sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
 from pretrainedmodels import se_resnext101_32x4d, senet154
 from pretrainedmodels import inceptionresnetv2
 from pretrainedmodels import pnasnet5large
