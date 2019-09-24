@@ -1,32 +1,8 @@
 # ===============
-# best_ckpt=11, fold=0
-# 2019-09-22 20:21:17,224 - INFO - Mean train loss: 0.00841
-# 2019-09-22 20:22:24,301 - INFO - Mean valid loss: 0.00855
-# 2019-09-22 20:23:32,791 - INFO - Mean EMA valid loss: 0.00803
-# 2019-09-23 06:08:22,377 - INFO - dice=0.9667818835644745 on 800
-# 2019-09-23 06:09:54,324 - INFO - dice=0.9899488094674251 on 800
-# 2019-09-23 06:11:25,569 - INFO - dice=0.8673755849027167 on 800
-# 2019-09-23 06:12:25,661 - INFO - dice=0.9847439999198341 on 400
-# 2019-09-23 13:12:00,649 - INFO - dice=0.9691685184093431 on 0.17
-# 2019-09-23 13:40:14,458 - INFO - dice=0.99034658194157 on 0.08
-# 2019-09-23 14:08:25,024 - INFO - dice=0.8754584861686093 on 0.65
-# 2019-09-23 14:36:54,637 - INFO - dice=0.9859557605689044 on 0.42
-# best_ckpt=17, fold=1
-# 2019-09-23 01:15:26,062 - INFO - Mean train loss: 0.00707
-# 2019-09-23 01:16:32,374 - INFO - Mean valid loss: 0.00871
-# 2019-09-23 01:17:39,554 - INFO - Mean EMA valid loss: 0.00833
-# best_ckpt=13, fold=2
-# 2019-09-22 21:40:58,876 - INFO - Mean train loss: 0.00805
-# 2019-09-22 21:42:04,469 - INFO - Mean valid loss: 0.00859
-# 2019-09-22 21:43:08,734 - INFO - Mean EMA valid loss: 0.008121
-# best_ckpt=13, fold=3
-# 2019-09-22 21:43:32,186 - INFO - Mean train loss: 0.00722
-# 2019-09-22 21:44:33,931 - INFO - Mean valid loss: 0.00869
-# 2019-09-22 21:45:36,636 - INFO - Mean EMA valid loss: 0.00859
-# best_ckpt=9, fold=4
-# 2019-09-23 02:31:39,970 - INFO - Mean train loss: 0.00865
-# 2019-09-23 02:32:47,933 - INFO - Mean valid loss: 0.0085
-# 2019-09-23 02:33:57,067 - INFO - Mean EMA valid loss: 0.00809
+# best_ckpt=8, fold=1
+# 2019-09-24 16:35:46,966 - INFO - Mean train loss: 0.01443
+# 2019-09-24 16:36:25,663 - INFO - Mean valid loss: 0.01682
+# 2019-09-24 16:37:04,404 - INFO - Mean EMA valid loss: 0.01558
 # ===============
 import os
 import gc
@@ -74,8 +50,8 @@ device = "cuda"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 119
-FOLD_ID = 1
+EPOCHS = 83
+FOLD_ID = 0
 EXP_ID = "exp61_unet_resnet"
 CLASSIFICATION = True
 EMA = True
