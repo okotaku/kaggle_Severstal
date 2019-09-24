@@ -48,6 +48,7 @@ device = "cuda"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 8
+accumulation_steps = 4
 EPOCHS = 101
 FOLD_ID = 0
 EXP_ID = "cls_exp3_efficient"
@@ -163,7 +164,7 @@ def main(seed):
 
             LOGGER.info("Starting {} epoch...".format(epoch))
             tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device,
-                                      ema_model=ema_model, ema_decay=ema_decay)
+                                      ema_model=ema_model, ema_decay=ema_decay, accumulation_steps=accumulation_steps)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
