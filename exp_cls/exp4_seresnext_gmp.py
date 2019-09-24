@@ -56,11 +56,11 @@ FOLD_ID = 0
 EXP_ID = "cls_exp4_seresnext"
 EMA = True
 EMA_START = 6
-base_ckpt = 0
+base_ckpt = 1
 base_model = None
 base_model_ema = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
-#base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -157,7 +157,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(6, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
@@ -183,6 +183,8 @@ def main(seed):
                                'models/{}_fold{}_ckpt{}_ema.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                     best_model_ema_loss = ema_valid_loss
                     np.save("y_pred_ema_ckpt{}.npy".format(checkpoint), y_pred_ema)
+                del y_pred_ema, _
+                gc.collect()
 
             scheduler.step()
 
@@ -203,7 +205,7 @@ def main(seed):
                 best_model_loss = 999
                 best_model_ema_loss = 999
 
-            #del val_pred
+            del y_pred, y_true
             gc.collect()
 
     LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
