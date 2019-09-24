@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torchvision import models
+from efficientnet_pytorch import EfficientNet
 
 import sys
 sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
@@ -212,6 +213,26 @@ class SEResNext(nn.Module):
 
     def forward(self, x):
         return self.net(x)
+
+
+class Efficient(nn.Module):
+    def __init__(self, num_classes):
+        super().__init__()
+        self.net = EfficientNet.from_pretrained('efficientnet-b7')
+        self.avg_pool = AdaptiveConcatPool2d()
+        self.classifier = nn.Sequential(
+            Flatten(),
+            SEBlock(2560 * 2),
+            nn.Dropout(),
+            nn.Linear(2560 * 2, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.net.extract_features(x)
+        x = self.avg_pool(x)
+        out = self.classifier(x)
+
+        return out
 
 
 class InceptionResNetV2(nn.Module):
