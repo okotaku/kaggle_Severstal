@@ -3,6 +3,7 @@ import math
 import torch
 from torch import nn
 from torch.nn import functional as F
+from torch.nn.parameter import Parameter
 from torchvision import models
 from efficientnet_pytorch import EfficientNet
 
@@ -63,6 +64,23 @@ class AdaptiveConcatPool2d(nn.Module):
         self.mp = nn.AdaptiveMaxPool2d(sz)
     def forward(self, x):
         return torch.cat([self.mp(x), self.ap(x)], 1)
+
+
+def gem(x, p=3, eps=1e-6):
+    return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1./p)
+
+
+class GeM(nn.Module):
+    def __init__(self, p=3, eps=1e-6):
+        super(GeM,self).__init__()
+        self.p = Parameter(torch.ones(1)*p)
+        self.eps = eps
+
+    def forward(self, x):
+        return gem(x, p=self.p, eps=self.eps)
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(self.eps) + ')'
 
 
 class CSE(nn.Module):
@@ -196,15 +214,20 @@ class DenseNet(nn.Module):
 
 
 class SEResNext(nn.Module):
-    def __init__(self, num_classes, pretrained="imagenet"):
+    def __init__(self, num_classes, pretrained="imagenet", pool_type="concat"):
         super().__init__()
         self.net = se_resnext101_32x4d(pretrained=pretrained)
-        self.net.avg_pool = AdaptiveConcatPool2d()
+        if pool_type == "concat":
+            self.net.avg_pool = AdaptiveConcatPool2d()
+            last_channel = 2048*2
+        elif pool_type == "gem":
+            self.net.avg_pool = GeM()
+            last_channel = 2048
         self.net.last_linear = nn.Sequential(
             Flatten(),
-            SEBlock(2048*2),
+            SEBlock(last_channel),
             nn.Dropout(),
-            nn.Linear(2048*2, num_classes)
+            nn.Linear(last_channel, num_classes)
         )
 
 
@@ -216,15 +239,18 @@ class SEResNext(nn.Module):
 
 
 class Efficient(nn.Module):
-    def __init__(self, num_classes):
+    def __init__(self, num_classes, encoder='efficientnet-b7'):
         super().__init__()
-        self.net = EfficientNet.from_pretrained('efficientnet-b7')
+        n_channels_dict = {'efficientnet-b0': 1280, 'efficientnet-b1': 1280, 'efficientnet-b2': 1408,
+                           'efficientnet-b3': 1536, 'efficientnet-b4': 1792, 'efficientnet-b5': 2048,
+                           'efficientnet-b6': 2304, 'efficientnet-b7': 2560}
+        self.net = EfficientNet.from_pretrained(encoder)
         self.avg_pool = AdaptiveConcatPool2d()
         self.classifier = nn.Sequential(
             Flatten(),
-            SEBlock(2560 * 2),
+            SEBlock(n_channels_dict[encoder] * 2),
             nn.Dropout(),
-            nn.Linear(2560 * 2, num_classes)
+            nn.Linear(n_channels_dict[encoder] * 2, num_classes)
         )
 
     def forward(self, x):
