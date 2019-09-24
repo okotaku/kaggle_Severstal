@@ -239,6 +239,62 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
     return total_loss / (step + 1)
 
 
+def train_one_epoch_noapex(model, train_loader, criterion, optimizer, device, accumulation_steps=1, steps_upd_logging=500,
+                    scheduler=None, cutmix_prob=0.3, beta=1, classification=False, ema_model=None, ema_decay=0.99,
+                    clipnorm=None):
+    model.train()
+
+    total_loss = 0.0
+    for step, (features, targets) in enumerate(train_loader):
+        features = features.to(device)
+        if classification:
+            targets, targets_cls = targets["mask"].to(device), targets["class_y"].to(device)
+        else:
+            targets = targets.to(device)
+
+        if np.random.rand() < cutmix_prob:
+            features, targets = get_cutmixv2_data(
+                features,
+                targets,
+                beta=beta,
+                device=device
+            )
+
+        optimizer.zero_grad()
+
+
+        if classification:
+            logits, cls = model(features)
+            loss = criterion(logits, targets)
+            loss += criterion(cls.view(targets_cls.shape), targets_cls) / 1024
+        else:
+            logits = model(features)
+            loss = criterion(logits, targets)
+
+        loss.backward()
+
+        if (step + 1) % accumulation_steps == 0:
+            if clipnorm is not None:
+                nn.utils.clip_grad_norm(model.parameters(), clipnorm)
+            optimizer.step()
+            optimizer.zero_grad()
+            if scheduler is not None:
+                scheduler.step()
+
+        total_loss += loss.item()
+
+        if ema_model is not None:
+            accumulate(ema_model, model, decay=ema_decay)
+
+        if (step + 1) % steps_upd_logging == 0:
+            LOGGER.info('Train loss on step {} was {}'.format(step + 1, round(total_loss / (step + 1), 5)))
+        del features, targets, logits
+        gc.collect()
+
+
+    return total_loss / (step + 1)
+
+
 #https://github.com/facebookresearch/mixup-cifar10/blob/master/train.py
 def train_one_epoch_mixup(model, train_loader, criterion, optimizer, device, steps_upd_logging=500,
                           mixup_alpha=1.0):
