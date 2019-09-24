@@ -387,7 +387,37 @@ def validate(model, valid_loader, criterion, device, classification=False):
     with torch.no_grad():
 
         for step, (features, targets) in enumerate(valid_loader):
-            features, targets = features.to(device), targets.to(device)
+            features, targets = features.to(device, dtype=torch.float), targets.to(device)
+
+            if classification:
+                logits, _ = model(features)
+                loss = criterion(logits, targets)
+            else:
+                logits = model(features)
+                loss = criterion(logits, targets)
+
+            test_loss += loss.item()
+            #true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
+            #preds_cat.append(torch.sigmoid(logits).float().cpu().numpy().astype("float16"))
+
+            del features, targets, logits
+            gc.collect()
+
+        #all_true_ans = np.concatenate(true_ans_list, axis=0)
+        #all_preds = np.concatenate(preds_cat, axis=0)
+
+    return test_loss / (step + 1)#, all_preds, all_true_ans
+
+
+def validate_noapex(model, valid_loader, criterion, device, classification=False):
+    model.eval()
+    test_loss = 0.0
+    true_ans_list = []
+    preds_cat = []
+    with torch.no_grad():
+
+        for step, (features, targets) in enumerate(valid_loader):
+            features, targets = features.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
 
             if classification:
                 logits, _ = model(features)
