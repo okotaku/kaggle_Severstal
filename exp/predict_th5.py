@@ -153,6 +153,7 @@ def main(seed):
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
         scores = []
+        all_scores = []
         for i, th in enumerate(ths):
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
 
@@ -160,21 +161,23 @@ def main(seed):
             for n_th, remove_mask_pixel in enumerate([200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]):
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 val_preds_[sum_val_preds < remove_mask_pixel] = 0
-                scores = []
+                scores_ = []
+                all_scores_ = []
                 for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
                     score = dice(y_val_, y_pred_ > 0.5)
                     if np.isnan(score):
-                        scores.append(1)
+                        scores_.append(1)
                     else:
-                        scores.append(score)
-                LOGGER.info('dice={} on {}'.format(np.mean(scores), remove_mask_pixel))
-                if np.mean(scores) >= best:
-                    best = np.mean(scores)
-                else:
-                    break
-            scores.append(np.mean(scores))
+                        scores_.append(score)
+                LOGGER.info('dice={} on {}'.format(np.mean(scores_), remove_mask_pixel))
+                if np.mean(scores_) >= best:
+                    best = np.mean(scores_)
+                all_scores_.append(np.mean(scores_))
+            scores.append(np.mean(scores_))
+            all_scores.append(all_scores_)
 
         LOGGER.info('holdout dice={}'.format(np.mean(scores)))
+        np.save("all_scores_fold{}.npy".format(FOLD_ID), np.array(all_scores))
 
 
 if __name__ == '__main__':
