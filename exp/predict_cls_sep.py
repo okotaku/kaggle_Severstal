@@ -201,6 +201,7 @@ def validate(models, valid_loader, criterion, device):
                     logits = m(features)
                 else:
                     logits += m(features)
+            logits = logits / len(models)
             loss = criterion(logits.view(targets.shape), targets)
 
             test_loss += loss.item()
