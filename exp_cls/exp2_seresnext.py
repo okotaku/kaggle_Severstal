@@ -3,6 +3,10 @@
 # 2019-09-24 06:23:52,662 - INFO - Mean train loss: 0.04537
 # 2019-09-24 06:24:46,524 - INFO - Mean valid loss: 0.0493
 # 2019-09-24 06:25:40,531 - INFO - Mean EMA valid loss: 0.04112
+# best_ckpt=3, fold=1
+# 2019-09-25 05:44:09,927 - INFO - Mean train loss: 0.06938
+# 2019-09-25 05:45:04,190 - INFO - Mean valid loss: 0.05725
+# 2019-09-25 05:45:59,304 - INFO - Mean EMA valid loss: 0.04457
 # ===============
 import os
 import gc
@@ -52,7 +56,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 59
-FOLD_ID = 3
+FOLD_ID = 4
 EXP_ID = "cls_exp2_seresnext"
 EMA = True
 EMA_START = 6
