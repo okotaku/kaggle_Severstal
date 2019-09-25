@@ -18,10 +18,13 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import sys
 sys.path.append("../severstal-src/")
+from datasets import SeverCLSDataset
 from util import seed_torch, search_threshold, rle2mask
 from logger import setup_logger, LOGGER
 from trainer import predict
 from metric import dice
+from cls_trainer import validate
+import cls_models
 sys.path.append("../")
 import segmentation_models_pytorch as smp
 
@@ -51,6 +54,7 @@ CLASSIFICATION = True
 base_ckpt = 11
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model_cls = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp2_seresnext", FOLD_ID, 4)
 ths = [0.5, 0.5, 0.5, 0.5]
 remove_pixels = [800, 800, 800, 400]
 
@@ -176,10 +180,28 @@ def predict(model, valid_loader, criterion, device, classification=False):
 def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
+        y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
+        y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
+        y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
+        y4 = (df.EncodedPixels_4 != "-1").astype("float32").values.reshape(-1, 1)
+        y = np.concatenate([y1, y2, y3, y4], axis=1)
 
     with timer('preprocessing'):
         val_df = df[df.fold_id == FOLD_ID]
-        y_val = np.load("../exp_cls/y_pred_ema_ckpt8.npy")
+        y_val = y[df.fold_id == FOLD_ID]
+
+        val_dataset = SeverCLSDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, y_val, id_colname=ID_COLUMNS,
+                                      transforms=None)
+        val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
+
+        model = cls_models.SEResNext(num_classes=N_CLASSES)
+        model.load_state_dict(torch.load(base_model_cls))
+        model.to(device)
+        criterion = torch.nn.BCEWithLogitsLoss()
+
+        valid_loss, y_val, y_true = validate(model, val_loader, criterion, device)
+        #y_val = np.load("../exp_cls/y_pred_ema_ckpt8.npy")
+        LOGGER.info("val loss={}".format(valid_loss))
 
         val_augmentation = None
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
