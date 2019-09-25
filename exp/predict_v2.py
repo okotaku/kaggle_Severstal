@@ -149,7 +149,7 @@ def main(seed):
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        valid_loss, y_pred, y_true = predict(model, val_loader, criterion, device, classification=CLASSIFICATION)
+        valid_loss, y_pred, y_true, cls = predict(model, val_loader, criterion, device, classification=CLASSIFICATION)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
         scores = []
