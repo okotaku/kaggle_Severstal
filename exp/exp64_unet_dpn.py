@@ -46,7 +46,7 @@ SEED = np.random.randint(100000)
 device = "cuda"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 EPOCHS = 65
 FOLD_ID = 0
 EXP_ID = "exp64_unet_dpn"
@@ -119,7 +119,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('dpn107', encoder_weights='imagenet+5k', classes=N_CLASSES, encoder_se_module=True,
+        model = smp.Unet('dpn92', encoder_weights='imagenet+5k', classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
                          classification=CLASSIFICATION, attention_type="cbam", center=True)
         model = convert_model(model)
