@@ -22,7 +22,6 @@ from util import seed_torch, search_threshold, rle2mask
 from logger import setup_logger, LOGGER
 from trainer import predict
 from metric import dice
-from cls_trainer import validate
 import cls_models
 sys.path.append("../")
 import segmentation_models_pytorch as smp
@@ -54,6 +53,7 @@ base_ckpt = 11
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 base_model_cls = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp2_seresnext", FOLD_ID, 4)
+base_model_res = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp1_resnet", FOLD_ID, 8)
 ths = [0.5, 0.5, 0.5, 0.5]
 remove_pixels = [800, 800, 800, 400]
 
@@ -187,6 +187,32 @@ def timer(name):
     LOGGER.info('[{}] done in {} s'.format(name, round(time.time() - t0, 2)))
 
 
+def validate(models, valid_loader, criterion, device):
+    test_loss = 0.0
+    true_ans_list = []
+    preds_cat = []
+    with torch.no_grad():
+
+        for step, (features, targets) in enumerate(valid_loader):
+            features, targets = features.to(device), targets.to(device)
+
+            for i, m in enumerate(models):
+                if i == 0:
+                    logits = m(features)
+                else:
+                    logits += m(features)
+            loss = criterion(logits.view(targets.shape), targets)
+
+            test_loss += loss.item()
+            true_ans_list.append(targets)
+            preds_cat.append(logits)
+
+        all_true_ans = torch.cat(true_ans_list).float().cpu().numpy()
+        all_preds = torch.cat(preds_cat).float().cpu().numpy()
+
+    return test_loss / (step + 1), all_preds, all_true_ans
+
+
 def predict(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
@@ -246,12 +272,24 @@ def main(seed):
                                       transforms=None)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
 
+        models = []
+
         model = cls_models.SEResNext(num_classes=N_CLASSES)
         model.load_state_dict(torch.load(base_model_cls))
         model.to(device)
+        model.eval()
+        models.append(model)
+
+        model = cls_models.ResNet(num_classes=N_CLASSES, pretrained=None, net_cls=models.resnet50)
+        model.load_state_dict(torch.load(base_model_cls))
+        model.to(device)
+        model.eval()
+        models.append(model)
+
+
         criterion = torch.nn.BCEWithLogitsLoss()
 
-        valid_loss, y_val, y_true = validate(model, val_loader, criterion, device)
+        valid_loss, y_val, y_true = validate(models, val_loader, criterion, device)
         #y_val = np.load("../exp_cls/y_pred_ema_ckpt8.npy")
         LOGGER.info("val loss={}".format(valid_loss))
 
