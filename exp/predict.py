@@ -146,39 +146,12 @@ def main(seed):
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        valid_loss, score_all1, score_all2, score_all3, score_all4, ths = predict(model, val_loader, criterion, device,
-                                                                                  classification=CLASSIFICATION)
+        valid_loss, y_pred, y_true, cls = predict(model, val_loader, criterion, device, classification=CLASSIFICATION)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
-        LOGGER.info(score_all1)
-        LOGGER.info(score_all2)
-        LOGGER.info(score_all3)
-        LOGGER.info(score_all4)
-
-        score_all1 = np.array(score_all1).mean(0)
-        best_th = np.array(ths)[score_all1 == np.max(score_all1)]
-        best_score = np.max(score_all1)
-        LOGGER.info('class 1 dice={} on th={}'.format(best_score, best_th))
-
-        score_all2 = np.array(score_all2).mean(0)
-        best_th = np.array(ths)[score_all2 == np.max(score_all2)]
-        best_score = np.max(score_all2)
-        LOGGER.info('class 2 dice={} on th={}'.format(best_score, best_th))
-
-        score_all3 = np.array(score_all3).mean(0)
-        best_th = np.array(ths)[score_all3 == np.max(score_all3)]
-        best_score = np.max(score_all3)
-        LOGGER.info('class 3 dice={} on th={}'.format(best_score, best_th))
-
-        score_all4 = np.array(score_all4).mean(0)
-        best_th = np.array(ths)[score_all4 == np.max(score_all4)]
-        best_score = np.max(score_all4)
-        LOGGER.info('class 4 dice={} on th={}'.format(best_score, best_th))
-
-        np.save("score_all1_fold{}.npy".format(FOLD_ID), score_all1)
-        np.save("score_all2_fold{}.npy".format(FOLD_ID), score_all2)
-        np.save("score_all3_fold{}.npy".format(FOLD_ID), score_all3)
-        np.save("score_all4_fold{}.npy".format(FOLD_ID), score_all4)
+        for i in range(4):
+            th, score, ths, scores = search_threshold(y_true[:, i, :, :], y_pred[:, i, :, :])
+            LOGGER.info('dice={} on {}'.format(score, th))
 
 
 if __name__ == '__main__':
