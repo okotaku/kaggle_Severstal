@@ -1,5 +1,8 @@
 # ===============
-#
+# ckpt=3, fold=0
+# 2019-09-25 01:19:12,252 - INFO - Mean train loss: 0.03859
+# 2019-09-25 01:19:48,086 - INFO - Mean valid loss: 0.04636
+# 2019-09-25 01:20:24,155 - INFO - Mean EMA valid loss: 0.0442
 # ===============
 import os
 import gc
