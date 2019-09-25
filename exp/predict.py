@@ -43,11 +43,11 @@ CLR_CYCLE = 3
 BATCH_SIZE = 64
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp35_unet_resnet"
+EXP_ID = "exp57_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 16
+base_ckpt = 11
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -150,6 +150,11 @@ def main(seed):
                                                                                   classification=CLASSIFICATION)
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
+        LOGGER.info(score_all1)
+        LOGGER.info(score_all2)
+        LOGGER.info(score_all3)
+        LOGGER.info(score_all4)
+
         score_all1 = np.array(score_all1).mean(0)
         best_th = np.array(ths)[score_all1 == np.max(score_all1)]
         best_score = np.max(score_all1)
@@ -169,6 +174,11 @@ def main(seed):
         best_th = np.array(ths)[score_all4 == np.max(score_all4)]
         best_score = np.max(score_all4)
         LOGGER.info('class 4 dice={} on th={}'.format(best_score, best_th))
+
+        np.save("score_all1_fold{}.npy".format(FOLD_ID), score_all1)
+        np.save("score_all2_fold{}.npy".format(FOLD_ID), score_all2)
+        np.save("score_all3_fold{}.npy".format(FOLD_ID), score_all3)
+        np.save("score_all4_fold{}.npy".format(FOLD_ID), score_all4)
 
 
 if __name__ == '__main__':
