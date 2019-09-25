@@ -316,8 +316,8 @@ def main(seed):
 
         scores = []
         for i, (th, remove_mask_pixel) in enumerate(zip(ths, remove_pixels)):
-            if i <= 2:
-                continue
+            #if i <= 2:
+            #    continue
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
             cls_ = cls[:, i]
 
