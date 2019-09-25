@@ -177,8 +177,8 @@ class SeverCLSDataset(Dataset):
         class_y_ = self.class_y[idx]
         target = torch.tensor(class_y_)
 
-        return torch.tensor(img), target
-    
+        return torch.Tensor(img), target
+
 
 @contextmanager
 def timer(name):
