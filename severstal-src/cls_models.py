@@ -5,7 +5,7 @@ from torch import nn
 from torch.nn import functional as F
 from torch.nn.parameter import Parameter
 from torchvision import models
-from efficientnet_pytorch import EfficientNet
+#from efficientnet_pytorch import EfficientNet
 
 import sys
 sys.path.append("../input/pretrained-models/pretrained-models/pretrained-models.pytorch-master/")
