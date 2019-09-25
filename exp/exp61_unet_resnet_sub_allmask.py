@@ -1,4 +1,8 @@
 # ===============
+# best_ckpt=6, fold=0
+# 2019-09-25 02:02:00,982 - INFO - Mean train loss: 0.01482
+# 2019-09-25 02:02:40,100 - INFO - Mean valid loss: 0.01621
+# 2019-09-25 02:03:19,129 - INFO - Mean EMA valid loss: 0.01489
 # best_ckpt=8, fold=1
 # 2019-09-24 16:35:46,966 - INFO - Mean train loss: 0.01443
 # 2019-09-24 16:36:25,663 - INFO - Mean valid loss: 0.01682
@@ -51,7 +55,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 83
-FOLD_ID = 0
+FOLD_ID = 2
 EXP_ID = "exp61_unet_resnet"
 CLASSIFICATION = True
 EMA = True
