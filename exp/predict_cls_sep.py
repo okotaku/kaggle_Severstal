@@ -280,7 +280,7 @@ def main(seed):
         model.eval()
         models.append(model)
 
-        model = cls_models.ResNet(num_classes=N_CLASSES, pretrained=None, net_cls=models.resnet50)
+        model = cls_models.ResNet(num_classes=N_CLASSES, pretrained=None)
         model.load_state_dict(torch.load(base_model_cls))
         model.to(device)
         model.eval()
