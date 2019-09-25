@@ -44,12 +44,13 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp35_unet_resnet"
+EXP_ID = "exp57_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 16
+base_ckpt = 11
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-ths = [0.65, 0.76, 0.5, 0.54]
+base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+#ths = [0.65, 0.76, 0.5, 0.54]
+ths = [0.59, 0.69, 0.52, 0.52]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
