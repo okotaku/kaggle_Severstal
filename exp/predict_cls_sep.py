@@ -18,7 +18,6 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 import sys
 sys.path.append("../severstal-src/")
-from datasets import SeverCLSDataset
 from util import seed_torch, search_threshold, rle2mask
 from logger import setup_logger, LOGGER
 from trainer import predict
@@ -127,6 +126,59 @@ class SeverDataset(Dataset):
 
         return torch.Tensor(img), target
 
+
+class SeverCLSDataset(Dataset):
+
+    def __init__(self,
+                 df,
+                 img_dir,
+                 img_size,
+                 n_classes,
+                 class_y,
+                 crop_rate=1.0,
+                 id_colname="ImageId",
+                 mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
+                 transforms=None,
+                 means=[0.485, 0.456, 0.406],
+                 stds=[0.229, 0.224, 0.225],
+                 ):
+        self.df = df
+        self.img_dir = img_dir
+        self.img_size = img_size
+        self.transforms = transforms
+        self.means = np.array(means)
+        self.stds = np.array(stds)
+        self.id_colname = id_colname
+        self.mask_colname = mask_colname
+        self.n_classes = n_classes
+        self.crop_rate = crop_rate
+        self.class_y = class_y
+
+    def __len__(self):
+        return self.df.shape[0]
+
+    def __getitem__(self, idx):
+        cur_idx_row = self.df.iloc[idx]
+        img_id = cur_idx_row[self.id_colname]
+        img_path = os.path.join(self.img_dir, img_id)
+
+        img = cv2.imread(img_path)
+        img = cv2.resize(img, self.img_size)
+
+        if self.transforms is not None:
+            augmented = self.transforms(image=img)
+            img = augmented['image']
+
+        img = img / 255
+        img -= self.means
+        img /= self.stds
+        img = img.transpose((2, 0, 1))
+
+        class_y_ = self.class_y[idx]
+        target = torch.tensor(class_y_)
+
+        return torch.tensor(img), target
+    
 
 @contextmanager
 def timer(name):
