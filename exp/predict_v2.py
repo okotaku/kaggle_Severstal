@@ -154,6 +154,8 @@ def main(seed):
 
         scores = []
         for i, th in enumerate(ths):
+            if i <= 1:
+                continue
             sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > th, axis=1)
 
             best = 0
