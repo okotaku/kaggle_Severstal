@@ -49,7 +49,7 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 65
 FOLD_ID = 0
-EXP_ID = "exp66_unet_resnet152"
+EXP_ID = "exp66_unet_resnet101"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
@@ -119,7 +119,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('resnet152', encoder_weights='imagenet', classes=N_CLASSES, encoder_se_module=True,
+        model = smp.Unet('resnet101', encoder_weights='imagenet', classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
                          classification=CLASSIFICATION, attention_type="cbam", center=True)
         model = convert_model(model)
