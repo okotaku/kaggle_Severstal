@@ -262,21 +262,7 @@ class Efficient(nn.Module):
 
 
 class InceptionResNetV2(nn.Module):
-    def __init__(self, num_classes, pretrained="inceptionresnetv2-520b38e4.pth", dropout=False, arcface=False):
-        super().__init__()
-        self.net = inceptionresnetv2(pretrained=pretrained)
-        self.net.last_linear = nn.Linear(1536, num_classes)
-
-
-    def fresh_params(self):
-        return self.net.last_linear.parameters()
-
-    def forward(self, x):
-        return self.net(x)
-
-
-class InceptionResNetV2_V2(nn.Module):
-    def __init__(self, num_classes, pretrained="inceptionresnetv2-520b38e4.pth", dropout=False, arcface=False):
+    def __init__(self, num_classes, pretrained="imagenet"):
         super().__init__()
         self.net = inceptionresnetv2(pretrained=pretrained)
         self.net.avgpool_1a = AdaptiveConcatPool2d()
