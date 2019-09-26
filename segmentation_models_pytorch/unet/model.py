@@ -87,7 +87,7 @@ class Unet(EncoderDecoder):
         if self.freeze_bn:
             for m in self.encoder.modules():
                 if isinstance(m, nn.BatchNorm2d):
-                    m.eval().half()
+                    m.eval()#.half()
                     if self.freeze_bn_affine:
                         m.weight.requires_grad = False
                         m.bias.requires_grad = False
