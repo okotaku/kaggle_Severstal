@@ -1,9 +1,5 @@
-
 # ===============
-# best_ckpt=6, fold=0
-# 2019-09-25 19:12:53,783 - INFO - Mean train loss: 0.01193
-# 2019-09-25 19:13:54,147 - INFO - Mean valid loss: 0.01729
-# 2019-09-25 19:14:54,751 - INFO - Mean EMA valid loss: 0.01588
+# best_ckpt=
 # ===============
 import os
 import gc
@@ -55,7 +51,7 @@ EPOCHS = 101
 FOLD_ID = 0
 EXP_ID = "exp67_unet_seres"
 CLASSIFICATION = True
-EMA = True
+EMA = False
 EMA_START = 6
 base_ckpt = 0
 base_model = None
@@ -78,9 +74,6 @@ def timer(name):
 def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
-        LOGGER.info(len(df))
-        df = df[df.sum_target != 0].reset_index(drop=True)
-        LOGGER.info(len(df))
         y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
         y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
         y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
@@ -102,8 +95,7 @@ def main(seed):
                 RandomBrightnessContrast(p=0.5),
             ], p=0.5),
             OneOf([
-                GaussNoise(p=0.5),
-                #Cutout(num_holes=10, max_h_size=10, max_w_size=20, p=0.5)
+                GaussNoise(p=0.5)
             ], p=0.5),
             ShiftScaleRotate(rotate_limit=20, p=0.5),
         ])
@@ -113,8 +105,8 @@ def main(seed):
                                     transforms=train_augmentation, crop_rate=1.0, class_y=y_train)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
-        #train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
-        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
+        train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8, pin_memory=True)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
 
         del train_df, val_df, df, train_dataset, val_dataset
@@ -123,7 +115,7 @@ def main(seed):
     with timer('create model'):
         model = smp.Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION, attention_type="cbam", center=True)
+                         classification=CLASSIFICATION, attention_type="cbam", center=True, mode="train")
         #model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
@@ -148,10 +140,10 @@ def main(seed):
             if base_model_ema is not None:
                 ema_model.load_state_dict(torch.load(base_model_ema))
             ema_model.to(device)
+            ema_model = torch.nn.DataParallel(ema_model)
         else:
             ema_model = None
         model = torch.nn.DataParallel(model)
-        ema_model = torch.nn.DataParallel(ema_model)
 
     with timer('train'):
         train_losses = []
