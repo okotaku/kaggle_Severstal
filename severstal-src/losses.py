@@ -259,7 +259,7 @@ def multiclass_dice_loss(output, target, smooth=0, activation='softmax'):
         raise NotImplementedError('only sigmoid and softmax are implemented')
 
     loss = 0
-    dice = DiceLoss(smooth=smooth)
+    dice = DiceLoss()
     output = activation_nn(output)
     num_classes = output.size(1)
     target.data = target.data.float()
