@@ -462,7 +462,7 @@ def validate_crop(model, valid_loader, criterion, device):
     return test_loss / (step + 1)
 
 
-def validate_dsv(model, valid_loader, criterion, device):
+def validate_dsv(model, valid_loader, criterion, device, classification=False):
     model.eval()
     test_loss = 0.0
     with torch.no_grad():
