@@ -330,12 +330,12 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
     model.train()
 
     total_loss = 0.0
-    for step, batch in enumerate(train_loader):
-        features, targets = batch[0].to(device), batch[1].to(device)
-        if len(batch) == 3:
-            true_y = batch[2].to(device)
-        del batch
-        gc.collect()
+    for step, (features, targets) in enumerate(train_loader):
+        features = features.to(device)
+        if classification:
+            targets, targets_cls = targets["mask"].to(device), targets["class_y"].to(device)
+        else:
+            targets = targets.to(device)
 
         optimizer.zero_grad()
 
@@ -467,10 +467,8 @@ def validate_dsv(model, valid_loader, criterion, device):
     test_loss = 0.0
     with torch.no_grad():
 
-        for step, batch in enumerate(valid_loader):
-            features, targets = batch[0].to(device), batch[1].to(device)
-            del batch
-            gc.collect()
+        for step, (features, targets) in enumerate(valid_loader):
+            features, targets = features.to(device, dtype=torch.float), targets.to(device)
 
             logits = model(features)["mask"]#[0]
             #loss = criterion(logits, targets)
