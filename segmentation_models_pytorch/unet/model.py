@@ -48,10 +48,12 @@ class Unet(EncoderDecoder):
             freeze_bn=False,
             freeze_bn_affine=False,
             classification=False,
-            attention_type="scse"
+            attention_type="scse",
+            mode="valid"
     ):
         self.freeze_bn = freeze_bn
         self.freeze_bn_affine = freeze_bn_affine
+        self.mode = mode
         encoder = get_encoder(
             encoder_name,
             encoder_weights=encoder_weights,
@@ -87,7 +89,10 @@ class Unet(EncoderDecoder):
         if self.freeze_bn:
             for m in self.encoder.modules():
                 if isinstance(m, nn.BatchNorm2d):
-                    m.eval()#.half()
+                    if self.mode == "train":
+                        m.eval().half()
+                    else:
+                        m.eval()
                     if self.freeze_bn_affine:
                         m.weight.requires_grad = False
                         m.bias.requires_grad = False
