@@ -21,7 +21,7 @@ from util import seed_torch, search_threshold
 from losses import FocalLovaszLoss
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
-from trainer import train_one_epoch, validate
+from trainer import train_one_epoch_dsv, validate_dsv
 from scheduler import GradualWarmupScheduler
 sys.path.append("../")
 import segmentation_models_pytorch as smp
@@ -45,7 +45,7 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 EPOCHS = 101 #101
 FOLD_ID = 3
 EXP_ID = "exp68_unetpp_resnet"
@@ -143,12 +143,11 @@ def main(seed):
             seed_torch(seed)
 
             LOGGER.info("Starting {} epoch...".format(epoch))
-            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
-                                      classification=CLASSIFICATION)
+            tr_loss = train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, classification=CLASSIFICATION)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
-            valid_loss = validate(model, val_loader, criterion, device, classification=CLASSIFICATION)
+            valid_loss = validate_dsv(model, val_loader, criterion, device, classification=CLASSIFICATION)
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
