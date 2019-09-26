@@ -45,15 +45,15 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
-FOLD_ID = 0
+FOLD_ID = 1
 EXP_ID = "exp57_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 9
 #base_model = None
-base_model_res_old = "models/{}_fold{}_ckpt{}.pth".format("exp35_unet_resnet", FOLD_ID, 16)
+base_model_res_old = "models/{}_fold{}_ckpt{}.pth".format("exp35_unet_resnet", FOLD_ID, 14)
 base_model_res = [
-    "models/{}_fold{}_ckpt{}_ema.pth".format("exp57_unet_resnet", FOLD_ID, 11),
-    "models/{}_fold{}_ckpt{}_ema.pth".format("exp61_unet_resnet", FOLD_ID, 6),
+    "models/{}_fold{}_ckpt{}_ema.pth".format("exp57_unet_resnet", FOLD_ID, 17),
+    "models/{}_fold{}_ckpt{}_ema.pth".format("exp61_unet_resnet", FOLD_ID, 8),
 ]
 ths = [0.5, 0.5, 0.5, 0.5]
 
