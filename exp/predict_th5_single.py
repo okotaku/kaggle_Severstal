@@ -45,12 +45,12 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
-FOLD_ID = 0
-EXP_ID = "exp62_unet_inceptionresnetv2"
+FOLD_ID = 3
+EXP_ID = "exp68_unetpp_resnet"
 CLASSIFICATION = True
-base_ckpt = 5
+base_ckpt = 8
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
 
 setup_logger(out_file=LOGGER_PATH)
@@ -141,9 +141,9 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('inceptionresnetv2', encoder_weights=None, classes=N_CLASSES, encoder_se_module=True,
-                         decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION, attention_type="cbam", center=True)
+        model = smp.UnetPP('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+                           decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
+                           classification=CLASSIFICATION)
         model.load_state_dict(torch.load(base_model))
         model.to(device)
         model.eval()
