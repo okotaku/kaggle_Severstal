@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 #import segmentation_models_pytorch as smp
 from apex import amp
+from tqdm import tqdm
 from contextlib import contextmanager
 from albumentations import *
 import torch
@@ -47,6 +48,7 @@ EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp57_unet_resnet"
 #base_model = None
+CLASSIFICATION = True
 base_model_res_old = "models/{}_fold{}_ckpt{}.pth".format("exp35_unet_resnet", FOLD_ID, 16)
 base_model_res = [
     "models/{}_fold{}_ckpt{}_ema.pth".format("exp57_unet_resnet", FOLD_ID, 11),
