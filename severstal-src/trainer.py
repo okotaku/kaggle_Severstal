@@ -356,7 +356,7 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
 
         if classification:
             pred_y = out_dic["class"]
-            class_loss = criterion(pred_y, true_y)
+            class_loss = criterion(pred_y, targets_cls)
             loss += class_loss / 1024
 
         if ema_model is not None:
