@@ -18,7 +18,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import sys
 sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold
-from losses import BCEDiceLoss
+from losses import ComboLoss
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
 from trainer import train_one_epoch, validate
@@ -116,7 +116,9 @@ def main(seed):
             model.load_state_dict(torch.load(base_model))
         model.to(device)
 
-        criterion = BCEDiceLoss(dice_weight=0.3, bce_weight=1)
+        criterion = ComboLoss({'bce': 4,
+                        'dice': 1,
+                        'focal': 3}, channel_weights=[1, 1, 1, 1])
         optimizer = torch.optim.Adam([
             {'params': model.decoder.parameters(), 'lr': 3e-3},
             {'params': model.encoder.parameters(), 'lr': 3e-4},
