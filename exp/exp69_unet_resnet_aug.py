@@ -1,5 +1,7 @@
 # ===============
-# best_ckpt=
+# best_ckpt=14, fold=0
+# 54:57,163 - INFO - Mean train loss: 0.00796
+# 2019-09-26 16:56:02,756 - INFO - Mean valid loss: 0.00775
 # ===============
 import os
 import gc
@@ -46,7 +48,7 @@ device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 101
+EPOCHS = 149
 FOLD_ID = 0
 EXP_ID = "exp69_unet_resnet"
 CLASSIFICATION = True
@@ -139,7 +141,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(102, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
