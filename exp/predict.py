@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 #import segmentation_models_pytorch as smp
 from apex import amp
+from tqdm import tqdm
 from contextlib import contextmanager
 from albumentations import *
 import torch
