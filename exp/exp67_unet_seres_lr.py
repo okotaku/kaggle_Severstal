@@ -57,7 +57,7 @@ EXP_ID = "exp67_unet_seres"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 2
+base_ckpt = 4
 base_model = None
 base_model_ema = None
 base_model = "models/{}_fold{}_latest.pth".format("exp62_unet_seres", FOLD_ID)
@@ -162,7 +162,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(12, EPOCHS + 1):
+        for epoch in range(24, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
