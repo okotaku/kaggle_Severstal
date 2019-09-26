@@ -1,5 +1,5 @@
 # ===============
-# best_ckpt=
+#
 # ===============
 import os
 import gc
@@ -18,10 +18,10 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 import sys
 sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold
-from losses import ComboLoss
+from losses import FocalLovaszLoss
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
-from trainer import train_one_epoch, validate
+from trainer import train_one_epoch_dsv, validate_dsv
 from scheduler import GradualWarmupScheduler
 sys.path.append("../")
 import segmentation_models_pytorch as smp
@@ -45,12 +45,12 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 32
-EPOCHS = 101
-FOLD_ID = 0
-EXP_ID = "exp70_unet_resnet"
+BATCH_SIZE = 16
+EPOCHS = 101 #101
+FOLD_ID = 3
+EXP_ID = "exp71_unetpp_resnet"
 CLASSIFICATION = True
-base_ckpt = 6
+base_ckpt = 0
 base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
@@ -88,9 +88,12 @@ def main(seed):
             OneOf([
                 RandomGamma(gamma_limit=(100,140), p=0.5),
                 RandomBrightnessContrast(p=0.5),
+                RandomBrightness(p=0.5),
+                RandomContrast(p=0.5)
             ], p=0.5),
             OneOf([
                 GaussNoise(p=0.5),
+                Cutout(num_holes=10, max_h_size=10, max_w_size=20, p=0.5)
             ], p=0.5),
             ShiftScaleRotate(rotate_limit=20, p=0.5),
         ])
@@ -108,17 +111,15 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        model = smp.UnetPP('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION, attention_type="cbam", center=True)
+                         classification=CLASSIFICATION, attention_type="cbam")
         model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
         model.to(device)
 
-        criterion = ComboLoss({'bce': 4,
-                        'dice': 1,
-                        'focal': 3}, channel_weights=[1, 1, 1, 1])
+        criterion = torch.nn.BCEWithLogitsLoss()
         optimizer = torch.optim.Adam([
             {'params': model.decoder.parameters(), 'lr': 3e-3},
             {'params': model.encoder.parameters(), 'lr': 3e-4},
@@ -146,12 +147,11 @@ def main(seed):
             seed_torch(seed)
 
             LOGGER.info("Starting {} epoch...".format(epoch))
-            tr_loss = train_one_epoch(model, train_loader, criterion, optimizer, device, cutmix_prob=0.0,
-                                      classification=CLASSIFICATION)
+            tr_loss = train_one_epoch_dsv(model, train_loader, criterion, optimizer, device, classification=CLASSIFICATION)
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
-            valid_loss = validate(model, val_loader, criterion, device, classification=CLASSIFICATION)
+            valid_loss = validate_dsv(model, val_loader, criterion, device, classification=CLASSIFICATION)
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 

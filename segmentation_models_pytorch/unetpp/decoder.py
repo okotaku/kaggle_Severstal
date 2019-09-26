@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from segmentation_models_pytorch.common.blocks import Conv2dReLU, SEBlock, AdaptiveConcatPool2d, Flatten, CBAM
+from segmentation_models_pytorch.common.blocks import Conv2dReLU, ASPP, Flatten, CBAM
 from segmentation_models_pytorch.base.model import Model
 from segmentation_models_pytorch.encoders.scse import SCse
 
@@ -129,7 +129,8 @@ class UnetPPDecoder(Model):
         if center:
             channels = encoder_channels[0]
             # self.center = CenterBlock(channels, channels, use_batchnorm=use_batchnorm)
-            self.center = FPAv2(channels, channels)
+            #self.center = FPAv2(channels, channels)
+            self.center = ASPP(channels, channels, dilations=[1, (1, 6), (2, 12), (3, 18)])
         else:
             self.center = None
 
@@ -194,7 +195,7 @@ class UnetPPDecoder(Model):
                 nn.AdaptiveAvgPool2d(1),
                 Flatten(),
                 nn.Dropout(),
-                nn.Linear(64, 1)
+                nn.Linear(64, final_channels)
 
             )
 
