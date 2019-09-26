@@ -141,7 +141,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.UnetPP('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        model = smp_old.UnetPP('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                            decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
                            classification=CLASSIFICATION)
         model.load_state_dict(torch.load(base_model))
