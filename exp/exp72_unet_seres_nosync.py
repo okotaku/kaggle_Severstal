@@ -1,5 +1,8 @@
 # ===============
-# best_ckpt=
+# best_ckpt=14/14, fold=0
+# 2019-09-27 09:49:43,175 - INFO - Train loss on step 500 was 0.01033
+# 2019-09-27 09:50:40,998 - INFO - Mean train loss: 0.01033
+# 2019-09-27 09:52:30,326 - INFO - Mean valid loss: 0.00879
 # ===============
 import os
 import gc
@@ -53,7 +56,7 @@ EXP_ID = "exp72_unet_seres"
 CLASSIFICATION = True
 EMA = False
 EMA_START = 6
-base_ckpt = 4
+base_ckpt = 14
 base_model = None
 base_model_ema = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
@@ -155,7 +158,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(24, EPOCHS + 1):
+        for epoch in range(84, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
