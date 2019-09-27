@@ -52,10 +52,10 @@ CLASSIFICATION = True
 base_model_res_old = "models/{}_fold{}_ckpt{}.pth".format("exp35_unet_resnet", FOLD_ID, 16)
 base_model_res = [
     "models/{}_fold{}_ckpt{}_ema.pth".format("exp57_unet_resnet", FOLD_ID, 11),
-    "models/{}_fold{}_ckpt{}_ema.pth".format("exp61_unet_resnet", FOLD_ID, 6),
+    #"models/{}_fold{}_ckpt{}_ema.pth".format("exp61_unet_resnet", FOLD_ID, 6),
 ]
 #ths = [0.65, 0.76, 0.5, 0.54]
-ths = [0.5, 0.51, 0.52, 0.46]
+ths = [0.51, 0.58, 0.47, 0.46]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
