@@ -53,11 +53,11 @@ EXP_ID = "exp73_unet_resnet"
 CLASSIFICATION = True
 EMA = True
 EMA_START = 6
-base_ckpt = 0
+base_ckpt = 4
 base_model = None
 base_model_ema = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
-#base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model_ema = "models/{}_fold{}_latest_ema.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -155,7 +155,7 @@ def main(seed):
         ema_decay = 0
         checkpoint = base_ckpt + 1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(24, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
