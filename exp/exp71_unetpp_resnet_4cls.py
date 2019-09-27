@@ -1,5 +1,8 @@
 # ===============
-#
+# best_ckpt=10, fold=0
+# 2019-09-26 19:11:15,914 - INFO - Train loss on step 500 was 0.00938
+# 2019-09-26 19:12:13,617 - INFO - Mean train loss: 0.00934
+# 2019-09-26 19:13:59,106 - INFO - Mean valid loss: 0.0088
 # ===============
 import os
 import gc
