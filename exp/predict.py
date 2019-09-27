@@ -215,6 +215,8 @@ def main(seed):
         LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
 
         for i in range(4):
+            if i <= 2:
+                continue
             th, score, ths, scores = search_threshold(y_true[:, i, :, :], y_pred[:, i, :, :])
             LOGGER.info('dice={} on {}'.format(score, th))
 
