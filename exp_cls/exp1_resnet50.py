@@ -7,6 +7,10 @@
 # 2019-09-25 16:47:58,148 - INFO - Mean train loss: 0.04604
 # 2019-09-25 16:48:20,921 - INFO - Mean valid loss: 0.05152
 # 2019-09-25 16:48:43,500 - INFO - Mean EMA valid loss: 0.04821
+# best_ckpt=7, fold=2
+# 2019-09-27 01:48:07,690 - INFO - Mean train loss: 0.04506
+# 2019-09-27 01:48:26,077 - INFO - Mean valid loss: 0.05531
+# 2019-09-27 01:48:45,258 - INFO - Mean EMA valid loss: 0.05013
 # best_ckpt=5, fold=3
 # 2019-09-26 01:36:15,851 - INFO - Mean train loss: 0.04684
 # 2019-09-26 01:36:37,812 - INFO - Mean valid loss: 0.04633
@@ -60,7 +64,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 101
-FOLD_ID = 2
+FOLD_ID = 4
 EXP_ID = "cls_exp1_resnet"
 EMA = True
 EMA_START = 6
