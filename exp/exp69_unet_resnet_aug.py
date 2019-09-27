@@ -83,15 +83,15 @@ N_CLASSES = 4
 SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (1600, 256)
-CLR_CYCLE = 3
+CLR_CYCLE = 2
 BATCH_SIZE = 32
 EPOCHS = 119
 FOLD_ID = 3
 EXP_ID = "exp69_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 0
+base_ckpt = 3
 base_model = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -178,7 +178,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(18, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
