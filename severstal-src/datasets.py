@@ -54,6 +54,7 @@ class SeverDataset(Dataset):
         w, h, _ = img.shape
         mask = np.zeros((w, h, self.n_classes))
         for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
+            print(i, encoded)
             if encoded in "-1":
                 continue
             else:
