@@ -49,7 +49,6 @@ CLASSIFICATION = True
 base_model_res_old = "models/{}_fold{}_ckpt{}.pth".format("exp35_unet_resnet", FOLD_ID, 16)
 base_model_res = [
     "models/{}_fold{}_ckpt{}_ema.pth".format("exp57_unet_resnet", FOLD_ID, 11),
-    "models/{}_fold{}_ckpt{}_ema.pth".format("exp61_unet_resnet", FOLD_ID, 6),
 ]
 
 setup_logger(out_file=LOGGER_PATH)
