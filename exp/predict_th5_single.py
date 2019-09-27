@@ -50,7 +50,7 @@ EXP_ID = "exp70_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 10
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 ths = [0.5, 0.5, 0.5, 0.5]
 
 setup_logger(out_file=LOGGER_PATH)
