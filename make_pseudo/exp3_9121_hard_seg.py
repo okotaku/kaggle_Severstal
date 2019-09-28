@@ -318,7 +318,7 @@ with timer('create cls model'):
 with timer('cls predict'):
     rles, sub_ids, next_ids, next_sub_ids = predict_cls(models, test_loader, device)
     sub_df = pd.DataFrame({'ImageId_ClassId': sub_ids, 'EncodedPixels': rles})
-    sub_df.to_csv('submission_cls.csv', index=False)
+    #sub_df.to_csv('submission_cls.csv', index=False)
 
 with timer('preprocessing'):
     test_augmentation = None
@@ -362,4 +362,4 @@ with timer('predict'):
     LOGGER.info(len(sub_df_))
     sub_df_ = sub_df_[sub_df_.ImageId_ClassId.isin(next_sub_ids)]
 
-    sub_df_.to_csv('submission_sege.csv', index=False)
+    sub_df_.to_csv('submission_seg_hard.csv', index=False)
