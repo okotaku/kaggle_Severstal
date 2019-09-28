@@ -70,7 +70,6 @@ class SeverDataset(Dataset):
                  n_classes,
                  crop_rate=1.0,
                  id_colname="ImageId",
-                 mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
                  transforms=None,
                  means=[0.485, 0.456, 0.406],
                  stds=[0.229, 0.224, 0.225],
@@ -84,7 +83,7 @@ class SeverDataset(Dataset):
         self.means = np.array(means)
         self.stds = np.array(stds)
         self.id_colname = id_colname
-        self.mask_colname = mask_colname
+        self.mask_colname = ["EncodedPixels_{}".format(i) for i in range(1, n_classes+1)]
         self.n_classes = n_classes
         self.crop_rate = crop_rate
         self.class_y = class_y
