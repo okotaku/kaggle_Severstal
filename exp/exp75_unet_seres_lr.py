@@ -133,7 +133,7 @@ def main(seed):
             scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=5e-6)
             scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
         else:
-            scheduler = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
+            scheduler = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=5e-6)
 
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
