@@ -25,7 +25,8 @@ class SeverDataset(Dataset):
                  stds=[0.229, 0.224, 0.225],
                  class_y=None,
                  cut_h=False,
-                 crop_320=False
+                 crop_320=False,
+                 gamma=None
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -40,6 +41,7 @@ class SeverDataset(Dataset):
         self.class_y = class_y
         self.cut_h = cut_h
         self.crop_320 = crop_320
+        self.gamma = gamma
 
     def __len__(self):
         return self.df.shape[0]
@@ -50,6 +52,13 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+
+        if self.gamma is not None:
+            lookUpTable = np.empty((1, 256), np.uint8)
+            for i in range(256):
+                lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
+            img = cv2.LUT(img, lookUpTable)
+
         w, h, _ = img.shape
         mask = np.zeros((w, h, self.n_classes))
         for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
@@ -128,7 +137,7 @@ class SeverCLSDataset(Dataset):
 
         img = cv2.imread(img_path)
         img = cv2.resize(img, self.img_size)
-        
+
         if self.gamma is not None:
             lookUpTable = np.empty((1, 256), np.uint8)
             for i in range(256):
