@@ -48,9 +48,9 @@ EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp74_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 15
+base_ckpt = 16
 #base_model = None
-base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
+base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 if N_CLASSES == 4:
     ths = [0.5, 0.5, 0.5, 0.5]
 elif N_CLASSES == 3:
