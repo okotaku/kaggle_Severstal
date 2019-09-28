@@ -318,4 +318,6 @@ with timer('create cls model'):
 with timer('cls predict'):
     rles, sub_ids, next_ids, next_sub_ids = predict_cls(models, test_loader, device)
     sub_df = pd.DataFrame({'ImageId_ClassId': sub_ids, 'EncodedPixels': rles})
+    LOGGER.info(len(sub_df))
+    LOGGER.info(sub_df)
     sub_df.to_csv('submission_cls_hard.csv', index=False)
