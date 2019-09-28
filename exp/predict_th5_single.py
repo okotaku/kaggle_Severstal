@@ -33,7 +33,7 @@ IMG_DIR = "../input/train_images/"
 LOGGER_PATH = "log.txt"
 FOLD_PATH = "../input/severstal_folds01.csv"
 ID_COLUMNS = "ImageId"
-N_CLASSES = 4
+N_CLASSES = 3
 
 
 # ===============
@@ -46,12 +46,15 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp73_unet_resnet"
+EXP_ID = "exp74_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 17
+base_ckpt = 15
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-ths = [0.5, 0.5, 0.5, 0.5]
+if N_CLASSES == 4:
+    ths = [0.5, 0.5, 0.5, 0.5]
+elif N_CLASSES == 3:
+    ths = [0.5, 0.5, 0.5]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -128,6 +131,10 @@ def timer(name):
 def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
+        if N_CLASSES == 3:
+            df.drop("EncodedPixels_2", axis=1, inplace=True)
+            df = df.rename(columns={"EncodedPixels_3": "EncodedPixels_2"})
+            df = df.rename(columns={"EncodedPixels_4": "EncodedPixels_3"})
 
     with timer('preprocessing'):
         val_df = df[df.fold_id == FOLD_ID]
