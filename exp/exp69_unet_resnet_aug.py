@@ -41,7 +41,7 @@
 # 2019-09-27 05:51:36,355 - INFO - holdout dice=0.9515540590328868
 # best_ckpt=19, fold=1
 # 2019-09-27 18:35:17,055 - INFO - Mean train loss: 0.00775
-# 2019-09-27 18:36:22,090 - INFO - Mean valid loss: 0.008612
+# 2019-09-27 18:36:22,090 - INFO - Mean valid loss: 0.00861
 # best_ckpt=10, fold=2
 # 2019-09-27 18:27:33,082 - INFO - Mean train loss: 0.0088
 # 2019-09-27 18:28:39,005 - INFO - Mean valid loss: 0.00835
