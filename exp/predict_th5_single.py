@@ -45,10 +45,10 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
-FOLD_ID = 0
+FOLD_ID = 1
 EXP_ID = "exp74_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 16
+base_ckpt = 8
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 if N_CLASSES == 4:
