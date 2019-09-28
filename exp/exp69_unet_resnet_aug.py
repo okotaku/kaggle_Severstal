@@ -45,6 +45,9 @@
 # best_ckpt=10, fold=2
 # 2019-09-27 18:27:33,082 - INFO - Mean train loss: 0.0088
 # 2019-09-27 18:28:39,005 - INFO - Mean valid loss: 0.00835
+# best_ckpt=15, fold=4
+# 2019-09-27 23:10:29,629 - INFO - Mean train loss: 0.00818
+# 2019-09-27 23:11:32,192 - INFO - Mean valid loss: 0.00823
 # ===============
 import os
 import gc
