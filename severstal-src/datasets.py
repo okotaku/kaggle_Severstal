@@ -103,6 +103,7 @@ class SeverCLSDataset(Dataset):
                  transforms=None,
                  means=[0.485, 0.456, 0.406],
                  stds=[0.229, 0.224, 0.225],
+                 gamma=None
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -115,6 +116,7 @@ class SeverCLSDataset(Dataset):
         self.n_classes = n_classes
         self.crop_rate = crop_rate
         self.class_y = class_y
+        self.gamma = gamma
 
     def __len__(self):
         return self.df.shape[0]
@@ -126,6 +128,12 @@ class SeverCLSDataset(Dataset):
 
         img = cv2.imread(img_path)
         img = cv2.resize(img, self.img_size)
+        
+        if self.gamma is not None:
+            lookUpTable = np.empty((1, 256), np.uint8)
+            for i in range(256):
+                lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
+            img = cv2.LUT(img, lookUpTable)
 
         if self.transforms is not None:
             augmented = self.transforms(image=img)
