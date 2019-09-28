@@ -51,7 +51,7 @@ FOLD_ID = 0
 EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
-#base_model = None
+base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
