@@ -53,6 +53,7 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 59
 FOLD_ID = 0
+GAMMA = 0.7
 EXP_ID = "cls_exp8_seresnext"
 EMA = True
 EMA_START = 6
@@ -109,9 +110,9 @@ def main(seed):
         val_augmentation = None
 
         train_dataset = SeverCLSDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, y_train, id_colname=ID_COLUMNS,
-                                    transforms=train_augmentation, crop_rate=1.0, gamma=0.9)
+                                    transforms=train_augmentation, crop_rate=1.0, gamma=GAMMA)
         val_dataset = SeverCLSDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, y_val, id_colname=ID_COLUMNS,
-                                  transforms=val_augmentation, gamma=0.9)
+                                  transforms=val_augmentation, gamma=GAMMA)
         #train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=8, pin_memory=True)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
