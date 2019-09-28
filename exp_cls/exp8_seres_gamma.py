@@ -106,9 +106,9 @@ def main(seed):
         val_augmentation = None
 
         train_dataset = SeverCLSDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, y_train, id_colname=ID_COLUMNS,
-                                    transforms=train_augmentation, crop_rate=1.0, gamma=0.8)
+                                    transforms=train_augmentation, crop_rate=1.0, gamma=1.2)
         val_dataset = SeverCLSDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, y_val, id_colname=ID_COLUMNS,
-                                  transforms=val_augmentation, gamma=0.8)
+                                  transforms=val_augmentation, gamma=1.2)
         #train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=8, pin_memory=True)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8, pin_memory=True)
