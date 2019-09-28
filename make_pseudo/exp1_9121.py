@@ -196,9 +196,9 @@ def mask2rle(img, width, height):
 # ===============
 # Constants
 # ===============
-IMG_DIR = "../input/severstal-steel-defect-detection/test_images/"
+IMG_DIR = "../input/test_images/"
 LOGGER_PATH = "log.txt"
-TEST_PATH = "../input/severstal-steel-defect-detection/sample_submission.csv"
+TEST_PATH = "../input/sample_submission.csv"
 ID_COLUMNS = "ImageId"
 N_CLASSES = 4
 
@@ -213,35 +213,35 @@ BATCH_SIZE = 32
 FOLD_ID = 0
 CLASSIFICATION = True
 cls_model_path_res = [
-    "models/cls_exp1_resnet_fold0_ckpt8_ema.pth",
-    "models/cls_exp1_resnet_fold1_ckpt8_ema.pth",
-    "models/cls_exp1_resnet_fold2_ckpt7_ema.pth",
-    "models/cls_exp1_resnet_fold3_ckpt5_ema.pth",
-    "models/cls_exp1_resnet_fold4_ckpt5_ema.pth",
+    "../exp/models/cls_exp1_resnet_fold0_ckpt8_ema.pth",
+    "../exp/models/cls_exp1_resnet_fold1_ckpt8_ema.pth",
+    "../exp/models/cls_exp1_resnet_fold2_ckpt7_ema.pth",
+    "../exp/models/cls_exp1_resnet_fold3_ckpt5_ema.pth",
+    "../exp/models/cls_exp1_resnet_fold4_ckpt5_ema.pth",
 ]
 cls_model_path_se = [
-    "models/cls_exp2_seresnext_fold0_ckpt4_ema.pth",
-    "models/cls_exp2_seresnext_fold1_ckpt3_ema.pth",
-    "models/cls_exp2_seresnext_fold2_ckpt5_ema.pth",
-    "models/cls_exp2_seresnext_fold3_ckpt4_ema.pth",
-    "models/cls_exp2_seresnext_fold4_ckpt3_ema.pth",
+    "../exp/models/cls_exp2_seresnext_fold0_ckpt4_ema.pth",
+    "../exp/models/cls_exp2_seresnext_fold1_ckpt3_ema.pth",
+    "../exp/models/cls_exp2_seresnext_fold2_ckpt5_ema.pth",
+    "../exp/models/cls_exp2_seresnext_fold3_ckpt4_ema.pth",
+    "../exp/models/cls_exp2_seresnext_fold4_ckpt3_ema.pth",
 ]
 cls_model_path_inc = [
-    "models/cls_exp7_incep_fold0_ckpt3_ema.pth",
+    "../exp/models/cls_exp7_incep_fold0_ckpt3_ema.pth",
 ]
 model_pathes = [
-    "models/exp57_unet_resnet_fold0_ckpt11_ema.pth",
-    "models/exp57_unet_resnet_fold1_ckpt17_ema.pth",
-    "models/exp57_unet_resnet_fold2_ckpt13_ema.pth",
-    "models/exp57_unet_resnet_fold3_ckpt13_ema.pth",
-    "models/exp57_unet_resnet_fold4_ckpt9_ema.pth",
-    "models/exp69_unet_resnet_fold0_ckpt14.pth",
+    "../exp/models/exp57_unet_resnet_fold0_ckpt11_ema.pth",
+    "../exp/models/exp57_unet_resnet_fold1_ckpt17_ema.pth",
+    "../exp/models/exp57_unet_resnet_fold2_ckpt13_ema.pth",
+    "../exp/models/exp57_unet_resnet_fold3_ckpt13_ema.pth",
+    "../exp/models/exp57_unet_resnet_fold4_ckpt9_ema.pth",
+    "../exp/models/exp69_unet_resnet_fold0_ckpt14.pth",
 ]
 model_pathes2 = [
-    "models/exp35_unet_resnet_fold0_ckpt16.pth",
-    "models/exp35_unet_resnet_fold1_ckpt14.pth",
-    "models/exp35_unet_resnet_fold2_ckpt15.pth",
-    "models/exp35_unet_resnet_fold4_ckpt12.pth",
+    "../exp/models/exp35_unet_resnet_fold0_ckpt16.pth",
+    "../exp/models/exp35_unet_resnet_fold1_ckpt14.pth",
+    "../exp/models/exp35_unet_resnet_fold2_ckpt15.pth",
+    "../exp/models/exp35_unet_resnet_fold4_ckpt12.pth",
 ]
 remove_mask_pixels = [400, 800, 600, 1600]
 thresholds = [0.51, 0.58, 0.47, 0.46]
@@ -361,4 +361,4 @@ with timer('predict'):
     LOGGER.info(len(sub_df_))
     sub_df_ = sub_df_[sub_df_.ImageId_ClassId.isin(next_sub_ids)]
 
-    sub_df_.to_csv('submission_seg.csv', index=False)
+    sub_df_.to_csv('submission_sege.csv', index=False)
