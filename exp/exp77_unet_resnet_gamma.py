@@ -1,5 +1,5 @@
 # ===============
-# best_ckpt=13, 14, fold=0
+# best_ckpt=13, 14, fold=0, GAMMA=0.8
 # 2019-09-29 05:41:50,708 - INFO - Mean train loss: 0.00827
 # 2019-09-29 05:42:56,282 - INFO - Mean valid loss: 0.00768
 # 2019-09-29 06:22:44,157 - INFO - Mean train loss: 0.00825
@@ -51,7 +51,8 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 137
-FOLD_ID = 1
+FOLD_ID = 0
+GAMMA = 0.7
 EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
@@ -101,9 +102,9 @@ def main(seed):
         val_augmentation = None
 
         train_dataset = SeverDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
-                                    transforms=train_augmentation, crop_rate=1.0, class_y=y_train, gamma=0.8)
+                                    transforms=train_augmentation, crop_rate=1.0, class_y=y_train, gamma=GAMMA)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
-                                  transforms=val_augmentation, gamma=0.8)
+                                  transforms=val_augmentation, gamma=GAMMA)
         train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
