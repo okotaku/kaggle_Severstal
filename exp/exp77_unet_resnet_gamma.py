@@ -1,5 +1,9 @@
 # ===============
-# best_ckpt=
+# best_ckpt=13, 14, fold=0
+# 2019-09-29 05:41:50,708 - INFO - Mean train loss: 0.00827
+# 2019-09-29 05:42:56,282 - INFO - Mean valid loss: 0.00768
+# 2019-09-29 06:22:44,157 - INFO - Mean train loss: 0.00825
+# 2019-09-29 06:23:50,598 - INFO - Mean valid loss: 0.00793
 # ===============
 import os
 import gc
@@ -47,7 +51,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 137
-FOLD_ID = 0
+FOLD_ID = 1
 EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
