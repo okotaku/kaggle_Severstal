@@ -118,7 +118,7 @@ def main(seed):
     with timer('create model'):
         model = smp.Unet('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
-                         classification=CLASSIFICATION, attention_type="cbam", center=True, mode="train")
+                         classification=CLASSIFICATION, attention_type="cbam", center=True)
         #model = convert_model(model)
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
