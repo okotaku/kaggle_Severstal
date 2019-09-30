@@ -381,7 +381,7 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
     return total_loss / (step + 1)
 
 
-def validate(model, valid_loader, criterion, device, classification=False, remove_mask_pixel=[]):
+def validate(model, valid_loader, criterion, device, classification=False, remove_mask_pixel=[400, 1200, 1400, 1800]):
     model.eval()
     test_loss = 0.0
     true_ans_list = []
