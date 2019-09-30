@@ -53,9 +53,9 @@ EPOCHS = 137
 FOLD_ID = 0
 EXP_ID = "exp78_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 0
+base_ckpt = 10
 base_model = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -143,7 +143,7 @@ def main(seed):
         best_model_score = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(60, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
@@ -168,7 +168,7 @@ def main(seed):
 
             if epoch % (CLR_CYCLE * 2) == CLR_CYCLE * 2 - 1:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
-                LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
+                LOGGER.info('Best valid score: {} on epoch={}'.format(round(best_model_score, 5), best_model_ep))
                 checkpoint += 1
                 best_model_loss = 999
                 best_model_score = 0
