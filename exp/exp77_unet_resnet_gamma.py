@@ -110,7 +110,7 @@ def timer(name):
 
 def main(seed):
     with timer('load data'):
-        df = pd.read_csv(FOLD_PATH)[:100]
+        df = pd.read_csv(FOLD_PATH)
         y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
         y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
         y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
@@ -201,7 +201,7 @@ def main(seed):
 
             if val_score > best_model_score:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
-                best_model_score = score
+                best_model_score = val_score
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
 
