@@ -33,7 +33,7 @@ IMG_DIR = "../input/train_images/"
 LOGGER_PATH = "log.txt"
 FOLD_PATH = "../input/severstal_folds01.csv"
 ID_COLUMNS = "ImageId"
-N_CLASSES = 3
+N_CLASSES = 4
 
 
 # ===============
@@ -46,9 +46,9 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 1
-EXP_ID = "exp74_unet_resnet"
+EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 8
+base_ckpt = 14
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
 if N_CLASSES == 4:
@@ -88,6 +88,7 @@ class SeverDataset(Dataset):
         self.crop_rate = crop_rate
         self.class_y = class_y
         self.cut_h = cut_h
+        self.gamma = 0.8
 
     def __len__(self):
         return self.df.shape[0]
@@ -98,6 +99,13 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+
+        if self.gamma is not None:
+            lookUpTable = np.empty((1, 256), np.uint8)
+            for i in range(256):
+                lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
+            img = cv2.LUT(img, lookUpTable)
+
         w, h, _ = img.shape
         mask = np.zeros((w, h, self.n_classes))
         for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
