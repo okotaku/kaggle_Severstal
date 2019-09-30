@@ -54,6 +54,9 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+        if self.meaning is not None:
+            img = (img - np.mean(img)) / np.std(img) * 32 + 100
+            img = img.astype("int64")
 
         if self.gamma is not None:
             lookUpTable = np.empty((1, 256), np.uint8)
@@ -84,8 +87,6 @@ class SeverDataset(Dataset):
         if self.cut_h:
             img, mask = cutout_h(img, mask, self.img_size, self.n_classes)
 
-        if self.meaning is not None:
-            img = (img - np.mean(img)) / np.std(img) * 32 + 100
         img = img / 255
         img -= self.means
         img /= self.stds
