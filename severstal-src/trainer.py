@@ -1,5 +1,6 @@
 import gc
 import sys
+import copy
 import torch
 import torch.nn as nn
 import numpy as np
@@ -10,6 +11,7 @@ from tqdm import tqdm
 
 sys.path.append("../severstal-src/")
 from util import seed_torch, search_threshold
+from metric import dice_all
 
 
 def get_cutmixv5_data(inputs, target, beta=1, device=0):
@@ -379,7 +381,7 @@ def train_one_epoch_dsv(model, train_loader, criterion, optimizer, device,
     return total_loss / (step + 1)
 
 
-def validate(model, valid_loader, criterion, device, classification=False):
+def validate(model, valid_loader, criterion, device, classification=False, remove_mask_pixel=[]):
     model.eval()
     test_loss = 0.0
     true_ans_list = []
@@ -400,13 +402,23 @@ def validate(model, valid_loader, criterion, device, classification=False):
             #true_ans_list.append(targets.float().cpu().numpy().astype("int8"))
             #preds_cat.append(torch.sigmoid(logits).float().cpu().numpy().astype("float16"))
 
+            targets = targets.float().cpu().numpy().astype("int8")
+            scores = []
+            for i in range(4):
+                sum_val_preds = np.sum(y_pred[:, i, :, :].reshape(len(y_pred), -1) > 0.5, axis=1)
+                y_pred = torch.sigmoid(logits).float().cpu().numpy().astype("float32")
+                val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
+                val_preds_[sum_val_preds < remove_mask_pixel[i]] = 0
+                score = dice_all(targets[:, i, :, :], val_preds_)
+                scores.append(score)
+
             del features, targets, logits
             gc.collect()
 
         #all_true_ans = np.concatenate(true_ans_list, axis=0)
         #all_preds = np.concatenate(preds_cat, axis=0)
 
-    return test_loss / (step + 1)#, all_preds, all_true_ans
+    return test_loss / (step + 1), np.mean(scores)
 
 
 def validate_noapex(model, valid_loader, criterion, device, classification=False):

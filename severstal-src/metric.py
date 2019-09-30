@@ -33,3 +33,15 @@ def dice(im1, im2):
     intersection = np.logical_and(im1, im2)
 
     return 2. * intersection.sum() / (im1.sum() + im2.sum())
+
+
+def dice_all(y_true, y_pred):
+    scores = []
+    for y_val_, y_pred_ in zip(y_true, y_pred):
+        score = dice(y_val_, y_pred_ > 0.5)
+        if np.isnan(score):
+            scores.append(1)
+        else:
+            scores.append(score)
+
+    return np.mean(scores)
