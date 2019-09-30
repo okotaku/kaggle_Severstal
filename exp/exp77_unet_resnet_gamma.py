@@ -110,7 +110,7 @@ def timer(name):
 
 def main(seed):
     with timer('load data'):
-        df = pd.read_csv(FOLD_PATH)
+        df = pd.read_csv(FOLD_PATH)[:100]
         y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
         y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
         y3 = (df.EncodedPixels_3 != "-1").astype("float32").values.reshape(-1, 1)
