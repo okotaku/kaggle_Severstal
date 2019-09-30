@@ -56,7 +56,7 @@ class SeverDataset(Dataset):
         img = cv2.imread(img_path)
         if self.meaning is not None:
             img = (img - np.mean(img)) / np.std(img) * 32 + 100
-            img = img.astype("int64")
+            img = img.astype("uint8")
 
         if self.gamma is not None:
             lookUpTable = np.empty((1, 256), np.uint8)
