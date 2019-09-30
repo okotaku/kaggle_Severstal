@@ -406,7 +406,7 @@ def validate(model, valid_loader, criterion, device, classification=False, remov
             logits = torch.sigmoid(logits).float().cpu().numpy().astype("float32")
             scores = []
             for i in range(4):
-                sum_val_preds = np.sum(logits[:, i, :, :].reshape(len(y_pred), -1) > 0.5, axis=1)
+                sum_val_preds = np.sum(logits[:, i, :, :].reshape(len(logits), -1) > 0.5, axis=1)
                 val_preds_ = copy.deepcopy(logits[:, i, :, :])
                 val_preds_[sum_val_preds < remove_mask_pixel[i]] = 0
                 score = dice_all(targets[:, i, :, :], val_preds_)
