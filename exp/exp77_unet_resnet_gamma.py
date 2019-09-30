@@ -179,6 +179,7 @@ def main(seed):
 
         best_model_loss = 999
         best_model_ep = 0
+        best_model_score = 0
         checkpoint = base_ckpt+1
 
         for epoch in range(1, EPOCHS + 1):
@@ -191,15 +192,16 @@ def main(seed):
             train_losses.append(tr_loss)
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
-            valid_loss = validate(model, val_loader, criterion, device, classification=CLASSIFICATION)
+            valid_loss, val_score = validate(model, val_loader, criterion, device, classification=CLASSIFICATION)
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
+            LOGGER.info('Mean valid score: {}'.format(round(val_score, 5)))
 
             scheduler.step()
 
-            if valid_loss < best_model_loss:
+            if val_score > best_model_score:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
-                best_model_loss = valid_loss
+                best_model_score = score
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
 
@@ -208,6 +210,7 @@ def main(seed):
                 LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
                 checkpoint += 1
                 best_model_loss = 999
+                best_model_score = 0
 
             #del val_pred
             gc.collect()
