@@ -189,7 +189,7 @@ def main(seed):
                 if np.mean(scores_) >= best:
                     best = np.mean(scores_)
                 all_scores_.append(np.mean(scores_))
-            scores.append(np.mean(scores_))
+            scores.append(best)
             all_scores.append(all_scores_)
 
         LOGGER.info('holdout dice={}'.format(np.mean(scores)))
