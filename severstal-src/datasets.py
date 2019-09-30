@@ -26,7 +26,8 @@ class SeverDataset(Dataset):
                  class_y=None,
                  cut_h=False,
                  crop_320=False,
-                 gamma=None
+                 gamma=None,
+                 meaning=False
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -42,6 +43,7 @@ class SeverDataset(Dataset):
         self.cut_h = cut_h
         self.crop_320 = crop_320
         self.gamma = gamma
+        self.meaning = meaning
 
     def __len__(self):
         return self.df.shape[0]
@@ -52,6 +54,8 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+        if self.meaning is not None:
+            img = (img - np.mean(img)) / np.std(img) * 32 + 100
 
         if self.gamma is not None:
             lookUpTable = np.empty((1, 256), np.uint8)
