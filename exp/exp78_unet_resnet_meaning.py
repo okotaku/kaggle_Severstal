@@ -28,6 +28,9 @@ import segmentation_models_pytorch as smp
 from sync_batchnorm import convert_model
 
 
+import warnings
+warnings.filterwarnings('ignore')
+
 # ===============
 # Constants
 # ===============
