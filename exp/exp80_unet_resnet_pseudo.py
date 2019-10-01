@@ -71,6 +71,8 @@ def main(seed):
     with timer('load data'):
         df = pd.read_csv(FOLD_PATH)
         df = df.append(pd.read_csv(PSEUDO_PATH)).reset_index(drop=True)
+        for c in ["EncodedPixels_1", "EncodedPixels_2", "EncodedPixels_3", "EncodedPixels_4"]:
+            df[c] = df[c].astype(str)
         df["fold_id"] = df["fold_id"].fillna(FOLD_ID+1)
         y1 = (df.EncodedPixels_1 != "-1").astype("float32").values.reshape(-1, 1)
         y2 = (df.EncodedPixels_2 != "-1").astype("float32").values.reshape(-1, 1)
