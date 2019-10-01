@@ -238,6 +238,7 @@ def predict(model, valid_loader, criterion, device, classification=False):
     with torch.no_grad():
 
         for step, (features, targets) in enumerate(tqdm(valid_loader)):
+            print(targets)
             features = features.to(device)
             targets, val_cls = targets["mask"].to(device), targets["class_y"]
 
