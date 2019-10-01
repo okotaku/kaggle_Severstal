@@ -126,7 +126,13 @@ class SeverDataset(Dataset):
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
 
-        return torch.Tensor(img), torch.Tensor(mask)
+        if self.class_y is None:
+            class_y_ = self.class_y[idx]
+            target = {"mask": torch.Tensor(mask), "class_y": torch.tensor(class_y_)}
+        else:
+            target = mask
+
+        return torch.Tensor(img), target
 
 
 class SeverCLSDataset(Dataset):
