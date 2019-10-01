@@ -253,7 +253,7 @@ threshold_after_removes = [0.35, 0.39, 0.38, 0.45]
 # threshold_after_removes = [0.5, 0.5, 0.5, 0.5]
 add_cls = 0.1
 #cls_thresholds = [0.11, 1.0, 0.59, 0.71]
-cls_thresholds = [0.9, 1.0, 0.9, 0.9]
+cls_thresholds = [0.05, 1.0, 0.2, 0.2]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
