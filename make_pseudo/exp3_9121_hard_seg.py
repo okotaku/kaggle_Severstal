@@ -244,8 +244,8 @@ model_pathes2 = [
     "../exp/models/exp35_unet_resnet_fold4_ckpt12.pth",
 ]
 remove_mask_pixels = [400, 800, 600, 1600]
-#thresholds = [0.51, 0.58, 0.47, 0.46]
-thresholds = [0.8, 0.8, 0.8, 0.8]
+thresholds = [0.51, 0.58, 0.47, 0.46]
+#thresholds = [0.8, 0.8, 0.8, 0.8]
 threshold_after_removes = [0.35, 0.39, 0.38, 0.45]
 # remove_mask_pixels = [200, 1000, 400,1400]
 # remove_mask_pixels = [800, 800, 800,1600]
@@ -253,7 +253,8 @@ threshold_after_removes = [0.35, 0.39, 0.38, 0.45]
 # thresholds = [0.5, 0.5, 0.5, 0.5]
 # threshold_after_removes = [0.5, 0.5, 0.5, 0.5]
 add_cls = 0.1
-cls_thresholds = [0.11, 1.0, 0.59, 0.71]
+#cls_thresholds = [0.11, 1.0, 0.59, 0.71]
+cls_thresholds = [0.8, 1.0, 0.8, 0.8]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
