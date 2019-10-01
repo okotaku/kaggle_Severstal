@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from apex import amp
 from contextlib import contextmanager
 from albumentations import *
+from sklearn.metrics import roc_auc_score
 import torch
 from torchvision import models
 from torch.utils.data import DataLoader
@@ -153,7 +154,9 @@ def main(seed):
         valid_losses = []
 
         best_model_loss = 999
+        best_model_score = 0
         best_model_ema_loss = 999
+        best_model_ema_score = 0
         best_model_ep = 0
         ema_decay = 0
         checkpoint = base_ckpt+1
@@ -172,34 +175,37 @@ def main(seed):
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
             valid_loss, y_pred, y_true = validate(model, val_loader, criterion, device)
+            val_score = roc_auc_score(y_true, y_pred)
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
+            LOGGER.info('Mean valid score: {}'.format(round(val_score, 5)))
 
             if EMA and epoch >= EMA_START:
                 ema_valid_loss, y_pred_ema, _ = validate(ema_model, val_loader, criterion, device)
+                val_score_ema = roc_auc_score(y_true, y_pred_ema)
                 LOGGER.info('Mean EMA valid loss: {}'.format(round(ema_valid_loss, 5)))
 
-                if ema_valid_loss < best_model_ema_loss:
+                if val_score_ema > best_model_ema_score:
                     torch.save(ema_model.module.state_dict(),
                                'models/{}_fold{}_ckpt{}_ema.pth'.format(EXP_ID, FOLD_ID, checkpoint))
-                    best_model_ema_loss = ema_valid_loss
+                    best_model_ema_score = val_score_ema
                     np.save("y_pred_ema_ckpt{}.npy".format(checkpoint), y_pred_ema)
 
             scheduler.step()
 
-            if valid_loss < best_model_loss:
+            if val_score > best_model_score:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                 np.save("y_pred_ckpt{}.npy".format(checkpoint), y_pred)
-                best_model_loss = valid_loss
+                best_model_score = val_score
                 best_model_ep = epoch
                 #np.save("val_pred.npy", val_pred)
 
             if epoch % (CLR_CYCLE * 2) == CLR_CYCLE * 2 - 1:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
-                LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
+                LOGGER.info('Best valid score: {} on epoch={}'.format(round(best_model_score, 5), best_model_ep))
                 if EMA:
                     torch.save(ema_model.module.state_dict(), 'models/{}_fold{}_latest_ema.pth'.format(EXP_ID, FOLD_ID))
-                    LOGGER.info('Best ema valid loss: {}'.format(round(best_model_ema_loss, 5)))
+                    LOGGER.info('Best ema valid score: {}'.format(round(best_model_ema_score, 5)))
                 checkpoint += 1
                 best_model_loss = 999
                 best_model_ema_loss = 999
