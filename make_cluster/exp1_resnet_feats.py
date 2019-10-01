@@ -126,7 +126,7 @@ class SeverDataset(Dataset):
         img /= self.stds
         img = img.transpose((2, 0, 1))
 
-        return torch.from_numpy(img), torch.tensor([img_id])
+        return torch.from_numpy(img), img_id
 
 
 class ResNet(nn.Module):
@@ -193,7 +193,7 @@ def main(seed):
             output = model(image)
             features.append(output.cpu().data.numpy().astype("float32"))
             ids.extend(ids_)
-        
+
         np.save("ids.npy", np.array(ids))
         np.save("features.npy", np.array(features))
 
