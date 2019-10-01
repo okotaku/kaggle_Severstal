@@ -126,7 +126,7 @@ class SeverDataset(Dataset):
         img /= self.stds
         img = img.transpose((2, 0, 1))
 
-        return torch.from_numpy(img), img_id
+        return torch.Tensor(img), img_id
 
 
 class ResNet(nn.Module):
