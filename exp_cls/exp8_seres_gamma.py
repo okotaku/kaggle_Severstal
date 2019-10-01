@@ -175,14 +175,14 @@ def main(seed):
             LOGGER.info('Mean train loss: {}'.format(round(tr_loss, 5)))
 
             valid_loss, y_pred, y_true = validate(model, val_loader, criterion, device)
-            val_score = roc_auc_score(y_true, y_pred)
+            val_score = np.mean([roc_auc_score(y_true[:, i], y_pred[:, i]) for i in range(4)])
             valid_losses.append(valid_loss)
             LOGGER.info('Mean valid loss: {}'.format(round(valid_loss, 5)))
             LOGGER.info('Mean valid score: {}'.format(round(val_score, 5)))
 
             if EMA and epoch >= EMA_START:
                 ema_valid_loss, y_pred_ema, _ = validate(ema_model, val_loader, criterion, device)
-                val_score_ema = roc_auc_score(y_true, y_pred_ema)
+                val_score_ema = np.mean([roc_auc_score(y_true[:, i], y_pred_ema[:, i]) for i in range(4)])
                 LOGGER.info('Mean EMA valid loss: {}'.format(round(ema_valid_loss, 5)))
 
                 if val_score_ema > best_model_ema_score:
