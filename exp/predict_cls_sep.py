@@ -47,15 +47,16 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 71
 FOLD_ID = 0
-EXP_ID = "exp57_unet_resnet"
+EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 11
+GAMMA = 0.8
+base_ckpt = 14
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}_ema.pth".format(EXP_ID, FOLD_ID, base_ckpt)
-base_model_cls = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp2_seresnext", FOLD_ID, 4)
-base_model_res = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp1_resnet", FOLD_ID, 8)
+base_model_cls = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp8_seresnext", FOLD_ID, 4)
+#base_model_res = "models/{}_fold{}_ckpt{}_ema.pth".format("cls_exp1_resnet", FOLD_ID, 8)
 ths = [0.5, 0.5, 0.5, 0.5]
-remove_pixels = [800, 800, 800, 400]
+remove_pixels = [400, 1200, 1600, 1800]
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -71,7 +72,6 @@ class SeverDataset(Dataset):
                  n_classes,
                  crop_rate=1.0,
                  id_colname="ImageId",
-                 mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
                  transforms=None,
                  means=[0.485, 0.456, 0.406],
                  stds=[0.229, 0.224, 0.225],
@@ -85,11 +85,12 @@ class SeverDataset(Dataset):
         self.means = np.array(means)
         self.stds = np.array(stds)
         self.id_colname = id_colname
-        self.mask_colname = mask_colname
+        self.mask_colname = ["EncodedPixels_{}".format(i) for i in range(1, n_classes+1)]
         self.n_classes = n_classes
         self.crop_rate = crop_rate
         self.class_y = class_y
         self.cut_h = cut_h
+        self.gamma = GAMMA
 
     def __len__(self):
         return self.df.shape[0]
@@ -100,6 +101,13 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+
+        if self.gamma is not None:
+            lookUpTable = np.empty((1, 256), np.uint8)
+            for i in range(256):
+                lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
+            img = cv2.LUT(img, lookUpTable)
+
         w, h, _ = img.shape
         mask = np.zeros((w, h, self.n_classes))
         for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
@@ -118,13 +126,8 @@ class SeverDataset(Dataset):
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
 
-        if self.class_y is not None:
-            class_y_ = self.class_y[idx]
-            target = {"mask": torch.Tensor(mask), "class_y": torch.tensor(class_y_)}
-        else:
-            target = mask
-
-        return torch.Tensor(img), target
+        if self.class_y is None:
+            return torch.Tensor(img), torch.Tensor(mask)
 
 
 class SeverCLSDataset(Dataset):
@@ -153,6 +156,7 @@ class SeverCLSDataset(Dataset):
         self.n_classes = n_classes
         self.crop_rate = crop_rate
         self.class_y = class_y
+        self.gamma = GAMMA
 
     def __len__(self):
         return self.df.shape[0]
@@ -164,6 +168,12 @@ class SeverCLSDataset(Dataset):
 
         img = cv2.imread(img_path)
         img = cv2.resize(img, self.img_size)
+
+        if self.gamma is not None:
+            lookUpTable = np.empty((1, 256), np.uint8)
+            for i in range(256):
+                lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
+            img = cv2.LUT(img, lookUpTable)
 
         if self.transforms is not None:
             augmented = self.transforms(image=img)
@@ -187,7 +197,7 @@ def timer(name):
     LOGGER.info('[{}] done in {} s'.format(name, round(time.time() - t0, 2)))
 
 
-def validate(models, valid_loader, criterion, device):
+def predict_cls(models, valid_loader, criterion, device):
     test_loss = 0.0
     true_ans_list = []
     preds_cat = []
@@ -281,16 +291,16 @@ def main(seed):
         model.eval()
         models.append(model)
 
-        model = cls_models.ResNet(num_classes=N_CLASSES, pretrained=None)
+        """model = cls_models.ResNet(num_classes=N_CLASSES, pretrained=None)
         model.load_state_dict(torch.load(base_model_res))
         model.to(device)
         model.eval()
-        models.append(model)
+        models.append(model)"""
 
 
         criterion = torch.nn.BCEWithLogitsLoss()
 
-        valid_loss, y_val, y_true = validate(models, val_loader, criterion, device)
+        valid_loss, y_val, y_true = predict_cls(models, val_loader, criterion, device)
         #y_val = np.load("../exp_cls/y_pred_ema_ckpt8.npy")
         LOGGER.info("val loss={}".format(valid_loss))
 

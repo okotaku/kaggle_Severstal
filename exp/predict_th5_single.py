@@ -48,6 +48,7 @@ EPOCHS = 71
 FOLD_ID = 0
 EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
+GAMMA = 0.8
 base_ckpt = 14
 #base_model = None
 base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, base_ckpt)
@@ -88,7 +89,7 @@ class SeverDataset(Dataset):
         self.crop_rate = crop_rate
         self.class_y = class_y
         self.cut_h = cut_h
-        self.gamma = 0.8
+        self.gamma = GAMMA
 
     def __len__(self):
         return self.df.shape[0]
