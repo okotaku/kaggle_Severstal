@@ -45,7 +45,7 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 EPOCHS = 137
 FOLD_ID = 0
 EXP_ID = "exp78_unet_resnet"
@@ -194,8 +194,8 @@ def main(seed):
             features.append(output.cpu().data.numpy().astype("float32"))
             ids.extend(ids_)
 
-        np.save("ids.npy", np.array(ids))
-        np.save("features.npy", np.array(features))
+        np.save("exp1_ids.npy", np.array(ids))
+        np.save("exp1_features.npy", np.array(features))
 
 
 if __name__ == '__main__':
