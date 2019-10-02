@@ -212,7 +212,7 @@ def main(seed):
                 best_model_score = val_score
                 best_model_ep_score = epoch
 
-            if valid_loss > best_model_loss:
+            if valid_loss < best_model_loss:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                 best_model_loss = valid_loss
                 best_model_ep = epoch
