@@ -48,6 +48,7 @@ CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 137
 FOLD_ID = 0
+BLACK_CROP_RATE = 1.0
 GAMMA = None
 EXP_ID = "exp82_unet_resnet"
 CLASSIFICATION = True
@@ -99,9 +100,9 @@ def main(seed):
 
         train_dataset = SeverDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                     transforms=train_augmentation, crop_rate=1.0, class_y=y_train, gamma=GAMMA,
-                                    p_black_crop=1.0)
+                                    p_black_crop=BLACK_CROP_RATE)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
-                                  transforms=val_augmentation, gamma=GAMMA, p_black_crop=1.0)
+                                  transforms=val_augmentation, gamma=GAMMA, p_black_crop=BLACK_CROP_RATE)
         train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
         train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
