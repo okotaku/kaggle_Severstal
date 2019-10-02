@@ -71,7 +71,7 @@ class SeverDataset(Dataset):
             w_cr = np.where(sum_channel.sum(0) != 0)
             h_cr = np.where(sum_channel.sum(1) != 0)
             img = img[np.min(h_cr):np.max(h_cr) + 1, np.min(w_cr):np.max(w_cr) + 1, :]
-            mask = mask[np.min(h_cr):np.max(h_cr) + 1, np.min(w_cr):np.max(w_cr) + 1, :]
+            mask = mask[np.min(h_cr):np.max(h_cr) + 1, np.min(w_cr):np.max(w_cr) + 1]
 
         if self.meaning is not None:
             img = (img - np.mean(img)) / np.std(img) * 32 + 100
