@@ -56,12 +56,14 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+        w, h, _ = img.shape
+
         if np.random.rand() <= self.p_black_crop:
             mask = img > 20
             sum_channel = np.sum(mask, 2)
-            w = np.where(sum_channel.sum(0) != 0)
-            h = np.where(sum_channel.sum(1) != 0)
-            img = img[np.min(h):np.max(h) + 1, np.min(w):np.max(w) + 1, :]
+            w_cr = np.where(sum_channel.sum(0) != 0)
+            h_cr = np.where(sum_channel.sum(1) != 0)
+            img = img[np.min(h_cr):np.max(h_cr) + 1, np.min(w_cr):np.max(w_cr) + 1, :]
 
         if self.meaning is not None:
             img = (img - np.mean(img)) / np.std(img) * 32 + 100
@@ -73,7 +75,7 @@ class SeverDataset(Dataset):
                 lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
             img = cv2.LUT(img, lookUpTable)
 
-        w, h, _ = img.shape
+
         mask = np.zeros((w, h, self.n_classes))
         for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
             if encoded in "-1":
