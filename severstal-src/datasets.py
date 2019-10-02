@@ -66,14 +66,12 @@ class SeverDataset(Dataset):
                 mask[:, :, i] = rle2mask(encoded, (w, h))
 
         if np.random.rand() <= self.p_black_crop:
-            mask = img > 20
-            sum_channel = np.sum(mask, 2)
+            mask_img = img > 20
+            sum_channel = np.sum(mask_img, 2)
             w_cr = np.where(sum_channel.sum(0) != 0)
             h_cr = np.where(sum_channel.sum(1) != 0)
             img = img[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :]
-            print("a", mask.shape)
             mask = mask[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :].astype(np.uint8)
-            print("b", mask.shape)
 
         if self.meaning is not None:
             img = (img - np.mean(img)) / np.std(img) * 32 + 100
@@ -90,9 +88,7 @@ class SeverDataset(Dataset):
         if self.crop_320:
             img, mask = random_320cropping(img, mask)
         img = cv2.resize(img, self.img_size)
-        print(mask.shape)
         mask = cv2.resize(mask, self.img_size, interpolation = cv2.INTER_CUBIC)
-        print(mask.shape)
         mask[mask != 0] = 1
 
         if self.transforms is not None:
