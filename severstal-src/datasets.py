@@ -88,6 +88,7 @@ class SeverDataset(Dataset):
         if self.crop_320:
             img, mask = random_320cropping(img, mask)
         img = cv2.resize(img, self.img_size)
+        print(mask.shape)
         mask = cv2.resize(mask, self.img_size, interpolation = cv2.INTER_CUBIC)
         mask[mask != 0] = 1
 
