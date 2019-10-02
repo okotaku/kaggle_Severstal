@@ -70,8 +70,8 @@ class SeverDataset(Dataset):
             sum_channel = np.sum(mask_img, 2)
             w_cr = np.where(sum_channel.sum(0) != 0)
             h_cr = np.where(sum_channel.sum(1) != 0)
-            img = img[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :]
-            mask = mask[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :].astype(np.int64)
+            img = img[np.min(h_cr):np.max(h_cr)+1, np.min(w_cr):np.max(w_cr)+1, :]
+            mask = mask[np.min(h_cr):np.max(h_cr)+1, np.min(w_cr):np.max(w_cr)+1, :].astype("uint8")
 
         if self.meaning is not None:
             img = (img - np.mean(img)) / np.std(img) * 32 + 100
