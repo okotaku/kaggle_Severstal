@@ -123,14 +123,14 @@ def main(seed):
 
         criterion = torch.nn.BCEWithLogitsLoss()
         optimizer = torch.optim.Adam([
-            {'params': model.decoder.parameters(), 'lr': 1e-4},
+            {'params': model.decoder.parameters(), 'lr': 1e-3},
             {'params': model.encoder.parameters(), 'lr': 1e-5},
         ])
         if base_model is None:
             scheduler_cosine = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=3e-5)
             scheduler = GradualWarmupScheduler(optimizer, multiplier=1.1, total_epoch=CLR_CYCLE*2, after_scheduler=scheduler_cosine)
         else:
-            scheduler = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=1e-6)
+            scheduler = CosineAnnealingLR(optimizer, T_max=CLR_CYCLE, eta_min=1e-5)
 
 
         model, optimizer = amp.initialize(model, optimizer, opt_level="O1", verbosity=0)
