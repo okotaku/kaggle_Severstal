@@ -72,7 +72,7 @@ class SeverDataset(Dataset):
             h_cr = np.where(sum_channel.sum(1) != 0)
             img = img[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :]
             print(mask)
-            mask = mask[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :]
+            mask = mask[np.min(h_cr):np.max(h_cr), np.min(w_cr):np.max(w_cr), :].astype(np.uint8)
             print(mask)
 
         if self.meaning is not None:
