@@ -27,7 +27,8 @@ class SeverDataset(Dataset):
                  cut_h=False,
                  crop_320=False,
                  gamma=None,
-                 meaning=False
+                 meaning=False,
+                 p_black_crop = 0.0
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -44,6 +45,7 @@ class SeverDataset(Dataset):
         self.crop_320 = crop_320
         self.gamma = gamma
         self.meaning = meaning
+        self.p_black_crop = p_black_crop
 
     def __len__(self):
         return self.df.shape[0]
@@ -54,6 +56,13 @@ class SeverDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
+        if np.random.rand() <= self.p_black_crop:
+            mask = img > 20
+            sum_channel = np.sum(mask, 2)
+            w = np.where(sum_channel.sum(0) != 0)
+            h = np.where(sum_channel.sum(1) != 0)
+            img = img[np.min(h):np.max(h) + 1, np.min(w):np.max(w) + 1, :]
+
         if self.meaning is not None:
             img = (img - np.mean(img)) / np.std(img) * 32 + 100
             img = img.astype("uint8")
