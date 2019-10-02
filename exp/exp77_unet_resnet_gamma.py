@@ -96,8 +96,8 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 137
-FOLD_ID = 0
-GAMMA = 0.7
+FOLD_ID = 1
+GAMMA = 0.8
 EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
@@ -208,14 +208,19 @@ def main(seed):
             scheduler.step()
 
             if val_score > best_model_score:
-                torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
+                torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}_score.pth'.format(EXP_ID, FOLD_ID, checkpoint))
                 best_model_score = val_score
+                best_model_ep_score = epoch
+
+            if valid_loss > best_model_loss:
+                torch.save(model.module.state_dict(), 'models/{}_fold{}_ckpt{}.pth'.format(EXP_ID, FOLD_ID, checkpoint))
+                best_model_loss = valid_loss
                 best_model_ep = epoch
-                #np.save("val_pred.npy", val_pred)
 
             if epoch % (CLR_CYCLE * 2) == CLR_CYCLE * 2 - 1:
                 torch.save(model.module.state_dict(), 'models/{}_fold{}_latest.pth'.format(EXP_ID, FOLD_ID))
                 LOGGER.info('Best valid loss: {} on epoch={}'.format(round(best_model_loss, 5), best_model_ep))
+                LOGGER.info('Best valid score: {} on epoch={}'.format(round(best_model_score, 5), best_model_ep_score))
                 checkpoint += 1
                 best_model_loss = 999
                 best_model_score = 0
