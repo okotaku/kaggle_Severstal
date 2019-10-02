@@ -103,7 +103,7 @@ class SeverDataset(Dataset):
         img /= self.stds
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
-        mask = torch.from_numpy(mask.astype("int64"))
+        mask = torch.from_numpy(mask.astype("float64"))
 
         if self.class_y is not None:
             class_y_ = self.class_y[idx]
