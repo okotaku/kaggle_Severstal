@@ -1,5 +1,12 @@
 # ===============
-# best_ckpt=
+# best_ckpt=9, fold=0
+# 2019-10-02 20:58:51,044 - INFO - Mean train loss: 0.0103
+# 2019-10-02 21:01:00,819 - INFO - Mean valid loss: 0.00993
+# 2019-10-02 21:01:00,820 - INFO - Mean valid score: 0.9466700000000001
+# best_ckpt_score=19, fold=0
+# 2019-10-03 05:13:49,567 - INFO - Mean train loss: 0.00697
+# 2019-10-03 05:15:54,338 - INFO - Mean valid loss: 0.01095
+# 2019-10-03 05:15:54,338 - INFO - Mean valid score: 0.9589400000000001
 # ===============
 import os
 import gc
