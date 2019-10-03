@@ -96,11 +96,11 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 137
-FOLD_ID = 1
+FOLD_ID = 2
 GAMMA = 0.8
 EXP_ID = "exp77_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 8
+base_ckpt = 11
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
@@ -190,7 +190,7 @@ def main(seed):
         best_model_score = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(48, EPOCHS + 1):
+        for epoch in range(66, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
