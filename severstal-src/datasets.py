@@ -128,7 +128,8 @@ class SeverCLSDataset(Dataset):
                  transforms=None,
                  means=[0.485, 0.456, 0.406],
                  stds=[0.229, 0.224, 0.225],
-                 gamma=None
+                 gamma=None,
+                 p_black_crop=0.0
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -142,6 +143,7 @@ class SeverCLSDataset(Dataset):
         self.crop_rate = crop_rate
         self.class_y = class_y
         self.gamma = gamma
+        self.p_black_crop = p_black_crop
 
     def __len__(self):
         return self.df.shape[0]
@@ -153,6 +155,13 @@ class SeverCLSDataset(Dataset):
 
         img = cv2.imread(img_path)
         img = cv2.resize(img, self.img_size)
+
+        if np.random.rand() <= self.p_black_crop:
+            mask_img = img > 20
+            sum_channel = np.sum(mask_img, 2)
+            w_cr = np.where(sum_channel.sum(0) != 0)
+            h_cr = np.where(sum_channel.sum(1) != 0)
+            img = img[np.min(h_cr):np.max(h_cr)+1, np.min(w_cr):np.max(w_cr)+1, :]
 
         if self.gamma is not None:
             lookUpTable = np.empty((1, 256), np.uint8)
