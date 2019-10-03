@@ -154,7 +154,6 @@ class SeverCLSDataset(Dataset):
         img_path = os.path.join(self.img_dir, img_id)
 
         img = cv2.imread(img_path)
-        img = cv2.resize(img, self.img_size)
 
         if np.random.rand() <= self.p_black_crop:
             mask_img = img > 20
@@ -162,6 +161,8 @@ class SeverCLSDataset(Dataset):
             w_cr = np.where(sum_channel.sum(0) != 0)
             h_cr = np.where(sum_channel.sum(1) != 0)
             img = img[np.min(h_cr):np.max(h_cr)+1, np.min(w_cr):np.max(w_cr)+1, :]
+
+        img = cv2.resize(img, self.img_size)
 
         if self.gamma is not None:
             lookUpTable = np.empty((1, 256), np.uint8)
