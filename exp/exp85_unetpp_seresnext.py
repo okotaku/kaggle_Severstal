@@ -51,7 +51,7 @@ CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 101
 FOLD_ID = 0
-EXP_ID = "exp85_unetpp_seresnext"
+EXP_ID = "exp85_unetpp_resnet34"
 CLASSIFICATION = True
 base_ckpt = 0
 base_model = None
@@ -111,7 +111,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
-        model = smp.UnetPP('se_resnext50_32x4d', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
+        model = smp.UnetPP('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
                          classification=CLASSIFICATION, attention_type="cbam")
         model = convert_model(model)
