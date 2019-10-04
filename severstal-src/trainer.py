@@ -474,7 +474,7 @@ def validate_crop(model, valid_loader, criterion, device):
     return test_loss / (step + 1)
 
 
-def validate_dsv(model, valid_loader, criterion, device, classification=False):
+def validate_dsv(model, valid_loader, criterion, device, classification=False, remove_mask_pixel=[400, 1200, 1400, 1800]):
     model.eval()
     test_loss = 0.0
     with torch.no_grad():
@@ -491,11 +491,21 @@ def validate_dsv(model, valid_loader, criterion, device, classification=False):
 
             test_loss += loss.item()
 
+            targets = targets.float().cpu().numpy().astype("int8")
+            logits = torch.sigmoid(logits[0]).float().cpu().numpy().astype("float32")
+            scores = []
+            for i in range(4):
+                sum_val_preds = np.sum(logits[:, i, :, :].reshape(len(logits), -1) > 0.5, axis=1)
+                val_preds_ = copy.deepcopy(logits[:, i, :, :])
+                val_preds_[sum_val_preds < remove_mask_pixel[i]] = 0
+                score = dice_all(targets[:, i, :, :], val_preds_)
+                scores.append(score)
+
             del features, targets, logits
             gc.collect()
 
 
-    return test_loss / (step + 1)
+    return test_loss / (step + 1), np.mean(scores)
 
 
 def predict_sep(model, valid_loader, criterion, device, classification=False):
