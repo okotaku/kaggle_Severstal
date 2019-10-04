@@ -51,7 +51,7 @@ FOLD_ID = 0
 GAMMA = None
 EXP_ID = "exp84_unet_seresnext"
 CLASSIFICATION = True
-base_ckpt = 5
+base_ckpt = 12
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
@@ -140,7 +140,7 @@ def main(seed):
         best_model_score = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(30, EPOCHS + 1):
+        for epoch in range(72, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
