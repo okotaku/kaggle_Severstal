@@ -501,7 +501,7 @@ def validate_dsv(model, valid_loader, criterion, device, classification=False, r
                 score = dice_all(targets[:, i, :, :], val_preds_)
                 scores.append(score)
 
-            del features, targets, logits
+            del features, targets, logits, val_preds_
             gc.collect()
 
 
