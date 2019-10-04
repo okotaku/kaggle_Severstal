@@ -45,13 +45,13 @@ SEED = np.random.randint(100000)
 device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 EPOCHS = 100
 FOLD_ID = 0
 GAMMA = None
 EXP_ID = "exp84_unet_seresnext"
 CLASSIFICATION = True
-base_ckpt = 1
+base_ckpt = 0
 base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
