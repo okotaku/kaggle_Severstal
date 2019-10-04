@@ -54,11 +54,11 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 137
-FOLD_ID = 0
+FOLD_ID = 1
 GAMMA = None
 EXP_ID = "exp81_unet_seresnext"
 CLASSIFICATION = True
-base_ckpt = 1
+base_ckpt = 0
 base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
