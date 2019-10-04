@@ -58,7 +58,7 @@ FOLD_ID = 0
 GAMMA = None
 EXP_ID = "exp81_unet_seresnext"
 CLASSIFICATION = True
-base_ckpt = 0
+base_ckpt = 1
 base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
