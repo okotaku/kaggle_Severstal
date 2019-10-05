@@ -7,6 +7,14 @@
 # 2019-10-03 01:29:01,906 - INFO - Mean train loss: 0.00589
 # 2019-10-03 01:32:14,593 - INFO - Mean valid loss: 0.01081
 # 2019-10-03 01:32:14,593 - INFO - Mean valid score: 0.96689
+# best_ckpt=8, fold=1
+# 2019-10-04 19:54:56,904 - INFO - Mean train loss: 0.00848
+# 2019-10-04 19:59:11,210 - INFO - Mean valid loss: 0.00936
+# 2019-10-04 19:59:11,211 - INFO - Mean valid score: 0.9814200000000001
+# best_ckpt=6, fold=1
+# 2019-10-04 17:11:21,667 - INFO - Mean train loss: 0.0095
+# 2019-10-04 17:15:05,933 - INFO - Mean valid loss: 0.01086
+# 2019-10-04 17:15:05,933 - INFO - Mean valid score: 0.98443
 # ===============
 import os
 import gc
@@ -53,7 +61,7 @@ device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
-EPOCHS = 137
+EPOCHS = 107
 FOLD_ID = 1
 GAMMA = None
 EXP_ID = "exp81_unet_seresnext"
