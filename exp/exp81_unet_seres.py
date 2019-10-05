@@ -62,13 +62,13 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 107
-FOLD_ID = 1
+FOLD_ID = 2
 GAMMA = None
 EXP_ID = "exp81_unet_seresnext"
 CLASSIFICATION = True
-base_ckpt = 10
+base_ckpt = 0
 base_model = None
-base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -156,7 +156,7 @@ def main(seed):
         best_model_score = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(60, EPOCHS + 1):
+        for epoch in range(1, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
