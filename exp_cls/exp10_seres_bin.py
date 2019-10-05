@@ -1,5 +1,10 @@
 # ===============
-# best_ckpt=4, fold=0
+# best_ckpt=5, fold=0
+# 2019-10-04 18:22:41,960 - INFO - Mean train loss: 0.04755
+# 2019-10-04 18:23:36,176 - INFO - Mean valid loss: 0.06908
+# 2019-10-04 18:23:36,177 - INFO - Mean valid score: (array([0.96195203, 0.9862069 ]), array([0.98475868, 0.96549137]), array([0.97322176, 0.9757392 ]), array([1181, 1333]))
+# 2019-10-04 18:24:30,378 - INFO - Mean EMA valid loss: 0.06122
+# best_ckpt=4, fold=2
 # 2019-10-04 10:19:18,386 - INFO - Mean train loss: 0.06578
 # 2019-10-04 10:20:08,519 - INFO - Mean valid loss: 0.08781
 # 2019-10-04 10:20:08,520 - INFO - Mean valid score: (array([0.95778146, 0.98238897]), array([0.98050847, 0.96176912]), array([0.96901173, 0.9719697 ]), array([1180, 1334]))
@@ -54,7 +59,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 59
-FOLD_ID = 0
+FOLD_ID = 3
 EXP_ID = "cls_exp10_seresnext"
 EMA = True
 EMA_START = 6
