@@ -46,12 +46,12 @@ device = "cuda:0"
 IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
-EPOCHS = 100
+EPOCHS = 119
 FOLD_ID = 0
 GAMMA = None
 EXP_ID = "exp84_unet_seresnext"
 CLASSIFICATION = True
-base_ckpt = 12
+base_ckpt = 14
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 
@@ -140,7 +140,7 @@ def main(seed):
         best_model_score = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(72, EPOCHS + 1):
+        for epoch in range(84, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
