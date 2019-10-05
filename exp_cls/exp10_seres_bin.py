@@ -4,6 +4,11 @@
 # 2019-10-04 18:23:36,176 - INFO - Mean valid loss: 0.06908
 # 2019-10-04 18:23:36,177 - INFO - Mean valid score: (array([0.96195203, 0.9862069 ]), array([0.98475868, 0.96549137]), array([0.97322176, 0.9757392 ]), array([1181, 1333]))
 # 2019-10-04 18:24:30,378 - INFO - Mean EMA valid loss: 0.06122
+# best_ckpt=5, fold=1
+# 2019-10-04 17:38:35,582 - INFO - Mean train loss: 0.06278
+# 2019-10-04 17:39:24,887 - INFO - Mean valid loss: 0.09282
+# 2019-10-04 17:39:24,888 - INFO - Mean valid score: (array([0.953125 , 0.9830639]), array([0.98137172, 0.95727136]), array([0.96704214, 0.9699962 ]), array([1181, 1334]))
+# 2019-10-04 17:40:14,158 - INFO - Mean EMA valid loss: 0.06325
 # best_ckpt=4, fold=2
 # 2019-10-04 10:19:18,386 - INFO - Mean train loss: 0.06578
 # 2019-10-04 10:20:08,519 - INFO - Mean valid loss: 0.08781
