@@ -189,6 +189,7 @@ def main(seed):
         for i in range(N_CLASSES):
             best = 0
             for min_size in [100, 200, 300, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]:
+                val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 scores_ = []
                 all_scores_ = []
                 for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
