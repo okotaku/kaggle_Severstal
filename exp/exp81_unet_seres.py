@@ -15,6 +15,14 @@
 # 2019-10-04 17:11:21,667 - INFO - Mean train loss: 0.0095
 # 2019-10-04 17:15:05,933 - INFO - Mean valid loss: 0.01086
 # 2019-10-04 17:15:05,933 - INFO - Mean valid score: 0.98443
+# best_ckpt=6, fold=2
+# 2019-10-05 22:46:46,541 - INFO - Mean train loss: 0.00832
+# 2019-10-05 22:50:35,033 - INFO - Mean valid loss: 0.00872
+# 2019-10-05 22:50:35,034 - INFO - Mean valid score: 0.9034800000000001
+# best_ckpt=4, fold=2
+# 2019-10-05 19:28:35,038 - INFO - Mean train loss: 0.01075
+# 2019-10-05 19:32:22,684 - INFO - Mean valid loss: 0.01041
+# 2019-10-05 19:32:22,685 - INFO - Mean valid score: 0.9369400000000001
 # ===============
 import os
 import gc
