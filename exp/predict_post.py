@@ -199,7 +199,7 @@ def main(seed):
                         scores_.append(1)
                     else:
                         scores_.append(score)
-                LOGGER.info('dice={} on {}'.format(np.mean(scores_), remove_mask_pixel))
+                LOGGER.info('dice={} on {}'.format(np.mean(scores_), min_size))
                 if np.mean(scores_) >= best:
                     best = np.mean(scores_)
                 all_scores_.append(np.mean(scores_))
