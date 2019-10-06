@@ -187,7 +187,10 @@ def main(seed):
         scores = []
         all_scores = []
         for i in range(N_CLASSES):
+            if i == 1:
+                continue
             best = 0
+            count = 0
             for min_size in [100, 200, 300, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]:
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 scores_ = []
@@ -202,12 +205,15 @@ def main(seed):
                 LOGGER.info('dice={} on {}'.format(np.mean(scores_), min_size))
                 if np.mean(scores_) >= best:
                     best = np.mean(scores_)
-                all_scores_.append(np.mean(scores_))
+                    count = 0
+                else:
+                    count += 1
+                if count == 3:
+                    break
             scores.append(best)
             all_scores.append(all_scores_)
 
         LOGGER.info('holdout dice={}'.format(np.mean(scores)))
-        np.save("all_scores_fold{}.npy".format(FOLD_ID), np.array(all_scores))
 
 
 if __name__ == '__main__':
