@@ -57,7 +57,7 @@ CLASSIFICATION = True
 base_ckpt = 0
 base_model = None
 #base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
-PSEUDO_PATH = "../input/severstal_pseudo01.csv"
+PSEUDO_PATH = "../input/severstal_pseudo02.csv"
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
