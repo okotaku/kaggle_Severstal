@@ -1,4 +1,8 @@
 # ===============
+# best_ckpt=14, fold=1
+# 2019-10-07 12:14:21,251 - INFO - Mean train loss: 0.00749
+# 2019-10-07 12:16:30,290 - INFO - Mean valid loss: 0.00873
+# 2019-10-07 12:16:30,291 - INFO - Mean valid score: 0.8947900000000001
 # best_ckpt=14, fold=2
 # 2019-10-07 10:18:41,873 - INFO - Mean train loss: 0.00773
 # 2019-10-07 10:20:26,477 - INFO - Mean valid loss: 0.00848
@@ -51,7 +55,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 101
-FOLD_ID = 3
+FOLD_ID = 4
 EXP_ID = "exp86_unet_resnet"
 CLASSIFICATION = True
 base_ckpt = 0
