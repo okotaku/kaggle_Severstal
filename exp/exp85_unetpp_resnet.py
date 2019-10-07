@@ -7,6 +7,14 @@
 # 2019-10-05 16:13:41,150 - INFO - Mean train loss: 0.00825
 # 2019-10-05 16:17:49,627 - INFO - Mean valid loss: 0.00931
 # 2019-10-05 16:17:49,628 - INFO - Mean valid score: 0.96357
+# best_ckpt=9, fold=1
+# 2019-10-06 17:45:03,491 - INFO - Mean train loss: 0.0087
+# 2019-10-06 17:48:34,584 - INFO - Mean valid loss: 0.00911
+# 2019-10-06 17:48:34,585 - INFO - Mean valid score: 0.9828100000000001
+# best_ckpt=6, fold=1
+# 2019-10-06 14:06:05,782 - INFO - Mean train loss: 0.01037
+# 2019-10-06 14:09:36,937 - INFO - Mean valid loss: 0.00986
+# 2019-10-06 14:09:36,937 - INFO - Mean valid score: 0.98611
 # ===============
 import os
 import gc
@@ -54,7 +62,7 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 16
 EPOCHS = 101
-FOLD_ID = 1
+FOLD_ID = 2
 EXP_ID = "exp85_unetpp_resnet34"
 CLASSIFICATION = True
 base_ckpt = 0
