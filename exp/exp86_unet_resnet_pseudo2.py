@@ -51,10 +51,10 @@ IMG_SIZE = (1600, 256)
 CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 101
-FOLD_ID = 1
+FOLD_ID = 0
 EXP_ID = "exp86_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 7
+base_ckpt = 5
 base_model = None
 base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
 PSEUDO_PATH = "../input/severstal_pseudo02.csv"
@@ -147,7 +147,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(42, EPOCHS + 1):
+        for epoch in range(30, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
