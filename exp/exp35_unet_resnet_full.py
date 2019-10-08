@@ -45,9 +45,10 @@
 # 2019-09-15 21:34:33,322 - INFO - Mean valid loss: 0.0082
 # 2019-09-15 22:59:07,310 - INFO - Mean train loss: 0.00738
 # 2019-09-15 22:59:50,390 - INFO - Mean valid loss: 0.0082
-# fold=4, best_ckpt=12
-# 2019-09-16 06:08:10,543 - INFO - Mean train loss: 0.00828
-# 2019-09-16 06:08:53,696 - INFO - Mean valid loss: 0.00801
+# fold=4, best_ckpt=10
+# 2019-10-08 00:01:54,986 - INFO - Mean train loss: 0.00869
+# 2019-10-08 00:03:40,920 - INFO - Mean valid loss: 0.00807
+# 2019-10-08 00:03:40,921 - INFO - Mean valid score: 0.9371600000000001
 # ===============
 import os
 import gc
