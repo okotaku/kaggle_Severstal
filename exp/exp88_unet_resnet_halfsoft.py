@@ -1,6 +1,8 @@
 # ===============
 #
 # ===============
+import warnings
+warnings.filterwarnings('ignore')
 import os
 import gc
 import time
