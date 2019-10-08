@@ -206,6 +206,7 @@ def main(seed):
         gc.collect()
 
     with timer('create model'):
+        models = []
         model = smp_old.Unet('resnet34', encoder_weights="imagenet", classes=N_CLASSES, encoder_se_module=True,
                          decoder_semodule=True, h_columns=False, skip=True, act="swish", freeze_bn=True,
                          classification=CLASSIFICATION)
@@ -213,9 +214,10 @@ def main(seed):
         if base_model is not None:
             model.load_state_dict(torch.load(base_model))
         model.to(device)
+        models.append(model)
 
     with timer('predict'):
-        rles, sub_ids = predict(model, val_loader, device)
+        rles, sub_ids = predict(models, val_loader, device)
         sub_df = pd.DataFrame({'ImageId_ClassId': sub_ids, 'EncodedPixels': rles})
         LOGGER.info(sub_df.head())
 
