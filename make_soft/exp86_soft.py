@@ -90,7 +90,7 @@ def post_process(mask, min_size):
         return None
 
 
-def predict(models, models_g, test_loader, device):
+def predict(models, test_loader, device):
     preds_rle = []
     ids = []
     with torch.no_grad():
@@ -103,7 +103,7 @@ def predict(models, models_g, test_loader, device):
                 else:
                     logits += torch.sigmoid(m(features)[0])
 
-            logits = logits / (len(models) + len(models_g))
+            logits = logits / len(models)
             logits = logits.float().cpu().numpy().astype("float64")
 
             rles = []
@@ -149,10 +149,8 @@ def main(seed):
             model.load_state_dict(torch.load(base_model))
         model.to(device)
 
-        criterion = torch.nn.BCEWithLogitsLoss()
-
     with timer('predict'):
-        rles, sub_ids = predict(model, val_loader, criterion, device)
+        rles, sub_ids = predict(model, val_loader, device)
         sub_df = pd.DataFrame({'ImageId_ClassId': sub_ids, 'EncodedPixels': rles})
         LOGGER.info(sub_df.head())
 
