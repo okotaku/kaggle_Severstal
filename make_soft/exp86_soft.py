@@ -7,18 +7,15 @@ import gc
 import time
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-#import segmentation_models_pytorch as smp
-from apex import amp
 from contextlib import contextmanager
 from albumentations import *
 import torch
 from torch.utils.data import DataLoader
-from torch.optim.lr_scheduler import CosineAnnealingLR
+from torch.utils.data import Dataset
 
 import sys
 sys.path.append("../severstal-src/")
-from util import seed_torch, search_threshold, mask2rle
+from util import seed_torch, mask2rle, rle2mask
 from losses import FocalLovaszLoss
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
@@ -27,6 +24,74 @@ sys.path.append("../")
 import segmentation_models_pytorch as smp
 import segmentation_models_pytorch2 as smp_old
 from sync_batchnorm import convert_model
+
+
+class SeverDatasetTest(Dataset):
+
+    def __init__(self,
+                 df,
+                 img_dir,
+                 img_size,
+                 n_classes,
+                 crop_rate=1.0,
+                 id_colname="ImageId",
+                 mask_colname=["EncodedPixels_{}".format(i) for i in range(1, 5)],
+                 transforms=None,
+                 means=[0.485, 0.456, 0.406],
+                 stds=[0.229, 0.224, 0.225],
+                 p_black_crop=0.0
+                 ):
+        self.df = df
+        self.img_dir = img_dir
+        self.img_size = img_size
+        self.transforms = transforms
+        self.means = np.array(means)
+        self.stds = np.array(stds)
+        self.id_colname = id_colname
+        self.mask_colname = mask_colname
+        self.n_classes = n_classes
+        self.crop_rate = crop_rate
+        self.gamma = 0.8
+        self.p_black_crop = p_black_crop
+
+    def __len__(self):
+        return self.df.shape[0]
+
+    def __getitem__(self, idx):
+        cur_idx_row = self.df.iloc[idx]
+        img_id = cur_idx_row[self.id_colname]
+        img_path = os.path.join(self.img_dir, img_id)
+
+        img = cv2.imread(img_path)
+
+        if np.random.rand() <= self.p_black_crop:
+            mask_img = img > 20
+            sum_channel = np.sum(mask_img, 2)
+            w_cr = np.where(sum_channel.sum(0) != 0)
+            h_cr = np.where(sum_channel.sum(1) != 0)
+            img = img[np.min(h_cr):np.max(h_cr) + 1, np.min(w_cr):np.max(w_cr) + 1, :]
+            bbox = [np.min(h_cr), np.max(h_cr) + 1, np.min(w_cr), np.max(w_cr) + 1]
+
+        lookUpTable = np.empty((1, 256), np.uint8)
+        for i in range(256):
+            lookUpTable[0, i] = np.clip(pow(i / 255.0, self.gamma) * 255.0, 0, 255)
+        img_g = cv2.LUT(img, lookUpTable)
+
+        img = cv2.resize(img, self.img_size)
+        img_g = cv2.resize(img_g, self.img_size)
+
+        img = self._preprocess(img)
+        img_g = self._preprocess(img_g)
+
+        return torch.Tensor(img), torch.Tensor(img_g), img_id
+
+    def _preprocess(self, img_):
+        img_ = img_ / 255
+        img_ -= self.means
+        img_ /= self.stds
+        img_ = img_.transpose((2, 0, 1))
+
+        return img_
 
 
 # ===============
@@ -133,7 +198,7 @@ def main(seed):
         val_df = df[df.fold_id == FOLD_ID]
         val_augmentation = None
 
-        val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
+        val_dataset = SeverDatasetTest(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
