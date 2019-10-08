@@ -152,7 +152,7 @@ def main(seed):
         criterion = torch.nn.BCEWithLogitsLoss()
 
     with timer('predict'):
-        rles, sub_ids = predict(model, val_loader, criterion, device, classification=CLASSIFICATION)
+        rles, sub_ids = predict(model, val_loader, criterion, device)
         sub_df = pd.DataFrame({'ImageId_ClassId': sub_ids, 'EncodedPixels': rles})
         LOGGER.info(sub_df.head())
 
