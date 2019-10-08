@@ -28,7 +28,8 @@ class SeverDataset(Dataset):
                  crop_320=False,
                  gamma=None,
                  meaning=False,
-                 p_black_crop = 0.0
+                 p_black_crop = 0.0,
+                 soft_df=None
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -46,12 +47,15 @@ class SeverDataset(Dataset):
         self.gamma = gamma
         self.meaning = meaning
         self.p_black_crop = p_black_crop
+        self.soft_df = soft_df
 
     def __len__(self):
         return self.df.shape[0]
 
     def __getitem__(self, idx):
         cur_idx_row = self.df.iloc[idx]
+        if self.soft_df is not None:
+            cur_idx_row_soft = self.df.iloc[idx]
         img_id = cur_idx_row[self.id_colname]
         img_path = os.path.join(self.img_dir, img_id)
 
@@ -59,11 +63,22 @@ class SeverDataset(Dataset):
         w, h, _ = img.shape
 
         mask = np.zeros((w, h, self.n_classes))
-        for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
-            if encoded in "-1":
-                continue
-            else:
-                mask[:, :, i] = rle2mask(encoded, (w, h))
+        if self.soft_df is not None:
+            for i, (encoded, encoded_soft) in enumerate(zip(cur_idx_row[self.mask_colname], cur_idx_row_soft[self.mask_colname])):
+                if encoded in "-1" and encoded_soft in "-1":
+                    continue
+                elif encoded in "-1":
+                    mask[:, :, i] = rle2mask(encoded_soft, (w, h)) / 2
+                elif encoded_soft in "-1":
+                    mask[:, :, i] = rle2mask(encoded, (w, h)) / 2
+                else:
+                    mask[:, :, i] = (rle2mask(encoded, (w, h)) + rle2mask(encoded_soft, (w, h))) / 2
+        else:
+            for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
+                if encoded in "-1":
+                   continue
+                else:
+                    mask[:, :, i] = rle2mask(encoded, (w, h))
 
         if np.random.rand() <= self.p_black_crop:
             mask_img = img > 20
@@ -89,7 +104,7 @@ class SeverDataset(Dataset):
             img, mask = random_320cropping(img, mask)
         img = cv2.resize(img, self.img_size)
         mask = cv2.resize(mask, self.img_size, interpolation = cv2.INTER_CUBIC)
-        mask[mask != 0] = 1
+        mask = mask / np.max(mask)
 
         if self.transforms is not None:
             augmented = self.transforms(image=img, mask=mask)
