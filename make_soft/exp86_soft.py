@@ -53,7 +53,7 @@ EXP_ID = "exp86_unet_resnet"
 CLASSIFICATION = True
 remove_mask_pixels = [200, 400, 200, 1000]
 best_ckpt = 11
-base_model = "models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, best_ckpt)
+base_model = "../exp/models/{}_fold{}_ckpt{}.pth".format(EXP_ID, FOLD_ID, best_ckpt)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
