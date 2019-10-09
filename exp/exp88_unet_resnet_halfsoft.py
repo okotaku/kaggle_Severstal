@@ -1,5 +1,8 @@
 # ===============
-#
+# ckpt=13, fold=1
+# 2019-10-09 09:27:51,343 - INFO - Mean train loss: 0.00782
+# 2019-10-09 09:29:54,526 - INFO - Mean valid loss: 0.00877
+# 2019-10-09 09:29:54,527 - INFO - Mean valid score: 0.9155700000000001
 # ===============
 import warnings
 warnings.filterwarnings('ignore')
