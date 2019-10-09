@@ -107,7 +107,8 @@ class SeverDataset(Dataset):
             img, mask = random_320cropping(img, mask)
         img = cv2.resize(img, self.img_size)
         mask = cv2.resize(mask, self.img_size, interpolation = cv2.INTER_CUBIC)
-        mask[mask!=0]= 1
+        if self.soft_df is None:
+            mask[mask!=0]= 1
 
         if self.transforms is not None:
             augmented = self.transforms(image=img, mask=mask)
