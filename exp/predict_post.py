@@ -142,12 +142,13 @@ def post_process(mask, mask_orig, min_size, th):
     num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
     predictions = np.zeros((256, 1600), np.float32)
     num = 0
-    for c in range(1, num_component):
-        p = component == c
-        p_orig = mask_orig[p]
-        if p.sum() > min_size and p_orig.max() > th:
-            predictions[p] = 1
-            num += 1
+    if mask_orig.max() > th:
+        for c in range(1, num_component):
+            p = component == c
+            #p_orig = mask_orig[p]
+            if p.sum() > min_size:# and p_orig.max() > th:
+                predictions[p] = 1
+                num += 1
 
     return predictions
 
@@ -194,7 +195,7 @@ def main(seed):
             best = 0
             count = 0
             min_size = min_sizes[i]
-            for th in [0.8, 0.85, 0.9, 0.95, 0.99]:
+            for th in [0.7+i*0.1 for i in range(30)]:
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 scores_ = []
                 all_scores_ = []
@@ -205,7 +206,7 @@ def main(seed):
                         scores_.append(1)
                     else:
                         scores_.append(score)
-                LOGGER.info('dice={} on {}'.format(np.mean(scores_), min_size))
+                LOGGER.info('dice={} on {}'.format(np.mean(scores_), th))
                 if np.mean(scores_) >= best:
                     best = np.mean(scores_)
                     count = 0
