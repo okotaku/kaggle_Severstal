@@ -195,7 +195,7 @@ def main(seed):
             best = 0
             count = 0
             min_size = min_sizes[i]
-            for th in [0.7+i*0.1 for i in range(30)]:
+            for th in [0.7+i*0.01 for i in range(30)]:
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 scores_ = []
                 all_scores_ = []
