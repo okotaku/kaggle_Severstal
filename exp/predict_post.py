@@ -136,7 +136,7 @@ def timer(name):
     LOGGER.info('[{}] done in {} s'.format(name, round(time.time() - t0, 2)))
 
 
-def post_process(mask, min_size):
+def post_process(mask, mask_orig, min_size, th):
     """Post processing of each predicted mask, components with lesser number of pixels
     than `min_size` are ignored"""
     num_component, component = cv2.connectedComponents(mask.astype(np.uint8))
@@ -144,7 +144,8 @@ def post_process(mask, min_size):
     num = 0
     for c in range(1, num_component):
         p = component == c
-        if p.sum() > min_size:
+        p_orig = mask_orig[p]
+        if p.sum() > min_size and p_orig.max() > th:
             predictions[p] = 1
             num += 1
 
@@ -186,17 +187,19 @@ def main(seed):
 
         scores = []
         all_scores = []
+        min_sizes = [300, 0, 600, 1600]
         for i in range(N_CLASSES):
             if i == 1:
                 continue
             best = 0
             count = 0
-            for min_size in [100, 200, 300, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]:
+            min_size = min_sizes[i]
+            for th in [0.8, 0.85, 0.9, 0.95, 0.99]:
                 val_preds_ = copy.deepcopy(y_pred[:, i, :, :])
                 scores_ = []
                 all_scores_ = []
                 for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
-                    y_pred_ = post_process(y_pred_ > 0.5, min_size)
+                    y_pred_ = post_process(y_pred_ > 0.5, min_size, th)
                     score = dice(y_val_, y_pred_)
                     if np.isnan(score):
                         scores_.append(1)
