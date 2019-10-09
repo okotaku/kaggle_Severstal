@@ -199,7 +199,7 @@ def main(seed):
                 scores_ = []
                 all_scores_ = []
                 for y_val_, y_pred_ in zip(y_true[:, i, :, :], val_preds_):
-                    y_pred_ = post_process(y_pred_ > 0.5, min_size, th)
+                    y_pred_ = post_process(y_pred_ > 0.5, y_pred_, min_size, th)
                     score = dice(y_val_, y_pred_)
                     if np.isnan(score):
                         scores_.append(1)
