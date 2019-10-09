@@ -1,24 +1,8 @@
 # ===============
-# best_ckpt=11, fold=0
-# 2019-10-07 14:41:05,834 - INFO - Mean train loss: 0.00799
-# 2019-10-07 14:42:53,281 - INFO - Mean valid loss: 0.00803
-# 2019-10-07 14:42:53,281 - INFO - Mean valid score: 0.9503400000000001
-# best_ckpt=14, fold=1
-# 2019-10-07 12:14:21,251 - INFO - Mean train loss: 0.00749
-# 2019-10-07 12:16:30,290 - INFO - Mean valid loss: 0.00873
-# 2019-10-07 12:16:30,291 - INFO - Mean valid score: 0.8947900000000001
-# best_ckpt=14, fold=2
-# 2019-10-07 10:18:41,873 - INFO - Mean train loss: 0.00773
-# 2019-10-07 10:20:26,477 - INFO - Mean valid loss: 0.00848
-# 2019-10-07 10:20:26,477 - INFO - Mean valid score: 0.95749
-# best_ckpt=13, fold=3
-# 2019-10-08 04:36:07,176 - INFO - Mean train loss: 0.00896
-# 2019-10-08 04:38:13,457 - INFO - Mean valid loss: 0.00883
-# 2019-10-08 04:38:13,457 - INFO - Mean valid score: 0.9564
-# best_ckpt=13, fold=4
-# 2019-10-07 22:16:44,299 - INFO - Mean train loss: 0.00754
-# 2019-10-07 22:18:52,193 - INFO - Mean valid loss: 0.00808
-# 2019-10-07 22:18:52,193 - INFO - Mean valid score: 0.95435
+# best_ckpt=16, fold=1
+# 2019-10-09 00:03:21,655 - INFO - Mean train loss: 0.00417
+# 2019-10-09 00:05:29,242 - INFO - Mean valid loss: 0.00381
+# 2019-10-09 00:05:29,243 - INFO - Mean valid score: 0.9417900000000001
 # ===============
 import os
 import gc
