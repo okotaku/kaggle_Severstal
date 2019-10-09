@@ -28,7 +28,8 @@ class SeverDataset(Dataset):
                  gamma=None,
                  meaning=False,
                  p_black_crop = 0.0,
-                 soft_df=None
+                 soft_df=None,
+                 double_mask=False
                  ):
         self.df = df
         self.img_dir = img_dir
@@ -47,6 +48,7 @@ class SeverDataset(Dataset):
         self.meaning = meaning
         self.p_black_crop = p_black_crop
         self.soft_df = soft_df
+        self.double_mask = double_mask
 
     def __len__(self):
         return self.df.shape[0]
@@ -103,7 +105,7 @@ class SeverDataset(Dataset):
             img, mask = random_320cropping(img, mask)
         img = cv2.resize(img, self.img_size)
         mask = cv2.resize(mask, self.img_size, interpolation = cv2.INTER_CUBIC)
-        if self.soft_df is None:
+        if self.soft_df is None or self.double_mask:
             mask[mask!=0]= 1
 
         if self.transforms is not None:
