@@ -69,10 +69,13 @@ class SeverDataset(Dataset):
                     continue
                 elif encoded in "-1":
                     mask[:, :, i] = rle2mask(encoded_soft, (w, h)) / 2
+                    print("a", np.max(mask))
                 elif encoded_soft in "-1":
                     mask[:, :, i] = rle2mask(encoded, (w, h)) / 2
+                    print("b", np.max(mask))
                 else:
                     mask[:, :, i] = (rle2mask(encoded, (w, h)) + rle2mask(encoded_soft, (w, h))) / 2
+                    print("c", np.max(mask))
         else:
             for i, encoded in enumerate(cur_idx_row[self.mask_colname]):
                 if encoded in "-1":
