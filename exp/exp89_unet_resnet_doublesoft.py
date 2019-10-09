@@ -52,11 +52,11 @@ CLR_CYCLE = 3
 BATCH_SIZE = 32
 EPOCHS = 101
 FOLD_ID = 1
-EXP_ID = "exp88_unet_resnet"
+EXP_ID = "exp89_unet_resnet"
 CLASSIFICATION = True
-base_ckpt = 0
+base_ckpt = 5
 base_model = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+base_model = "models/{}_fold{}_latest.pth".format("exp88_unet_resnet", FOLD_ID)
 PSEUDO_PATH = "../input/severstal_pseudo02.csv"
 
 setup_logger(out_file=LOGGER_PATH)
@@ -154,7 +154,7 @@ def main(seed):
         best_model_ep = 0
         checkpoint = base_ckpt+1
 
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(30, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
