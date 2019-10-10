@@ -124,7 +124,7 @@ def main(seed):
         model = torch.nn.DataParallel(model)
 
     with timer('train'):
-        for epoch in range(61, EPOCHS + 1):
+        for epoch in range(62, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
