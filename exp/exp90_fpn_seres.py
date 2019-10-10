@@ -50,8 +50,8 @@ EPOCHS = 100
 EXP_ID = "exp90_fpn_seresnext_all"
 CLASSIFICATION = False
 base_ckpt = 0
-#base_model = None
-base_model = "models/{}_latest.pth".format(EXP_ID)
+base_model = None
+#base_model = "models/{}_latest.pth".format(EXP_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
