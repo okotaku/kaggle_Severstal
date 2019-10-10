@@ -195,7 +195,7 @@ def train_one_epoch(model, train_loader, criterion, optimizer, device, accumulat
         if classification:
             targets, targets_cls = targets["mask"].to(device), targets["class_y"].to(device)
         else:
-            targets = targets.to(device)
+            targets = targets["mask"].to(device)
 
         if np.random.rand() < cutmix_prob:
             features, targets = get_cutmixv2_data(
