@@ -50,8 +50,8 @@ EPOCHS = 100
 EXP_ID = "exp35_unet_resnet_all"
 CLASSIFICATION = True
 base_ckpt = 0
-base_model = None
-#base_model = "models/{}_fold{}_latest.pth".format(EXP_ID, FOLD_ID)
+#base_model = None
+base_model = "models/{}_latest.pth".format(EXP_ID)
 
 setup_logger(out_file=LOGGER_PATH)
 seed_torch(SEED)
@@ -124,7 +124,7 @@ def main(seed):
         model = torch.nn.DataParallel(model)
 
     with timer('train'):
-        for epoch in range(1, EPOCHS + 1):
+        for epoch in range(32, EPOCHS + 1):
             seed = seed + epoch
             seed_torch(seed)
 
