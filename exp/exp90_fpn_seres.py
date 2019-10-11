@@ -99,7 +99,7 @@ def main(seed):
         val_augmentation = None
 
         train_dataset = SeverDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
-                                    transforms=train_augmentation, crop_rate=1.0, class_y=y_train)
+                                    transforms=train_augmentation, crop_rate=1.0)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
         train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
