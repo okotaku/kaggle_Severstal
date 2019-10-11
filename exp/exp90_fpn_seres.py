@@ -21,7 +21,7 @@ from util import seed_torch, search_threshold
 from losses import FocalLovaszLoss
 from datasets import SeverDataset, MaskProbSampler
 from logger import setup_logger, LOGGER
-from trainer import train_one_epoch, validate
+from trainer import train_one_epoch_noapex, validate
 from scheduler import GradualWarmupScheduler
 sys.path.append("../")
 import segmentation_models_pytorch as smp
