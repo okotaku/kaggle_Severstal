@@ -120,7 +120,7 @@ class SeverDataset(Dataset):
         img /= self.stds
         img = img.transpose((2, 0, 1))
         mask = mask.transpose((2, 0, 1))
-        mask = torch.from_numpy(mask.astype("float64"))
+        mask = torch.FloatTensor(mask.astype("float64"))
 
         if self.class_y is not None:
             class_y_ = self.class_y[idx]
@@ -128,7 +128,7 @@ class SeverDataset(Dataset):
         else:
             target = mask
 
-        return torch.from_numpy(img), target
+        return torch.FloatTensor(img), target
 
 
 class SeverCLSDataset(Dataset):
