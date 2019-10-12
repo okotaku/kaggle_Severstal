@@ -113,11 +113,11 @@ def main(seed):
         val_augmentation = None
 
         train_dataset = SeverDataset(train_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
-                                    transforms=train_augmentation, crop_rate=1.0, class_y=y_train, drop_last=True)
+                                    transforms=train_augmentation, crop_rate=1.0, class_y=y_train)
         val_dataset = SeverDataset(val_df, IMG_DIR, IMG_SIZE, N_CLASSES, id_colname=ID_COLUMNS,
                                   transforms=val_augmentation)
         train_sampler = MaskProbSampler(train_df, demand_non_empty_proba=0.6)
-        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8)
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, sampler=train_sampler, num_workers=8, drop_last=True)
         val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=8)
 
         del train_df, val_df, df, train_dataset, val_dataset
