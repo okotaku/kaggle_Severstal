@@ -268,6 +268,7 @@ def train_one_epoch_noapex(model, train_loader, criterion, optimizer, device, ac
         if classification:
             logits, cls = model(features)
             loss = criterion(logits, targets)
+            print(targets_cls.shape, cls.shape)
             loss += criterion(cls.view(targets_cls.shape), targets_cls) / 1024
         else:
             logits = model(features)
