@@ -61,7 +61,7 @@ EXP_ID = "exp87_unet_resnet_finetune"
 CLASSIFICATION = True
 base_ckpt = 0
 base_model = None
-base_model = "datasets/exp87_unet_resnet_fold1_ckpt16.pth"
+base_model = "dataset/exp87_unet_resnet_fold1_ckpt16.pth"
 PSEUDO_PATH = "../input/severstal_pseudo02.csv"
 
 setup_logger(out_file=LOGGER_PATH)
