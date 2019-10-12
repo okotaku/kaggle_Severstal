@@ -1,5 +1,7 @@
 # ===============
-#
+# 2019-10-11 23:04:21,990 - INFO - Mean train loss: 0.0081
+# 2019-10-11 23:07:02,126 - INFO - Mean valid loss: 0.00884
+# 2019-10-11 23:07:02,127 - INFO - Mean valid score: 0.90868
 # ===============
 import os
 import gc
